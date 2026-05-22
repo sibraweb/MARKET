@@ -595,6 +595,52 @@ select:focus { border-color: var(--red); }
 .sort-icon { font-size: 10px; color: var(--text3); margin-left: 3px; }
 .sort-icon.asc  { color: var(--red); }
 .sort-icon.desc { color: var(--red); }
+
+/* ── AUTOCOMPLETE ── */
+.ac-wrap { position: relative; display: flex; flex-direction: column; gap: 5px; }
+.ac-label { font-size: 10px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); }
+.ac-box { position: relative; }
+.ac-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  color: var(--text);
+  padding: 7px 12px;
+  font-family: var(--font-main);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.ac-input:focus { border-color: var(--red); }
+.ac-lista {
+  display: none;
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 0; right: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  z-index: 200;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.ac-lista.open { display: block; }
+.ac-item {
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover { background: var(--bg4); color: var(--text); }
+.ac-item.selected { background: rgba(225,6,0,0.12); color: var(--red-light); }
+.ac-item-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
 [data-tip] { position: relative; cursor: help; }
 [data-tip]::after {
   content: attr(data-tip);
@@ -656,27 +702,34 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
     <div style="flex:0 0 340px;">
       <div class="drive-config">
         <h2>Conexión Google Drive</h2>
-        <p>Configurá tus credenciales OAuth para leer los archivos directamente desde Drive y escribir resultados sin salir de la app.</p>
+        <p>Autorizá con Google para leer archivos desde Drive y escribir resultados.</p>
 
-        <div class="config-section">
-          <label>Client ID (OAuth 2.0)</label>
-          <input type="text" id="cfgClientId" value="891275909999-25to444ggoo9k1inji4lqbaq1h99ij41.apps.googleusercontent.com" />
-          <p class="hint">Crealo en <strong>Google Cloud Console → APIs → Credenciales → OAuth 2.0</strong>. Tipo: Aplicación web. URI de redirección autorizado: el origen de esta página.</p>
-        </div>
-
-        <div class="config-section">
-          <label>Scopes requeridos</label>
-          <div style="font-family:monospace; font-size:11px; color:var(--text2); line-height:2;">
-            https://www.googleapis.com/auth/drive.readonly<br>
-            https://www.googleapis.com/auth/drive.file
+        <!-- Config oculta — protegida por clave -->
+        <div id="cfgLock" style="margin-bottom:14px;">
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="password" id="cfgClave" placeholder="Clave de configuración..." style="flex:1;" onkeydown="if(event.key==='Enter') App.desbloquearConfig()" />
+            <button class="btn-secondary" style="padding:6px 14px; font-size:12px;" onclick="App.desbloquearConfig()">Ver</button>
           </div>
-          <p class="hint">readonly para leer, drive.file para escribir solo archivos creados por la app.</p>
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:6px;">
-          <button class="btn-primary" onclick="App.driveAuth()">
-            <span>Autorizar con Google</span>
-          </button>
+        <div id="cfgHidden" style="display:none;">
+          <div class="config-section">
+            <label>Client ID (OAuth 2.0)</label>
+            <input type="text" id="cfgClientId" value="891275909999-25to444ggoo9k1inji4lqbaq1h99ij41.apps.googleusercontent.com" />
+          </div>
+          <div class="config-section">
+            <label>Scopes requeridos</label>
+            <div style="font-family:monospace; font-size:11px; color:var(--text2); line-height:2;">
+              https://www.googleapis.com/auth/drive.readonly<br>
+              https://www.googleapis.com/auth/drive.file
+            </div>
+            <p class="hint">readonly para leer, drive.file para escribir archivos creados por la app.</p>
+          </div>
+          <button class="btn-secondary" style="font-size:11px; padding:4px 12px; margin-top:6px;" onclick="App.bloquearConfig()">🔒 Ocultar</button>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <button class="btn-primary" onclick="App.driveAuth()">Autorizar con Google</button>
           <button class="btn-secondary" onclick="App.driveRevoke()">Revocar</button>
         </div>
 
@@ -695,13 +748,11 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
       <div class="drive-config mt-20" style="background:var(--bg3);">
         <h2 style="font-size:15px; margin-bottom:10px;">Tipo de cambio MEP</h2>
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-          <div class="mep-badge">
-            MEP <span class="mep-val" id="mepVal">—</span>
-          </div>
+          <div class="mep-badge">MEP <span class="mep-val" id="mepVal">—</span></div>
           <div style="font-size:11px; color:var(--text3);">AL30/AL30D · Data912</div>
           <button class="btn-secondary" style="padding:5px 12px; font-size:11px;" onclick="App.fetchMEP()">Actualizar</button>
         </div>
-        <p class="hint mt-12">Calculado automáticamente: AL30 ÷ AL30D. No editable. Usado para valuar Cash USD y mostrar totales.</p>
+        <p class="hint mt-12">Calculado automáticamente: AL30 ÷ AL30D. No editable.</p>
       </div>
     </div>
 
@@ -807,51 +858,92 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
   </div>
 </div>
 
-<!-- ══════════ PANEL: DASHBOARD ══════════ -->
 <!-- ══════════ PANEL: CARTERA ══════════ -->
 <div class="panel" id="panel-cartera">
 
-  <!-- Buscador en tiempo real -->
-  <div style="display:flex; gap:12px; align-items:flex-end; margin-bottom:14px; flex-wrap:wrap;">
-    <div class="selector-group" style="flex:1; min-width:220px;">
-      <label>Buscar cliente, CC o ticker</label>
-      <input type="text" id="cartBuscar" placeholder="ej: BRADE, 58677, AL30..." oninput="App.filtrarCartera()" style="width:100%;" />
+  <!-- Filtros autocomplete -->
+  <div style="display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap;">
+    <div class="ac-wrap" style="flex:1; min-width:200px;">
+      <label class="ac-label">Cliente / CC</label>
+      <div class="ac-box">
+        <input type="text" id="acCliente" class="ac-input" placeholder="Escribí para buscar..." oninput="App.acFiltrar('acCliente','acClienteLista')" onfocus="App.acAbrir('acCliente','acClienteLista')" autocomplete="off" />
+        <div class="ac-lista" id="acClienteLista"></div>
+      </div>
     </div>
-    <div class="selector-group">
-      <label>ALyC</label>
-      <select id="cartAlyc" onchange="App.filtrarCartera()">
-        <option value="">Todas</option>
-      </select>
+    <div class="ac-wrap" style="min-width:150px;">
+      <label class="ac-label">Ticker</label>
+      <div class="ac-box">
+        <input type="text" id="acTicker" class="ac-input" placeholder="ej: MELI, AL30..." oninput="App.acFiltrar('acTicker','acTickerLista')" onfocus="App.acAbrir('acTicker','acTickerLista')" autocomplete="off" />
+        <div class="ac-lista" id="acTickerLista"></div>
+      </div>
     </div>
-    <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.limpiarFiltroCartera()">Limpiar</button>
-    <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.exportarCartela()">↓ Excel</button>
+    <div class="ac-wrap" style="min-width:130px;">
+      <label class="ac-label">ALyC</label>
+      <div class="ac-box">
+        <input type="text" id="acAlyc" class="ac-input" placeholder="ej: ADCAP..." oninput="App.acFiltrar('acAlyc','acAlycLista')" onfocus="App.acAbrir('acAlyc','acAlycLista')" autocomplete="off" />
+        <div class="ac-lista" id="acAlycLista"></div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
+      <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.limpiarFiltroCartera()">Limpiar</button>
+      <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.exportarCartela()">↓ Excel</button>
+    </div>
   </div>
 
-  <!-- KPIs totales -->
-  <div class="kpi-row" id="cartKPIs" style="display:none; margin-bottom:14px;">
-    <div class="kpi"><div class="kpi-label">Total ARS</div><div class="kpi-value" id="cartTotalARS">—</div></div>
-    <div class="kpi"><div class="kpi-label">Total USD</div><div class="kpi-value" id="cartTotalUSD">—</div></div>
-    <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="cartNPos">—</div></div>
-    <div class="kpi"><div class="kpi-label">Clientes</div><div class="kpi-value" id="cartNCli">—</div></div>
+  <!-- KPIs -->
+  <div class="kpi-row" id="cartKPIs" style="display:none; margin-bottom:16px;">
+    <div class="kpi">
+      <div class="kpi-label">Cartera bruta ARS</div>
+      <div class="kpi-value" id="cartBrutaARS">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Cartera bruta USD</div>
+      <div class="kpi-value" id="cartBrutaUSD" style="color:var(--amber);">—</div>
+    </div>
+    <div class="kpi" style="border-left:2px solid var(--red);">
+      <div class="kpi-label">Caución ARS</div>
+      <div class="kpi-value" id="cartCaucionARS" style="color:var(--text2);">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Caución USD</div>
+      <div class="kpi-value" id="cartCaucionUSD" style="color:var(--text2);">—</div>
+    </div>
+    <div class="kpi" style="border-left:2px solid var(--green);">
+      <div class="kpi-label">Cartera neta ARS</div>
+      <div class="kpi-value" id="cartNetaARS" style="color:var(--green);">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Cartera neta USD</div>
+      <div class="kpi-value" id="cartNetaUSD" style="color:var(--green);">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Posiciones</div>
+      <div class="kpi-value" id="cartNPos">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Clientes</div>
+      <div class="kpi-value" id="cartNCli">—</div>
+    </div>
   </div>
 
-  <!-- Tabla principal -->
-  <div class="table-wrap" id="cartTablaWrap">
+  <!-- Tabla -->
+  <div class="table-wrap" id="cartTablaWrap" style="display:none;">
     <table id="cartTabla">
       <thead>
         <tr>
-          <th onclick="App.sortCartera('alyc')"      class="th-sort">ALyC <span class="sort-icon" id="si-alyc">⇅</span></th>
-          <th onclick="App.sortCartera('cliente')"   class="th-sort">Cliente <span class="sort-icon" id="si-cliente">⇅</span></th>
-          <th onclick="App.sortCartera('ticker')"    class="th-sort">Ticker <span class="sort-icon" id="si-ticker">⇅</span></th>
-          <th onclick="App.sortCartera('tipo')"      class="th-sort">Tipo <span class="sort-icon" id="si-tipo">⇅</span></th>
-          <th onclick="App.sortCartera('tenencia')"  class="th-sort text-right">Tenencia <span class="sort-icon" id="si-tenencia">⇅</span></th>
+          <th onclick="App.sortCartera('alyc')"       class="th-sort">ALyC <span class="sort-icon" id="si-alyc">⇅</span></th>
+          <th onclick="App.sortCartera('cliente')"    class="th-sort">Cliente <span class="sort-icon" id="si-cliente">⇅</span></th>
+          <th onclick="App.sortCartera('ticker')"     class="th-sort">Ticker <span class="sort-icon" id="si-ticker">⇅</span></th>
+          <th onclick="App.sortCartera('tipo')"       class="th-sort">Tipo <span class="sort-icon" id="si-tipo">⇅</span></th>
+          <th onclick="App.sortCartera('tenencia')"   class="th-sort text-right">Tenencia <span class="sort-icon" id="si-tenencia">⇅</span></th>
           <th onclick="App.sortCartera('precioUnit')" class="th-sort text-right">PU $ <span class="sort-icon" id="si-precioUnit">⇅</span></th>
-          <th onclick="App.sortCartera('valor')"     class="th-sort text-right">Importe $ <span class="sort-icon" id="si-valor">⇅</span></th>
-          <th onclick="App.sortCartera('valorUSD')"  class="th-sort text-right">Importe USD <span class="sort-icon" id="si-valorUSD">⇅</span></th>
-          <th onclick="App.sortCartera('pct')"       class="th-sort text-right">% <span class="sort-icon" id="si-pct">⇅</span></th>
-          <th onclick="App.sortCartera('pais')"      class="th-sort">País <span class="sort-icon" id="si-pais">⇅</span></th>
-          <th onclick="App.sortCartera('grupo')"     class="th-sort">Grupo <span class="sort-icon" id="si-grupo">⇅</span></th>
-          <th onclick="App.sortCartera('subgrupo')"  class="th-sort">Subgrupo <span class="sort-icon" id="si-subgrupo">⇅</span></th>
+          <th onclick="App.sortCartera('valor')"      class="th-sort text-right">Importe $ <span class="sort-icon" id="si-valor">⇅</span></th>
+          <th onclick="App.sortCartera('valorUSD')"   class="th-sort text-right">USD <span class="sort-icon" id="si-valorUSD">⇅</span></th>
+          <th onclick="App.sortCartera('pctBruto')"   class="th-sort text-right">% Bruto <span class="sort-icon" id="si-pctBruto">⇅</span></th>
+          <th onclick="App.sortCartera('pctNeto')"    class="th-sort text-right">% Neto <span class="sort-icon" id="si-pctNeto">⇅</span></th>
+          <th onclick="App.sortCartera('pais')"       class="th-sort">País <span class="sort-icon" id="si-pais">⇅</span></th>
+          <th onclick="App.sortCartera('grupo')"      class="th-sort">Grupo <span class="sort-icon" id="si-grupo">⇅</span></th>
+          <th onclick="App.sortCartera('subgrupo')"   class="th-sort">Subgrupo <span class="sort-icon" id="si-subgrupo">⇅</span></th>
         </tr>
       </thead>
       <tbody id="tbCartaGlobal"></tbody>
@@ -868,43 +960,39 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
 <!-- ══════════ PANEL: DASHBOARD ══════════ -->
 <div class="panel" id="panel-dashboard">
 
-  <!-- Selector cliente -->
-  <div class="selector-row" style="margin-bottom:14px;">
-    <div class="selector-group">
-      <label>ALyC</label>
-      <select id="selAlyc" onchange="App.onAlycChange()">
-        <option value="">— Todas —</option>
-      </select>
-    </div>
-    <div class="selector-group" style="flex:1; min-width:200px;">
-      <label>Buscar cliente / CC</label>
-      <input type="text" id="selClienteBuscar" placeholder="Nombre o CC..." oninput="App.filtrarSelectorCliente()" style="width:100%;" />
-    </div>
-    <div class="selector-group" style="flex:1; min-width:200px;">
-      <label>Cliente</label>
-      <select id="selCliente" onchange="App.onClienteChange()" size="1">
-        <option value="">— Seleccioná —</option>
-      </select>
-    </div>
-    <div id="clientePerfil" style="display:none;">
-      <div class="selector-group">
-        <label>Perfil</label>
-        <div id="clientePerfilVal" class="pill pill-blue" style="padding:7px 14px; font-size:12px;">—</div>
+  <!-- Selector cliente con autocomplete -->
+  <div style="display:flex; gap:12px; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap;">
+    <div class="ac-wrap" style="min-width:150px;">
+      <label class="ac-label">ALyC</label>
+      <div class="ac-box">
+        <input type="text" id="dashAcAlyc" class="ac-input" placeholder="Todas..." oninput="App.acFiltrar('dashAcAlyc','dashAcAlycLista');App.onAlycChange()" onfocus="App.acAbrir('dashAcAlyc','dashAcAlycLista')" autocomplete="off" />
+        <div class="ac-lista" id="dashAcAlycLista"></div>
       </div>
     </div>
-  </div>
-
-  <div id="clienteKPIs" style="display:none;">
-    <div class="kpi-row">
-      <div class="kpi"><div class="kpi-label">Valor cartera ARS</div><div class="kpi-value" id="kCarteraARS">—</div></div>
-      <div class="kpi"><div class="kpi-label">Valor cartera USD MEP</div><div class="kpi-value" id="kCarteraUSD">—</div></div>
-      <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="kPosiciones">—</div></div>
-      <div class="kpi"><div class="kpi-label">MEP vigente</div><div class="kpi-value" id="kMEP">—</div></div>
+    <div class="ac-wrap" style="flex:1; min-width:220px;">
+      <label class="ac-label">Cliente / CC</label>
+      <div class="ac-box">
+        <input type="text" id="dashAcCliente" class="ac-input" placeholder="Escribí nombre o CC..." oninput="App.acFiltrarClientes()" onfocus="App.acAbrirClientes()" autocomplete="off" />
+        <div class="ac-lista" id="dashAcClienteLista"></div>
+      </div>
+    </div>
+    <div id="clientePerfil" style="display:none; padding-top:18px;">
+      <span id="clientePerfilVal" class="pill pill-blue" style="padding:7px 14px; font-size:12px;">—</span>
     </div>
   </div>
 
-  <!-- Filtros allocation -->
-  <div id="filterRow" style="display:none; margin-bottom:14px; margin-top:14px;">
+  <!-- KPIs cliente -->
+  <div id="clienteKPIs" style="display:none; margin-bottom:16px;">
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">Cartera bruta ARS</div><div class="kpi-value" id="kCarteraARS">—</div></div>
+      <div class="kpi"><div class="kpi-label">Cartera bruta USD</div><div class="kpi-value" id="kCarteraUSD" style="color:var(--amber);">—</div></div>
+      <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="kPosiciones">—</div></div>
+      <div class="kpi"><div class="kpi-label">MEP</div><div class="kpi-value" id="kMEP">—</div></div>
+    </div>
+  </div>
+
+  <!-- Filtros cruzados -->
+  <div id="filterRow" style="display:none; margin-bottom:14px;">
     <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
       <div class="selector-group">
         <label>País</label>
@@ -926,44 +1014,28 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
         <label>Subtipo</label>
         <select id="fSubtipo" onchange="App.applyFilters()"><option value="">Todos</option></select>
       </div>
-      <button class="btn-secondary" style="font-size:11px; padding:6px 14px;" onclick="App.clearFilters()">Limpiar filtros</button>
+      <button class="btn-secondary" style="font-size:11px; padding:6px 14px;" onclick="App.clearFilters()">Limpiar</button>
     </div>
   </div>
 
   <!-- Gráficos -->
   <div id="clienteCharts" style="display:none;">
+    <!-- Fila 1: Grupo + País + Subgrupo -->
+    <div class="dash-row" style="margin-bottom:14px;">
+      <div class="block"><div class="block-title">Grupo (RF / RV / CASH)</div><div class="chart-wrap"><canvas id="chartGrupo"></canvas></div></div>
+      <div class="block"><div class="block-title">País</div><div class="chart-wrap"><canvas id="chartPais"></canvas></div></div>
+      <div class="block"><div class="block-title">Subgrupo</div><div class="chart-wrap"><canvas id="chartSubgrupo"></canvas></div></div>
+    </div>
+    <!-- Fila 2: Subtipo + Sector (barras) -->
     <div class="dash-row">
-      <div class="block"><div class="block-title">Por grupo (RF/RV/CASH)</div><div class="chart-wrap"><canvas id="chartGrupo"></canvas></div></div>
-      <div class="block"><div class="block-title">Por país</div><div class="chart-wrap"><canvas id="chartPais"></canvas></div></div>
-      <div class="block"><div class="block-title">Por subgrupo</div><div class="chart-wrap"><canvas id="chartSector"></canvas></div></div>
-    </div>
-  </div>
-
-  <!-- Tabla cliente -->
-  <div id="clienteTabla" style="display:none;">
-    <div class="section-head">
-      <h3>Posiciones</h3>
-      <button class="btn-secondary" style="font-size:11px;" onclick="App.exportarCartela()">↓ Excel</button>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Ticker</th><th>Tipo</th><th class="text-right">Tenencia</th>
-            <th class="text-right">PU $</th><th class="text-right">Importe $</th>
-            <th class="text-right">Importe USD</th>
-            <th class="text-right">%</th>
-            <th>País</th><th>Grupo</th><th>Subgrupo</th>
-          </tr>
-        </thead>
-        <tbody id="tbCartera"></tbody>
-      </table>
+      <div class="block" style="flex:0 0 220px;"><div class="block-title">Subtipo</div><div class="chart-wrap"><canvas id="chartSubtipo"></canvas></div></div>
+      <div class="block" style="flex:2;"><div class="block-title">Sector</div><div style="height:220px; overflow-y:auto;"><canvas id="chartSector"></canvas></div></div>
     </div>
   </div>
 
   <div id="dashEmpty" class="empty-state">
     <div class="es-icon">📊</div>
-    <p>Seleccioná un cliente para ver su cartera</p>
+    <p>Seleccioná un cliente para ver los gráficos</p>
     <small>Primero cargá las fuentes de datos</small>
   </div>
 </div>
@@ -1489,7 +1561,8 @@ async function cargarFuenteDesdeCarpeta(key, folderId) {
     const file = await archivoMasRecienteDeCarpeta(folderId);
     log(`☁ ${key}: encontrado "${file.name}" (${new Date(file.modifiedTime).toLocaleDateString('es-AR')})`, 'log-ok');
     setSourceStatus(key, 'loading', `Descargando ${file.name}...`);
-    $(`sc-${key}-name`).textContent = file.name;
+    const nameEl = $(`sc-${key}-name`);
+    if (nameEl) nameEl.textContent = file.name;
     const buf = await driveDownload(file.id);
     await processSourceFile(key, buf, file.name);
   } catch(e) {
@@ -1506,9 +1579,9 @@ async function cargarAlycDesdeCarpeta(alycName, folderId) {
     const file = await archivoMasRecienteDeCarpeta(folderId);
     log(`☁ ${alycName}: encontrado "${file.name}" (${new Date(file.modifiedTime).toLocaleDateString('es-AR')})`, 'log-ok');
     setSourceStatus(key, 'loading', `Descargando ${file.name}...`);
-    $(`sc-${key}-name`).textContent = file.name;
+    const nameEl = $(`sc-${key}-name`);
+    if (nameEl) nameEl.textContent = file.name;
     const buf = await driveDownload(file.id);
-    // Quitar entrada previa de esta ALyC y agregar la nueva
     S.alycFiles = S.alycFiles.filter(f => f.alyc !== alycName);
     S.alycFiles.push({ name: file.name, alyc: alycName, data: buf });
     updateAlycTags();
@@ -2079,29 +2152,118 @@ async function procesarArchivos() {
 // ══════════════════════════════════════════
 //  SELECTORES
 // ══════════════════════════════════════════
-// Estado de ordenamiento tabla global
-const CART_SORT = { col: 'valor', dir: 'desc' };
-let cartDataCache = []; // cache de todas las posiciones valuadas
+// ══════════════════════════════════════════
+//  SISTEMA AUTOCOMPLETE
+// ══════════════════════════════════════════
+const AC = { opciones: {}, seleccion: {} };
 
+function acInit(inputId, listaId, opciones) {
+  AC.opciones[inputId] = opciones;
+  AC.seleccion[inputId] = '';
+  acRenderLista(inputId, listaId, opciones);
+  document.addEventListener('click', (e) => {
+    const lista = $(listaId); const input = $(inputId);
+    if (lista && input && !lista.contains(e.target) && e.target !== input)
+      lista.classList.remove('open');
+  }, true);
+}
+
+function acAbrir(inputId, listaId) {
+  const lista = $(listaId); if (!lista) return;
+  lista.classList.add('open');
+  acFiltrar(inputId, listaId);
+}
+
+function acFiltrar(inputId, listaId) {
+  const input = $(inputId); const lista = $(listaId);
+  if (!input || !lista) return;
+  const q = input.value.toLowerCase().trim();
+  const todas = AC.opciones[inputId] || [];
+  const filtradas = q ? todas.filter(o => o.label.toLowerCase().includes(q) || (o.sub||'').toLowerCase().includes(q)) : todas;
+  acRenderLista(inputId, listaId, filtradas);
+  lista.classList.add('open');
+}
+
+function acRenderLista(inputId, listaId, opciones) {
+  const lista = $(listaId); if (!lista) return;
+  const selVal = AC.seleccion[inputId] || '';
+  lista.innerHTML = opciones.slice(0, 100).map(o => {
+    const v = o.value.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const l = o.label.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<div class="ac-item ${o.value===selVal?'selected':''}" onclick="App.acSeleccionar('${inputId}','${listaId}','${v}','${l}')">
+      ${o.label}${o.sub?`<div class="ac-item-sub">${o.sub}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function acSeleccionar(inputId, listaId, value, label) {
+  const input = $(inputId);
+  if (input) input.value = label;
+  AC.seleccion[inputId] = value;
+  const lista = $(listaId);
+  if (lista) lista.classList.remove('open');
+  if (['acCliente','acTicker','acAlyc'].includes(inputId)) filtrarCartera();
+  if (['dashAcCliente','dashAcAlyc'].includes(inputId)) onDashClienteSeleccionado();
+}
+
+function acGetVal(inputId) { return AC.seleccion[inputId] || ''; }
+
+function acReset(inputId, listaId) {
+  AC.seleccion[inputId] = '';
+  const input = $(inputId); if (input) input.value = '';
+  acFiltrar(inputId, listaId);
+}
+
+// ══════════════════════════════════════════
+//  INICIALIZAR AUTOCOMPLETES
+// ══════════════════════════════════════════
+function inicializarAutocompletes() {
+  const optsClientes = S.clientes
+    .map(c => ({ value:`${c.alyc}|${c.cc}`, label: c.cliente||c.cc, sub:`${c.alyc} · ${c.cc}` }))
+    .sort((a,b)=>a.label.localeCompare(b.label));
+  const optsTickers = [...new Set(S.posiciones.map(p=>p.ticker))].sort().map(t=>({value:t,label:t}));
+  const optsAlycs   = [...new Set(S.posiciones.map(p=>p.alyc))].sort().map(a=>({value:a,label:a}));
+
+  acInit('acCliente',    'acClienteLista',     optsClientes);
+  acInit('acTicker',     'acTickerLista',      optsTickers);
+  acInit('acAlyc',       'acAlycLista',        optsAlycs);
+  acInit('dashAcAlyc',   'dashAcAlycLista',    optsAlycs);
+  acInit('dashAcCliente','dashAcClienteLista', optsClientes);
+}
+
+// ══════════════════════════════════════════
+//  FUNCIONES CONFIG (clave de acceso)
+// ══════════════════════════════════════════
+function desbloquearConfig() {
+  const clave = $('cfgClave')?.value?.trim();
+  if (clave === '091285') {
+    $('cfgHidden').style.display = '';
+    $('cfgLock').style.display   = 'none';
+  } else {
+    alert('Clave incorrecta');
+  }
+}
+function bloquearConfig() {
+  $('cfgHidden').style.display = 'none';
+  $('cfgLock').style.display   = '';
+  if($('cfgClave')) $('cfgClave').value = '';
+}
+
+// ══════════════════════════════════════════
+//  ACTUALIZARSELECTORES
+// ══════════════════════════════════════════
 function actualizarSelectores() {
-  const alycs = [...new Set(S.posiciones.map(p => p.alyc))].sort();
-  ['selAlyc', 'rotAlyc', 'cartAlyc'].forEach(id => {
-    const el = $(id);
-    if (!el) return;
-    const cur = el.value;
-    el.innerHTML = '<option value="">— Todas —</option>' + alycs.map(a => `<option>${a}</option>`).join('');
-    if (cur) el.value = cur;
-  });
-  // Poblar tabla global de cartera
   renderCartaGlobal();
 }
 
-function renderCartaGlobal() {
-  // Valuar todas las posiciones de todas las ALyCs y clientes
-  const mep = S.mep || 1;
-  const allValuada = [];
+// ══════════════════════════════════════════
+//  PESTAÑA CARTERA
+// ══════════════════════════════════════════
+const CART_SORT = { col: 'valor', dir: 'desc' };
+let cartDataCache = [];
 
-  // Agrupar posiciones por alyc+comitente
+function renderCartaGlobal() {
+  const mep = S.mep || 1;
   const grupos = {};
   S.posiciones.forEach(p => {
     const key = `${p.alyc}|${p.comitente}`;
@@ -2109,161 +2271,199 @@ function renderCartaGlobal() {
     grupos[key].push(p);
   });
 
+  cartDataCache = [];
   Object.entries(grupos).forEach(([key, pos]) => {
     const [alyc, comitente] = key.split('|');
-    const cli = S.clientes.find(c => c.cc === comitente);
+    const cli     = S.clientes.find(c => c.cc===comitente && c.alyc===alyc)
+                 || S.clientes.find(c => c.cc===comitente);
     const cartela = valuarCartera(pos);
-    const totalCliente = cartela.reduce((s, p) => s + p.valor, 0);
+    const brutaARS = cartela.reduce((s,p) => s + p.valor, 0);
+    const caucionARS   = (cli?.caucionPesos   || 0);
+    const caucionUSD   = (cli?.caucionDolares || 0) * mep;
+    const caucionTotal = caucionARS + caucionUSD;
+    const netaARS = Math.max(brutaARS - caucionTotal, 0);
+
     cartela.forEach(p => {
-      allValuada.push({
-        alyc,
-        comitente,
-        cliente: cli?.cliente || comitente,
-        ticker: p.ticker,
-        tipo: p.tipo,
-        tenencia: p.tenencia,
-        precioUnit: p.precioUnit,
-        valor: p.valor,
-        valorUSD: p.valor / mep,
-        pct: totalCliente > 0 ? p.valor / totalCliente * 100 : 0,
-        pais: p.alloc.pais || '',
-        grupo: p.alloc.grupo || '',
-        subgrupo: p.alloc.subgrupo || '',
-        alloc: p.alloc,
+      const esCash = p.tipo==='CASH_ARS'||p.tipo==='CASH_USD';
+      let valorParaNeto = p.valor;
+      if (esCash && p.valor < 0) valorParaNeto = Math.max(p.valor + caucionTotal, 0);
+
+      cartDataCache.push({
+        alyc, comitente,
+        cliente:    cli?.cliente || comitente,
+        ticker:     p.ticker, tipo: p.tipo,
+        tenencia:   p.tenencia, precioUnit: p.precioUnit,
+        valor:      p.valor, valorUSD: p.valor / mep,
+        pctBruto:   brutaARS > 0 ? p.valor / brutaARS * 100 : 0,
+        pctNeto:    netaARS  > 0 ? Math.max(valorParaNeto,0) / netaARS * 100 : 0,
+        pais:       p.alloc.pais||'', grupo: p.alloc.grupo||'',
+        subgrupo:   p.alloc.subgrupo||'', alloc: p.alloc,
       });
     });
   });
 
-  cartDataCache = allValuada;
+  inicializarAutocompletes();
   filtrarCartera();
 }
 
 function filtrarCartera() {
-  const buscar = ($('cartBuscar')?.value || '').toLowerCase().trim();
-  const alyc   = $('cartAlyc')?.value || '';
+  const clienteVal = acGetVal('acCliente');
+  const tickerVal  = acGetVal('acTicker');
+  const alycVal    = acGetVal('acAlyc');
+  const clienteTxt = ($('acCliente')?.value||'').toLowerCase().trim();
+  const tickerTxt  = ($('acTicker')?.value ||'').toLowerCase().trim();
+  const alycTxt    = ($('acAlyc')?.value   ||'').toLowerCase().trim();
 
   let data = cartDataCache.filter(p => {
-    if (alyc && p.alyc !== alyc) return false;
-    if (buscar) {
-      return p.ticker.toLowerCase().includes(buscar) ||
-             p.cliente.toLowerCase().includes(buscar) ||
-             p.comitente.toLowerCase().includes(buscar);
+    if (alycVal && p.alyc !== alycVal) return false;
+    if (!alycVal && alycTxt && !p.alyc.toLowerCase().includes(alycTxt)) return false;
+    if (clienteVal) {
+      const [fA,fC] = clienteVal.split('|');
+      if (p.alyc!==fA || p.comitente!==fC) return false;
+    } else if (clienteTxt) {
+      if (!p.cliente.toLowerCase().includes(clienteTxt) && !p.comitente.includes(clienteTxt)) return false;
     }
+    if (tickerVal && p.ticker!==tickerVal) return false;
+    if (!tickerVal && tickerTxt && !p.ticker.toLowerCase().includes(tickerTxt)) return false;
     return true;
   });
 
-  // Ordenar
   data = sortData(data, CART_SORT.col, CART_SORT.dir);
   renderCartaTabla(data);
 }
 
 function sortData(data, col, dir) {
-  return [...data].sort((a, b) => {
-    let va = a[col] ?? '';
-    let vb = b[col] ?? '';
-    if (typeof va === 'string') va = va.toLowerCase();
-    if (typeof vb === 'string') vb = vb.toLowerCase();
-    if (va < vb) return dir === 'asc' ? -1 : 1;
-    if (va > vb) return dir === 'asc' ? 1 : -1;
+  return [...data].sort((a,b) => {
+    let va=a[col]??''; let vb=b[col]??'';
+    if(typeof va==='string') va=va.toLowerCase();
+    if(typeof vb==='string') vb=vb.toLowerCase();
+    if(va<vb) return dir==='asc'?-1:1;
+    if(va>vb) return dir==='asc'?1:-1;
     return 0;
   });
 }
 
 function sortCartera(col) {
-  if (CART_SORT.col === col) {
-    CART_SORT.dir = CART_SORT.dir === 'asc' ? 'desc' : 'asc';
-  } else {
-    CART_SORT.col = col;
-    CART_SORT.dir = col === 'valor' || col === 'valorUSD' || col === 'pct' ? 'desc' : 'asc';
-  }
-  // Actualizar iconos
-  document.querySelectorAll('.sort-icon').forEach(el => {
-    el.className = 'sort-icon';
-    el.textContent = '⇅';
-  });
-  const icon = $(`si-${col}`);
-  if (icon) {
-    icon.className = `sort-icon ${CART_SORT.dir}`;
-    icon.textContent = CART_SORT.dir === 'asc' ? '↑' : '↓';
-  }
+  CART_SORT.dir = CART_SORT.col===col ? (CART_SORT.dir==='asc'?'desc':'asc')
+    : (['valor','valorUSD','pctBruto','pctNeto','tenencia','precioUnit'].includes(col)?'desc':'asc');
+  CART_SORT.col = col;
+  document.querySelectorAll('.sort-icon').forEach(el=>{el.className='sort-icon';el.textContent='⇅';});
+  const icon=$(`si-${col}`);
+  if(icon){icon.className=`sort-icon ${CART_SORT.dir}`;icon.textContent=CART_SORT.dir==='asc'?'↑':'↓';}
   filtrarCartera();
 }
 
 function limpiarFiltroCartera() {
-  if ($('cartBuscar')) $('cartBuscar').value = '';
-  if ($('cartAlyc'))   $('cartAlyc').value   = '';
+  acReset('acCliente','acClienteLista');
+  acReset('acTicker', 'acTickerLista');
+  acReset('acAlyc',   'acAlycLista');
   filtrarCartera();
 }
 
 function renderCartaTabla(data) {
-  const mep = S.mep || 1;
+  const mep   = S.mep||1;
   const empty = $('cartEmpty');
   const wrap  = $('cartTablaWrap');
   const kpis  = $('cartKPIs');
 
-  if (data.length === 0 && cartDataCache.length === 0) {
-    empty.style.display = ''; wrap.style.display = 'none'; if(kpis) kpis.style.display = 'none';
+  if (!cartDataCache.length) {
+    if(empty) empty.style.display='';
+    if(wrap)  wrap.style.display='none';
+    if(kpis)  kpis.style.display='none';
     return;
   }
-  empty.style.display = 'none'; wrap.style.display = '';
+  if(empty) empty.style.display='none';
+  if(wrap)  wrap.style.display='';
 
-  // KPIs
   if (kpis) {
-    kpis.style.display = '';
-    const totalARS = data.reduce((s, p) => s + p.valor, 0);
-    const clientes = new Set(data.map(p => p.comitente)).size;
-    $('cartTotalARS').textContent = '$' + fmt(totalARS);
-    $('cartTotalUSD').textContent = 'U$S ' + fmt(totalARS / mep);
-    $('cartNPos').textContent     = data.length;
-    $('cartNCli').textContent     = clientes;
+    kpis.style.display='';
+    const brutaARS = data.reduce((s,p)=>s+p.valor,0);
+    const comitentesUniq = [...new Set(data.map(p=>`${p.alyc}|${p.comitente}`))];
+    let caucionARS=0, caucionUSD=0;
+    comitentesUniq.forEach(key => {
+      const [a,cc]=key.split('|');
+      const cli=S.clientes.find(c=>c.cc===cc&&c.alyc===a)||S.clientes.find(c=>c.cc===cc);
+      caucionARS += cli?.caucionPesos  ||0;
+      caucionUSD += cli?.caucionDolares||0;
+    });
+    const caucionARStotal = caucionARS + caucionUSD*mep;
+    const netaARS = Math.max(brutaARS - caucionARStotal, 0);
+    $('cartBrutaARS').textContent  = '$'+fmt(brutaARS);
+    $('cartBrutaUSD').textContent  = 'U$S '+fmt(brutaARS/mep);
+    $('cartCaucionARS').textContent= '$'+fmt(caucionARS);
+    $('cartCaucionUSD').textContent= 'U$S '+fmt(caucionUSD);
+    $('cartNetaARS').textContent   = '$'+fmt(netaARS);
+    $('cartNetaUSD').textContent   = 'U$S '+fmt(netaARS/mep);
+    $('cartNPos').textContent = data.length;
+    $('cartNCli').textContent = new Set(data.map(p=>p.comitente)).size;
   }
 
   const tipoPill = {
-    ACCION_ARG:'pill-green', CEDEAR:'pill-blue', RENTA_FIJA:'pill-amber',
-    ON:'pill-amber', ADR:'pill-blue', ETF:'pill-blue', FCI:'pill-blue',
-    CASH_ARS:'pill-gray', CASH_USD:'pill-gray', DESCONOCIDO:'pill-gray'
+    ACCION_ARG:'pill-green',CEDEAR:'pill-blue',RENTA_FIJA:'pill-amber',
+    ON:'pill-amber',ETF:'pill-blue',FCI:'pill-blue',
+    CASH_ARS:'pill-gray',CASH_USD:'pill-gray',DESCONOCIDO:'pill-gray'
   };
 
-  $('tbCartaGlobal').innerHTML = data.map(p => `<tr>
-    <td><span class="pill pill-gray" style="font-size:10px;">${p.alyc}</span></td>
-    <td style="max-width:160px; overflow:hidden; text-overflow:ellipsis;">${p.cliente}</td>
-    <td><strong>${p.ticker}</strong></td>
-    <td><span class="pill ${tipoPill[p.tipo]||'pill-gray'}" style="font-size:10px;">${p.tipo.replace('_',' ')}</span></td>
-    <td class="td-num">${fmt(p.tenencia, p.tipo==='CASH_ARS'||p.tipo==='CASH_USD'?2:0)}</td>
-    <td class="td-num">$${fmt(p.precioUnit, 2)}</td>
-    <td class="td-num td-pos">$${fmt(p.valor, 0)}</td>
-    <td class="td-num" style="color:var(--amber);">U$S ${fmt(p.valorUSD, 0)}</td>
-    <td class="td-num"><strong>${fmtPct(p.pct)}</strong></td>
-    <td class="td-muted">${p.pais}</td>
-    <td class="td-muted">${p.grupo}</td>
-    <td class="td-muted">${p.subgrupo}</td>
-  </tr>`).join('');
+  $('tbCartaGlobal').innerHTML = data.map(p => {
+    const esCash = p.tipo==='CASH_ARS'||p.tipo==='CASH_USD';
+    const neg    = p.valor<0 ? 'color:var(--red);' : '';
+    return `<tr>
+      <td><span class="pill pill-gray" style="font-size:10px;">${p.alyc}</span></td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;" title="${p.cliente}">${p.cliente}</td>
+      <td><strong>${p.ticker}</strong></td>
+      <td><span class="pill ${tipoPill[p.tipo]||'pill-gray'}" style="font-size:10px;">${p.tipo.replace('_',' ')}</span></td>
+      <td class="td-num">${fmt(p.tenencia,esCash?2:0)}</td>
+      <td class="td-num">$${fmt(p.precioUnit,2)}</td>
+      <td class="td-num" style="${neg}">${p.valor<0?'-':''}$${fmt(Math.abs(p.valor),0)}</td>
+      <td class="td-num" style="color:var(--amber);">U$S ${fmt(Math.abs(p.valorUSD),0)}</td>
+      <td class="td-num">${fmtPct(p.pctBruto)}</td>
+      <td class="td-num"><strong>${fmtPct(p.pctNeto)}</strong></td>
+      <td class="td-muted">${p.pais}</td>
+      <td class="td-muted">${p.grupo}</td>
+      <td class="td-muted">${p.subgrupo}</td>
+    </tr>`;
+  }).join('');
 }
 
-// Buscador en tiempo real para selector de cliente en Dashboard
-function filtrarSelectorCliente() {
-  const buscar = ($('selClienteBuscar')?.value || '').toLowerCase().trim();
-  const alyc   = $('selAlyc')?.value || '';
-  const comitentes = [...new Set(
-    S.posiciones.filter(p => !alyc || p.alyc === alyc).map(p => p.comitente)
-  )].sort();
-  const filtrados = comitentes.filter(c => {
-    if (!buscar) return true;
-    const cli = S.clientes.find(cl => cl.cc === c);
-    return c.includes(buscar) || (cli?.cliente || '').toLowerCase().includes(buscar);
-  });
-  const sel = $('selCliente');
-  sel.innerHTML = '<option value="">— Seleccioná —</option>' +
-    filtrados.map(c => {
-      const cli = S.clientes.find(cl => cl.cc === c);
-      const label = cli ? `${c} · ${cli.cliente}` : c;
-      return `<option value="${c}">${label}</option>`;
-    }).join('');
-}
+// ══════════════════════════════════════════
+//  DASHBOARD — autocomplete y gráficos
+// ══════════════════════════════════════════
+function acFiltrarClientes() { acFiltrar('dashAcCliente','dashAcClienteLista'); }
+function acAbrirClientes()   { acAbrir('dashAcCliente','dashAcClienteLista'); }
 
 function onAlycChange() {
-  if ($('selClienteBuscar')) $('selClienteBuscar').value = '';
-  filtrarSelectorCliente();
+  const alycVal = acGetVal('dashAcAlyc');
+  const todos = S.clientes
+    .filter(c => !alycVal || c.alyc===alycVal)
+    .map(c => ({value:`${c.alyc}|${c.cc}`,label:c.cliente||c.cc,sub:`${c.alyc} · ${c.cc}`}))
+    .sort((a,b)=>a.label.localeCompare(b.label));
+  AC.opciones['dashAcCliente'] = todos;
+  acFiltrar('dashAcCliente','dashAcClienteLista');
+}
+
+function onDashClienteSeleccionado() {
+  const val = acGetVal('dashAcCliente');
+  if (!val) {
+    $('dashEmpty').style.display='';
+    $('clienteKPIs').style.display='none';
+    $('clienteCharts').style.display='none';
+    $('filterRow').style.display='none';
+    return;
+  }
+  const [alyc, comitente] = val.split('|');
+  const cli = S.clientes.find(c=>c.cc===comitente&&c.alyc===alyc)||S.clientes.find(c=>c.cc===comitente);
+  if (cli) {
+    $('clientePerfil').style.display='';
+    $('clientePerfilVal').textContent = cli.perfil||'—';
+  }
+  const pos = S.posiciones.filter(p=>p.comitente===comitente&&(!alyc||p.alyc===alyc));
+  const cartela = valuarCartera(pos);
+  renderClienteKPIs(cartela);
+  renderClienteCharts(cartela);
+  populateFilters(cartela);
+  $('dashEmpty').style.display='none';
+  S.activeFilters={pais:'',grupo:'',subgrupo:'',sector:'',subtipo:''};
+  ['fPais','fGrupo','fSubgrupo','fSector','fSubtipo'].forEach(id=>{if($(id))$(id).value='';});
 }
 
 function onRotAlycChange() {
@@ -2354,10 +2554,10 @@ function applyFilters() {
     sector:   $('fSector')?.value   || '',
     subtipo:  $('fSubtipo')?.value  || '',
   };
-  const alyc      = $('selAlyc').value;
-  const comitente = $('selCliente').value;
-  if (!comitente) return;
-  const pos = S.posiciones.filter(p => p.comitente === comitente && (!alyc || p.alyc === alyc));
+  const val = acGetVal('dashAcCliente');
+  if (!val) return;
+  const [alyc, comitente] = val.split('|');
+  const pos = S.posiciones.filter(p => p.comitente===comitente && (!alyc||p.alyc===alyc));
   const cartela = valuarCartera(pos).filter(p => {
     const f = S.activeFilters;
     return (!f.pais     || p.alloc.pais     === f.pais)     &&
@@ -2368,50 +2568,73 @@ function applyFilters() {
   });
   renderClienteKPIs(cartela);
   renderClienteCharts(cartela);
-  renderClienteTabla(cartela);
-}
-
-function clearFilters() {
-  ['fPais','fGrupo','fSubgrupo','fSector','fSubtipo'].forEach(id => { if($(id)) $(id).value = ''; });
-  applyFilters();
 }
 
 function renderClienteCharts(cartela) {
   $('clienteCharts').style.display = '';
-  const totalARS = cartela.reduce((s, p) => s + p.valor, 0);
+  const totalARS = cartela.reduce((s, p) => s + (p.valor > 0 ? p.valor : 0), 0);
+
   const aggBy = (key) => {
     const map = {};
     cartela.forEach(p => {
-      const k = p.alloc[key] || (key === 'grupo' ? clasificarTicker(p.ticker, null) : 'Sin datos');
-      if (k) map[k] = (map[k] || 0) + p.valor;
+      if (p.valor <= 0) return; // excluir cash negativo de gráficos
+      const k = p.alloc[key] || 'Sin datos';
+      map[k] = (map[k] || 0) + p.valor;
     });
-    // Ordenar por valor descendente
     return Object.fromEntries(Object.entries(map).sort((a,b) => b[1]-a[1]));
   };
-  const COLORS = ['#E10600','#ff6b35','#f59e0b','#22c55e','#3b82f6','#a855f7','#ec4899','#14b8a6','#f97316','#64748b'];
-  const makeChart = (id, data) => {
+
+  const COLORS = ['#E10600','#ff6b35','#f59e0b','#22c55e','#3b82f6','#a855f7','#ec4899','#14b8a6','#f97316','#64748b','#06b6d4','#84cc16'];
+
+  const makeDoughnut = (id, data) => {
     const labels = Object.keys(data);
     const vals   = Object.values(data);
+    if (!$(id)) return;
     if (S.charts[id]) S.charts[id].destroy();
     S.charts[id] = new Chart($(id), {
       type: 'doughnut',
-      data: {
-        labels,
-        datasets: [{ data: vals, backgroundColor: COLORS.slice(0, labels.length), borderWidth: 0 }]
-      },
+      data: { labels, datasets: [{ data: vals, backgroundColor: COLORS.slice(0,labels.length), borderWidth:0 }] },
       options: {
-        responsive: true, maintainAspectRatio: false,
+        responsive:true, maintainAspectRatio:false,
         plugins: {
-          legend: { display: true, position: 'right', labels: { color: '#a0a0a0', font: { family: 'Montserrat', size: 10 }, boxWidth: 10, padding: 8 } },
-          tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: $${fmt(ctx.raw)} (${fmtPct(ctx.raw/totalARS*100)})` } }
+          legend: { display:true, position:'right', labels:{ color:'#a0a0a0', font:{family:'Montserrat',size:10}, boxWidth:10, padding:8 } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: $${fmt(ctx.raw)} (${fmtPct(ctx.raw/totalARS*100)})` } }
         }
       }
     });
   };
-  // Gráficos por las 3 dimensiones más útiles
-  makeChart('chartGrupo',   aggBy('grupo'));
-  makeChart('chartPais',    aggBy('pais'));
-  makeChart('chartSector',  aggBy('subgrupo')); // subgrupo es más granular que sector
+
+  const makeBar = (id, data) => {
+    const labels = Object.keys(data);
+    const vals   = Object.values(data);
+    if (!$(id)) return;
+    if (S.charts[id]) S.charts[id].destroy();
+    // Altura dinámica según cantidad de items
+    const canvas = $(id);
+    canvas.height = Math.max(labels.length * 28, 120);
+    S.charts[id] = new Chart(canvas, {
+      type: 'bar',
+      data: { labels, datasets: [{ data: vals, backgroundColor: '#E10600', borderRadius:3, borderWidth:0 }] },
+      options: {
+        indexAxis: 'y',
+        responsive:true, maintainAspectRatio:false,
+        plugins: {
+          legend: { display:false },
+          tooltip: { callbacks: { label: ctx => ` $${fmt(ctx.raw)} (${fmtPct(ctx.raw/totalARS*100)})` } }
+        },
+        scales: {
+          x: { ticks:{ color:'#666', font:{size:10} }, grid:{ color:'rgba(255,255,255,0.05)' } },
+          y: { ticks:{ color:'#a0a0a0', font:{size:10} }, grid:{ display:false } }
+        }
+      }
+    });
+  };
+
+  makeDoughnut('chartGrupo',    aggBy('grupo'));
+  makeDoughnut('chartPais',     aggBy('pais'));
+  makeDoughnut('chartSubgrupo', aggBy('subgrupo'));
+  makeDoughnut('chartSubtipo',  aggBy('subtipo'));
+  makeBar(     'chartSector',   aggBy('sector'));
 }
 
 function renderClienteTabla(cartela) {
@@ -2913,12 +3136,13 @@ return {
   driveAuth, driveRevoke, driveBrowse, closeDrivePicker, confirmDrivePick,
   pickDriveFile, pickLocalFile, pickAlycFile, pickDriveFolder,
   cargarFuenteDesdeCarpeta, cargarAlycDesdeCarpeta, cargarTodoDesdeDrive,
+  desbloquearConfig, bloquearConfig,
   removeAlyc, procesarArchivos, fetchPrices, fetchMEP,
   onAlycChange, onClienteChange, onRotAlycChange,
   filtrarCartera, limpiarFiltroCartera, sortCartera,
-  filtrarSelectorCliente,
+  acFiltrar, acAbrir, acSeleccionar, acFiltrarClientes, acAbrirClientes,
+  onDashClienteSeleccionado,
   applyFilters, clearFilters,
-  renderModelo, calcularRotacion,
   buscarTickers,
   cargarOrdenesYResultado,
   exportarCartela, exportarOperaciones, exportarResultado,

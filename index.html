@@ -4,1377 +4,2931 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIBRA · Rotador de Carteras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 :root {
-  --red:#E10600; --red-d:#B00500; --red-l:#ff3330;
-  --bg:#0d0d0d; --bg2:#141414; --bg3:#1a1a1a; --bg4:#222;
-  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
-  --text:#f0f0f0; --text2:#a0a0a0; --text3:#666;
-  --green:#22c55e; --amber:#f59e0b; --blue:#3b82f6;
-  --font:'Montserrat',sans-serif; --head:'Raleway',sans-serif;
+  --red: #E10600;
+  --red-dark: #B00500;
+  --red-light: #ff3330;
+  --bg: #0d0d0d;
+  --bg2: #141414;
+  --bg3: #1a1a1a;
+  --bg4: #222222;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0f0f0;
+  --text2: #a0a0a0;
+  --text3: #666;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --blue: #3b82f6;
+  --font-main: 'Montserrat', sans-serif;
+  --font-head: 'Raleway', sans-serif;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;min-height:100vh;}
-
-/* HEADER */
-.app-header{background:var(--bg2);border-bottom:1px solid var(--border2);padding:0 24px;height:52px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;}
-.logo{font-family:var(--head);font-weight:600;font-size:18px;letter-spacing:2px;color:var(--red);}
-.logo span{color:var(--text);font-weight:300;}
-.hdr-sep{flex:1;}
-.drive-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);transition:background .3s;}
-.drive-dot.on{background:var(--green);}
-.drive-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);}
-
-/* NAV */
-.nav-tabs{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;}
-.nav-tab{padding:10px 20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
-.nav-tab:hover{color:var(--text2);}
-.nav-tab.active{color:var(--red);border-bottom-color:var(--red);}
-
-/* MAIN */
-.main{padding:20px 24px;max-width:1700px;margin:0 auto;}
-.panel{display:none;}.panel.active{display:block;}
-
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:4px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:500;border:none;transition:all .15s;}
-.btn-red{background:var(--red);color:#fff;}.btn-red:hover{background:var(--red-l);}
-.btn-red:disabled{background:var(--text3);cursor:default;}
-.btn-out{background:transparent;border:1px solid var(--border2);color:var(--text2);}
-.btn-out:hover{border-color:var(--text2);color:var(--text);}
-.btn-sm{padding:5px 12px;font-size:11px;}
-
-/* INPUTS & SELECTS */
-input[type=text],input[type=password],select{
-  background:var(--bg3);border:1px solid var(--border2);border-radius:4px;
-  color:var(--text);padding:7px 12px;font-family:var(--font);font-size:12px;
-  outline:none;transition:border-color .15s;width:100%;
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: 13px;
+  min-height: 100vh;
 }
-input:focus,select:focus{border-color:var(--red);}
-select{cursor:pointer;}
 
-/* CARDS / PANELS */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px;}
-.card.ok{border-color:rgba(34,197,94,.35);}
-.card.loading{border-color:rgba(245,158,11,.35);}
-.card.err{border-color:rgba(225,6,0,.35);}
-.card-title{font-size:10px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
-.card-val{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.card-status{font-size:11px;margin-top:5px;display:flex;align-items:center;gap:5px;}
-.s-idle{color:var(--text3);}.s-ok{color:var(--green);}.s-load{color:var(--amber);}.s-err{color:var(--red);}
+/* ── HEADER ── */
+.app-header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 24px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--red);
+}
+.logo span { color: var(--text); font-weight: 300; }
+.header-sep { flex: 1; }
+.drive-status {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text2);
+}
+.drive-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text3);
+  transition: background 0.3s;
+}
+.drive-dot.connected { background: var(--green); }
+.drive-dot.error { background: var(--red); }
+.btn-drive {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 5px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-drive:hover { border-color: var(--red); color: var(--red); }
+.btn-drive.connected { border-color: var(--green); color: var(--green); }
+.btn-drive svg { width:14px; height:14px; }
 
-/* KPIs */
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px;}
-.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;}
-.kpi-label{font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
-.kpi-value{font-size:20px;font-weight:700;font-family:var(--head);line-height:1;}
-.kpi.accent{border-left:2px solid var(--red);}
-.kpi.green{border-left:2px solid var(--green);}
+/* ── NAV TABS ── */
+.nav-tabs {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; gap: 0;
+}
+.nav-tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.nav-tab:hover { color: var(--text2); }
+.nav-tab.active { color: var(--red); border-bottom-color: var(--red); }
 
-/* SECTION HEADER */
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.sec-head h3{font-family:var(--head);font-size:15px;font-weight:500;}
+/* ── MAIN LAYOUT ── */
+.main { padding: 24px; max-width: 1600px; margin: 0 auto; }
 
-/* LABEL */
-.lbl{font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:5px;}
+/* ── PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; }
 
-/* FLEX UTILS */
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;}
-.row.center{align-items:center;}
-.col{display:flex;flex-direction:column;gap:5px;}
-.sep{flex:1;}
-.mt8{margin-top:8px;}.mt16{margin-top:16px;}.mb8{margin-bottom:8px;}.mb16{margin-bottom:16px;}
-.text-sm{font-size:11px;color:var(--text3);}
-.text-muted{color:var(--text3);}
-.text-right{text-align:right;}
+/* ── DRIVE CONFIG PANEL ── */
+.drive-config {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 28px;
+  max-width: 700px;
+}
+.drive-config h2 {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.drive-config p { color: var(--text2); font-size: 12px; line-height: 1.7; margin-bottom: 20px; }
 
-/* PILLS */
-.pill{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600;letter-spacing:.3px;}
-.p-green{background:rgba(34,197,94,.12);color:#4ade80;}
-.p-red{background:rgba(225,6,0,.12);color:#ff6b6b;}
-.p-amber{background:rgba(245,158,11,.12);color:#fbbf24;}
-.p-blue{background:rgba(59,130,246,.12);color:#60a5fa;}
-.p-gray{background:rgba(255,255,255,.06);color:var(--text2);}
+.config-section {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.config-section label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  color: var(--text2);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.config-section .hint {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+input[type="text"], input[type="password"] {
+  width: 100%;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  padding: 8px 12px;
+  font-family: var(--font-main);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input[type="text"]:focus, input[type="password"]:focus { border-color: var(--red); }
 
-/* TABLE */
-.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:6px;}
-table{width:100%;border-collapse:collapse;}
-th{background:var(--bg3);padding:8px 11px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border2);white-space:nowrap;}
-td{padding:7px 11px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap;}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:var(--bg3);}
-.td-r{text-align:right;font-variant-numeric:tabular-nums;}
-.td-pos{color:var(--green);}.td-neg{color:var(--red);}.td-muted{color:var(--text3);}
-.th-sort{cursor:pointer;user-select:none;}
-.th-sort:hover{color:var(--text);background:var(--bg4);}
-.si{font-size:10px;color:var(--text3);margin-left:3px;}
-.si.asc{color:var(--red);}.si.desc{color:var(--red);}
+.btn-primary {
+  background: var(--red);
+  border: none;
+  color: #fff;
+  padding: 9px 22px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: background 0.15s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-primary:hover { background: var(--red-light); }
+.btn-primary:disabled { background: var(--text3); cursor: default; }
 
-/* AUTOCOMPLETE */
-.ac-wrap{position:relative;display:flex;flex-direction:column;gap:4px;}
-.ac-box{position:relative;}
-.ac-list{display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;z-index:300;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.6);}
-.ac-list.open{display:block;}
-.ac-item{padding:8px 12px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;}
-.ac-item:last-child{border-bottom:none;}
-.ac-item:hover{background:var(--bg4);}
-.ac-item.sel{background:rgba(225,6,0,.12);color:var(--red-l);}
-.ac-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 8px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-secondary:hover { border-color: var(--text2); color: var(--text); }
 
-/* LOG */
-.log{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:10px 14px;font-size:11px;font-family:monospace;color:var(--text2);max-height:140px;overflow-y:auto;line-height:1.8;margin-top:10px;}
-.log-ok{color:var(--green);}.log-warn{color:var(--amber);}.log-err{color:var(--red);}
+/* ── FOLDER BROWSER ── */
+.folder-browser {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.folder-browser .fb-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text2);
+  display: flex; align-items: center; gap: 8px;
+}
+.folder-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.folder-item:last-child { border-bottom: none; }
+.folder-item:hover { background: var(--bg4); }
+.folder-item.selected { background: rgba(225,6,0,0.1); border-left: 2px solid var(--red); }
+.folder-icon { font-size: 15px; }
 
-/* CHARTS */
-.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:14px;}
-.chart-block{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px;}
-.chart-title{font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
-.chart-wrap{position:relative;height:200px;}
-.chart-bar-wrap{overflow-y:auto;max-height:280px;}
+/* ── FILE SOURCES ── */
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.source-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  position: relative;
+}
+.source-card:hover { border-color: var(--border2); }
+.source-card.linked { border-color: rgba(34,197,94,0.4); }
+.source-card.loading { border-color: rgba(245,158,11,0.4); }
+.source-card.error { border-color: rgba(225,6,0,0.4); }
+.source-card .sc-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.source-card .sc-file {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.source-card .sc-status {
+  font-size: 11px;
+  margin-top: 6px;
+  display: flex; align-items: center; gap: 5px;
+}
+.sc-status.ok { color: var(--green); }
+.sc-status.warn { color: var(--amber); }
+.sc-status.err { color: var(--red); }
+.sc-status.idle { color: var(--text3); }
 
-/* MEP BADGE */
-.mep-badge{display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:6px 14px;font-size:13px;font-weight:600;}
-.mep-val{color:var(--amber);font-size:15px;}
+/* ── ALYC BADGES ── */
+.alyc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.alyc-tag {
+  background: rgba(225,6,0,0.1);
+  border: 1px solid rgba(225,6,0,0.25);
+  color: var(--red-light);
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  display: flex; align-items: center; gap: 6px;
+  cursor: pointer;
+}
+.alyc-tag .rm { cursor:pointer; opacity:0.6; }
+.alyc-tag .rm:hover { opacity:1; }
 
-/* SOURCES GRID */
-.src-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* ── PROCESS BAR ── */
+.process-bar {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.process-log {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--text2);
+  max-height: 120px;
+  overflow-y: auto;
+  margin-top: 10px;
+  line-height: 1.8;
+}
+.log-ok { color: var(--green); }
+.log-warn { color: var(--amber); }
+.log-err { color: var(--red); }
 
-/* SPINNER */
-.spin{display:inline-block;width:11px;height:11px;border:2px solid var(--border2);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
+/* ── DATA TABLES ── */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  background: var(--bg3);
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--text2);
+  border-bottom: 1px solid var(--border2);
+  white-space: nowrap;
+}
+td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  white-space: nowrap;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); }
+.td-num { text-align: right; font-variant-numeric: tabular-nums; }
+.td-pos { color: var(--green); }
+.td-neg { color: var(--red); }
+.td-muted { color: var(--text3); }
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+.pill-green { background: rgba(34,197,94,0.12); color: #4ade80; }
+.pill-red { background: rgba(225,6,0,0.12); color: #ff6b6b; }
+.pill-amber { background: rgba(245,158,11,0.12); color: #fbbf24; }
+.pill-blue { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.pill-gray { background: rgba(255,255,255,0.06); color: var(--text2); }
 
-/* EMPTY STATE */
-.empty{text-align:center;padding:48px 20px;color:var(--text3);}
-.empty .ico{font-size:38px;margin-bottom:10px;}
-.empty p{font-size:13px;color:var(--text2);margin-bottom:5px;}
+/* ── DASHBOARD ── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.kpi {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.kpi-value {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: var(--font-head);
+  color: var(--text);
+  line-height: 1;
+}
+.kpi-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
 
-/* SCROLLBAR */
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:var(--bg2);}
-::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
+.dash-row { display: flex; gap: 16px; margin-bottom: 20px; }
+.dash-row .block {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+}
+.block-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 14px;
+}
+.chart-wrap { position: relative; height: 200px; }
 
-/* ALYC TAGS */
-.alyc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.alyc-tag{background:rgba(225,6,0,.1);border:1px solid rgba(225,6,0,.25);color:var(--red-l);padding:3px 10px;border-radius:3px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px;}
-.alyc-tag .rm{cursor:pointer;opacity:.6;}.alyc-tag .rm:hover{opacity:1;}
+/* ── SUBTABS ── */
+.subtab-row {
+  display: flex; gap: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+.subtab {
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.subtab.active { background: var(--bg); color: var(--text); }
+.subtab:hover:not(.active) { color: var(--text); }
 
-/* DRIVE PICKER */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;}
-.overlay.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;width:580px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;}
-.modal-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.modal-hdr h3{font-family:var(--head);font-weight:500;font-size:15px;}
-.modal-body{padding:14px;overflow-y:auto;flex:1;}
-.modal-ftr{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
-.breadcrumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:10px;}
-.breadcrumb span{cursor:pointer;}.breadcrumb span:hover{color:var(--text);}
-.dpm-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:5px;cursor:pointer;font-size:12px;transition:background .1s;}
-.dpm-item:hover{background:var(--bg4);}
-.dpm-item.sel{background:rgba(225,6,0,.12);}
+/* ── SELECTORS ── */
+.selector-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap; }
+.selector-group { display: flex; flex-direction: column; gap: 5px; }
+.selector-group label { font-size: 10px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); }
+select {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  color: var(--text);
+  padding: 7px 12px;
+  font-family: var(--font-main);
+  font-size: 12px;
+  outline: none;
+  min-width: 160px;
+  cursor: pointer;
+}
+select:focus { border-color: var(--red); }
+
+/* ── ROTACION ── */
+.rot-controls {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;
+}
+.semaforo {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 4px; font-size: 13px; font-weight: 600;
+}
+.semaforo.ok { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.semaforo.warn { background: rgba(225,6,0,0.1); color: var(--red); border: 1px solid rgba(225,6,0,0.3); }
+
+/* ── DRIVE FILE PICKER ── */
+.drive-picker-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 500;
+  align-items: center; justify-content: center;
+}
+.drive-picker-overlay.open { display: flex; }
+.drive-picker-modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  width: 600px;
+  max-height: 80vh;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.dpm-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dpm-header h3 { font-family: var(--font-head); font-weight: 500; font-size: 16px; }
+.dpm-body { padding: 16px; overflow-y: auto; flex: 1; }
+.dpm-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+.dpm-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text3);
+  margin-bottom: 12px;
+}
+.dpm-breadcrumb span { cursor: pointer; }
+.dpm-breadcrumb span:hover { color: var(--text); }
+.dpm-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 5px;
+  cursor: pointer; font-size: 12px;
+  transition: background 0.1s;
+}
+.dpm-item:hover { background: var(--bg4); }
+.dpm-item.selected { background: rgba(225,6,0,0.12); }
+.dpm-item-icon { font-size: 16px; flex-shrink: 0; }
+.dpm-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dpm-item-meta { font-size: 10px; color: var(--text3); }
+
+/* ── SECTION HEADING ── */
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-head h3 {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* ── TICKER INPUT ── */
+.ticker-input-wrap {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.ticker-input-wrap input {
+  flex: 1; background: none; border: none;
+  color: var(--text); font-family: var(--font-main);
+  font-size: 14px; font-weight: 500; letter-spacing: 1px;
+  outline: none;
+}
+.ticker-input-wrap input::placeholder { color: var(--text3); font-weight: 400; font-size: 12px; letter-spacing: 0; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text3);
+}
+.empty-state .es-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state p { font-size: 13px; margin-bottom: 6px; color: var(--text2); }
+.empty-state small { font-size: 11px; color: var(--text3); }
+
+/* ── INLINE PROGRESS ── */
+.inline-spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── MEP BADGE ── */
+.mep-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.mep-badge .mep-val { color: var(--amber); font-size: 14px; }
+
+/* ── CAJA TABLE ── */
+.caja-table {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  max-width: 400px;
+}
+.caja-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.caja-row:last-child { border-bottom: none; font-weight: 600; font-size: 13px; }
+.caja-row .cr-label { color: var(--text2); }
+.caja-row.total { margin-top: 4px; }
+
+.th-sort { cursor: pointer; user-select: none; white-space: nowrap; }
+.th-sort:hover { color: var(--text); background: var(--bg4); }
+.sort-icon { font-size: 10px; color: var(--text3); margin-left: 3px; }
+.sort-icon.asc  { color: var(--red); }
+.sort-icon.desc { color: var(--red); }
+[data-tip] { position: relative; cursor: help; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 6px); left: 50%;
+  transform: translateX(-50%);
+  background: #000; color: var(--text); padding: 5px 10px;
+  border-radius: 4px; font-size: 11px; white-space: nowrap;
+  pointer-events: none; opacity: 0; transition: opacity 0.2s;
+  z-index: 999; border: 1px solid var(--border2);
+}
+[data-tip]:hover::after { opacity: 1; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+.gap-10 { display: flex; gap: 10px; }
+.mt-12 { margin-top: 12px; }
+.mt-20 { margin-top: 20px; }
+.mb-12 { margin-bottom: 12px; }
+.w-full { width: 100%; }
+.text-right { text-align: right; }
+.text-sm { font-size: 11px; color: var(--text3); }
+.flex-center { display:flex; align-items:center; gap:8px; }
+hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header class="app-header">
   <div class="logo">SIBRA<span> · Rotador de Carteras</span></div>
-  <div class="hdr-sep"></div>
+  <div class="header-sep"></div>
   <div class="drive-status">
     <div class="drive-dot" id="driveDot"></div>
     <span id="driveLabel">Sin conectar</span>
   </div>
-  <button class="btn btn-out btn-sm" id="btnAuth" onclick="App.driveAuth()">☁ Conectar Drive</button>
+  <button class="btn-drive" id="btnDriveAuth" onclick="App.driveAuth()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 18l5-8.5 5 8.5M3 18l4-7 4 7M13 18l4-7 4 7"/></svg>
+    Conectar Drive
+  </button>
 </header>
 
+<!-- NAV -->
 <nav class="nav-tabs">
   <div class="nav-tab active" data-tab="fuentes">Fuentes de datos</div>
   <div class="nav-tab" data-tab="cartera">Cartera</div>
   <div class="nav-tab" data-tab="dashboard">Dashboard</div>
 </nav>
 
+<!-- ══════════ PANEL: FUENTES ══════════ -->
 <main class="main">
-
-<!-- ═══ FUENTES ═══ -->
 <div class="panel active" id="panel-fuentes">
-  <div class="row" style="align-items:flex-start;">
+  <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
 
-    <!-- Columna izquierda -->
-    <div style="flex:0 0 320px;">
-      <div class="card mb16">
-        <div class="card-title">Conexión Google Drive</div>
+    <!-- Columna izquierda: config Drive -->
+    <div style="flex:0 0 340px;">
+      <div class="drive-config">
+        <h2>Conexión Google Drive</h2>
+        <p>Configurá tus credenciales OAuth para leer los archivos directamente desde Drive y escribir resultados sin salir de la app.</p>
 
-        <!-- Acceso a config protegido -->
-        <div id="cfgLock" class="mb8">
-          <label class="lbl">Clave de configuración</label>
-          <div class="row center" style="gap:8px;">
-            <input type="password" id="cfgClave" placeholder="••••••" onkeydown="if(event.key==='Enter')App.unlockCfg()" style="flex:1;" />
-            <button class="btn btn-out btn-sm" onclick="App.unlockCfg()">Ver</button>
+        <div class="config-section">
+          <label>Client ID (OAuth 2.0)</label>
+          <input type="text" id="cfgClientId" value="891275909999-25to444ggoo9k1inji4lqbaq1h99ij41.apps.googleusercontent.com" />
+          <p class="hint">Crealo en <strong>Google Cloud Console → APIs → Credenciales → OAuth 2.0</strong>. Tipo: Aplicación web. URI de redirección autorizado: el origen de esta página.</p>
+        </div>
+
+        <div class="config-section">
+          <label>Scopes requeridos</label>
+          <div style="font-family:monospace; font-size:11px; color:var(--text2); line-height:2;">
+            https://www.googleapis.com/auth/drive.readonly<br>
+            https://www.googleapis.com/auth/drive.file
           </div>
+          <p class="hint">readonly para leer, drive.file para escribir solo archivos creados por la app.</p>
         </div>
 
-        <div id="cfgHidden" style="display:none;">
-          <label class="lbl">Client ID OAuth 2.0</label>
-          <input type="text" id="cfgClientId" value="891275909999-25to444ggoo9k1inji4lqbaq1h99ij41.apps.googleusercontent.com" class="mb8" />
-          <div class="text-sm mb8">Scopes: drive.readonly · drive.file</div>
-          <button class="btn btn-out btn-sm" onclick="App.lockCfg()">🔒 Ocultar</button>
+        <div style="display:flex; gap:10px; margin-top:6px;">
+          <button class="btn-primary" onclick="App.driveAuth()">
+            <span>Autorizar con Google</span>
+          </button>
+          <button class="btn-secondary" onclick="App.driveRevoke()">Revocar</button>
         </div>
 
-        <div class="row center mt8" style="gap:8px;">
-          <button class="btn btn-red" onclick="App.driveAuth()">Autorizar con Google</button>
-          <button class="btn btn-out btn-sm" onclick="App.driveRevoke()">Revocar</button>
-        </div>
-
-        <div id="tokenInfo" style="display:none;margin-top:10px;" class="text-sm">
-          <span style="color:var(--green);">● Conectado</span> · válido hasta <span id="tokenExp">—</span>
+        <div id="driveTokenInfo" style="margin-top:14px; display:none;">
+          <div class="flex-center">
+            <div class="drive-dot connected"></div>
+            <span style="font-size:12px; color:var(--green);">Conectado</span>
+          </div>
+          <div style="font-size:11px; color:var(--text3); margin-top:4px;">
+            Token válido hasta: <span id="tokenExpiry">—</span>
+          </div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title">Tipo de cambio</div>
-        <div class="row center" style="gap:12px;margin-bottom:8px;">
-          <div class="mep-badge">MEP <span class="mep-val" id="mepVal">—</span></div>
-          <button class="btn btn-out btn-sm" onclick="App.fetchMEP()">Actualizar</button>
+      <!-- MEP en vivo -->
+      <div class="drive-config mt-20" style="background:var(--bg3);">
+        <h2 style="font-size:15px; margin-bottom:10px;">Tipo de cambio MEP</h2>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <div class="mep-badge">
+            MEP <span class="mep-val" id="mepVal">—</span>
+          </div>
+          <div style="font-size:11px; color:var(--text3);">AL30/AL30D · Data912</div>
+          <button class="btn-secondary" style="padding:5px 12px; font-size:11px;" onclick="App.fetchMEP()">Actualizar</button>
         </div>
-        <div class="text-sm">AL30 ÷ AL30D · Data912 · no editable</div>
+        <p class="hint mt-12">Calculado automáticamente: AL30 ÷ AL30D. No editable. Usado para valuar Cash USD y mostrar totales.</p>
       </div>
     </div>
 
-    <!-- Columna derecha -->
-    <div style="flex:1;min-width:480px;">
-      <div class="sec-head">
+    <!-- Columna derecha: fuentes de archivos -->
+    <div style="flex:1; min-width:500px;">
+
+      <div class="section-head">
         <h3>Fuentes de datos</h3>
-        <button class="btn btn-red" onclick="App.loadAll()">☁ Cargar todo desde Drive</button>
+        <button class="btn-primary" id="btnCargarDrive" onclick="App.cargarTodoDesdeDrive()">
+          ☁ Cargar todo desde Drive
+        </button>
       </div>
 
-      <div class="src-grid mb16">
-        <div class="card" id="sc-adcap">
-          <div class="card-title">ADCAP</div>
-          <div class="card-val" id="scv-adcap">Carpeta configurada</div>
-          <div class="card-status s-idle" id="scs-adcap"><span>●</span> Sin cargar</div>
-          <div class="row mt8" style="gap:6px;">
-            <button class="btn btn-out btn-sm" onclick="App.loadAlycFolder('ADCAP','1B8-FaVvgZ-uXYXb073FCNq8SrTmw4oD2')">↓ Drive</button>
-            <button class="btn btn-out btn-sm" onclick="App.pickLocal('ADCAP')">↑ Local</button>
-          </div>
-        </div>
-        <div class="card" id="sc-ieb">
-          <div class="card-title">IEB</div>
-          <div class="card-val" id="scv-ieb">Carpeta configurada</div>
-          <div class="card-status s-idle" id="scs-ieb"><span>●</span> Sin cargar</div>
-          <div class="row mt8" style="gap:6px;">
-            <button class="btn btn-out btn-sm" onclick="App.loadAlycFolder('IEB','16ed3PZqYeMOgM8jhU_Efgx47RyizTlJQ')">↓ Drive</button>
-            <button class="btn btn-out btn-sm" onclick="App.pickLocal('IEB')">↑ Local</button>
-          </div>
-        </div>
-        <div class="card" id="sc-clientes">
-          <div class="card-title">Clientes</div>
-          <div class="card-val" id="scv-clientes">Sin vincular</div>
-          <div class="card-status s-idle" id="scs-clientes"><span>●</span> Sin cargar</div>
-          <div class="row mt8" style="gap:6px;">
-            <button class="btn btn-out btn-sm" onclick="App.loadFolder('clientes','1HBVS0yIWUO_ywEowbovGnN2eUrj5I3n2')">↓ Drive</button>
-            <button class="btn btn-out btn-sm" onclick="App.pickLocalFile('clientes')">↑ Local</button>
-          </div>
-        </div>
-        <div class="card" id="sc-allocation">
-          <div class="card-title">Allocation (PAPELES)</div>
-          <div class="card-val" id="scv-allocation">Sin vincular</div>
-          <div class="card-status s-idle" id="scs-allocation"><span>●</span> Sin cargar</div>
-          <div class="row mt8" style="gap:6px;">
-            <button class="btn btn-out btn-sm" onclick="App.loadFolder('allocation','1N1iMCqBeLnA6AxJMiOwP8ifHxwQkyvnI')">↓ Drive</button>
-            <button class="btn btn-out btn-sm" onclick="App.pickLocalFile('allocation')">↑ Local</button>
-          </div>
-        </div>
-      </div>
+      <!-- Carpetas configuradas -->
+      <div style="background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:16px; margin-bottom:12px;">
+        <div class="block-title" style="margin-bottom:12px;">Carpetas Drive configuradas</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
 
-      <!-- ALyCs extra -->
-      <div class="card mb16">
-        <div class="card-title" style="margin-bottom:8px;">ALyCs adicionales (local)</div>
-        <div class="row" style="gap:6px;">
-          <button class="btn btn-out btn-sm" onclick="App.pickLocal('BALANCE')">+ BALANCE</button>
-          <button class="btn btn-out btn-sm" onclick="App.pickLocal('BCCH')">+ BCCH</button>
-          <button class="btn btn-out btn-sm" onclick="App.pickLocal('OTRO')">+ Otra</button>
+          <div class="source-card" id="sc-adcap">
+            <div class="sc-title">ADCAP</div>
+            <div class="sc-file" id="sc-adcap-name">Carpeta configurada</div>
+            <div class="sc-status idle" id="sc-adcap-status"><span>●</span> Sin cargar</div>
+            <div style="display:flex; gap:6px; margin-top:10px;">
+              <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="App.cargarAlycDesdeCarpeta('ADCAP','1B8-FaVvgZ-uXYXb073FCNq8SrTmw4oD2')">↓ Drive</button>
+              <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="App.pickAlycFile('ADCAP')">↑ Local</button>
+            </div>
+          </div>
+
+          <div class="source-card" id="sc-ieb">
+            <div class="sc-title">IEB</div>
+            <div class="sc-file" id="sc-ieb-name">Carpeta configurada</div>
+            <div class="sc-status idle" id="sc-ieb-status"><span>●</span> Sin cargar</div>
+            <div style="display:flex; gap:6px; margin-top:10px;">
+              <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="App.cargarAlycDesdeCarpeta('IEB','16ed3PZqYeMOgM8jhU_Efgx47RyizTlJQ')">↓ Drive</button>
+              <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="App.pickAlycFile('IEB')">↑ Local</button>
+            </div>
+          </div>
+
+          <div class="source-card" id="sc-clientes">
+            <div class="sc-title">Clientes</div>
+            <div class="sc-file" id="sc-clientes-name">Carpeta configurada</div>
+            <div class="sc-status idle" id="sc-clientes-status"><span>●</span> Sin cargar</div>
+            <div style="display:flex; gap:6px; margin-top:10px;">
+              <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="App.cargarFuenteDesdeCarpeta('clientes','1HBVS0yIWUO_ywEowbovGnN2eUrj5I3n2')">↓ Drive</button>
+              <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="App.pickLocalFile('clientes')">↑ Local</button>
+            </div>
+          </div>
+
+          <div class="source-card" id="sc-allocation">
+            <div class="sc-title">Allocation (PAPELES)</div>
+            <div class="sc-file" id="sc-allocation-name">Carpeta configurada</div>
+            <div class="sc-status idle" id="sc-allocation-status"><span>●</span> Sin cargar</div>
+            <div style="display:flex; gap:6px; margin-top:10px;">
+              <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="App.cargarFuenteDesdeCarpeta('allocation','1N1iMCqBeLnA6AxJMiOwP8ifHxwQkyvnI')">↓ Drive</button>
+              <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="App.pickLocalFile('allocation')">↑ Local</button>
+            </div>
+          </div>
+
         </div>
-        <div id="alycTags" class="alyc-tags"></div>
+
+        <!-- ALyCs adicionales -->
+        <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+          <div class="text-sm mb-12">ALyCs adicionales (local)</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn-secondary" style="font-size:11px; padding:5px 12px;" onclick="App.pickAlycFile('BALANCE')">+ BALANCE</button>
+            <button class="btn-secondary" style="font-size:11px; padding:5px 12px;" onclick="App.pickAlycFile('BCCH')">+ BCCH</button>
+            <button class="btn-secondary" style="font-size:11px; padding:5px 12px;" onclick="App.pickAlycFile('OTRO')">+ Otra ALyC</button>
+          </div>
+          <div id="alycTags" class="alyc-tags mt-12"></div>
+        </div>
       </div>
 
       <!-- Precios -->
-      <div class="card mb16" id="sc-precios">
-        <div class="card-title">Precios Data912</div>
-        <div class="card-val">5 paneles ARG · arg_stocks, arg_cedears, arg_bonds, arg_notes, arg_corp</div>
-        <div class="card-status s-idle" id="scs-precios"><span>●</span> Sin cargar</div>
-        <div class="row mt8"><button class="btn btn-out btn-sm" onclick="App.fetchPrices()">↓ Descargar precios</button></div>
+      <div class="source-card" id="sc-precios" style="margin-bottom:12px;">
+        <div class="sc-title">Precios Data912</div>
+        <div class="sc-file" id="sc-precios-name">API en vivo · 7 paneles</div>
+        <div class="sc-status idle" id="sc-precios-status"><span>●</span> Sin cargar</div>
+        <div style="display:flex; gap:6px; margin-top:10px; align-items:center;">
+          <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="App.fetchPrices()">↓ Descargar precios</button>
+          <span style="font-size:11px; color:var(--text3);">MEP: <span id="mepVal2" style="color:var(--amber);">—</span></span>
+        </div>
       </div>
 
-      <button class="btn btn-red" style="width:100%;justify-content:center;padding:11px;" onclick="App.procesar()">⚡ Procesar y cruzar datos</button>
+      <!-- Botón procesar -->
+      <button class="btn-primary w-full" style="padding:11px; font-size:13px; justify-content:center;" onclick="App.procesarArchivos()">
+        ⚡ Procesar y cruzar datos
+      </button>
 
-      <div id="logEl" class="log" style="display:none;"></div>
+      <!-- Log -->
+      <div id="processLog" class="process-log" style="display:none; margin-top:12px;"></div>
 
-      <div id="resumen" style="display:none;" class="mt16">
-        <div class="kpi-row" style="grid-template-columns:repeat(4,1fr);">
-          <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="kPos">0</div></div>
-          <div class="kpi"><div class="kpi-label">Clientes</div><div class="kpi-value" id="kCli">0</div></div>
-          <div class="kpi"><div class="kpi-label">Allocation</div><div class="kpi-value" id="kAlloc">0</div></div>
-          <div class="kpi"><div class="kpi-label">Precios</div><div class="kpi-value" id="kPrices">0</div></div>
+      <!-- Resumen -->
+      <div id="dataResumen" style="display:none;" class="mt-20">
+        <div class="block-title mb-12">Datos en memoria</div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="kpiPos">0</div></div>
+          <div class="kpi"><div class="kpi-label">Clientes</div><div class="kpi-value" id="kpiCli">0</div></div>
+          <div class="kpi"><div class="kpi-label">Tickers allocation</div><div class="kpi-value" id="kpiAlloc">0</div></div>
+          <div class="kpi"><div class="kpi-label">Tickers con precio</div><div class="kpi-value" id="kpiPrecios">0</div></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══ CARTERA ═══ -->
+<!-- ══════════ PANEL: DASHBOARD ══════════ -->
+<!-- ══════════ PANEL: CARTERA ══════════ -->
 <div class="panel" id="panel-cartera">
-  <!-- Filtros -->
-  <div class="row mb16" style="align-items:flex-end;">
-    <div class="ac-wrap col" style="flex:1;min-width:200px;">
-      <label class="lbl">Cliente / CC</label>
-      <div class="ac-box">
-        <input class="ac-input" id="acCli" type="text" placeholder="Escribí nombre o CC..." oninput="AC.filter('acCli','acCliList')" onfocus="AC.open('acCli','acCliList')" autocomplete="off" />
-        <div class="ac-list" id="acCliList"></div>
-      </div>
+
+  <!-- Buscador en tiempo real -->
+  <div style="display:flex; gap:12px; align-items:flex-end; margin-bottom:14px; flex-wrap:wrap;">
+    <div class="selector-group" style="flex:1; min-width:220px;">
+      <label>Buscar cliente, CC o ticker</label>
+      <input type="text" id="cartBuscar" placeholder="ej: BRADE, 58677, AL30..." oninput="App.filtrarCartera()" style="width:100%;" />
     </div>
-    <div class="ac-wrap col" style="min-width:160px;">
-      <label class="lbl">Ticker</label>
-      <div class="ac-box">
-        <input class="ac-input" id="acTkr" type="text" placeholder="ej: MELI, AL30..." oninput="AC.filter('acTkr','acTkrList')" onfocus="AC.open('acTkr','acTkrList')" autocomplete="off" />
-        <div class="ac-list" id="acTkrList"></div>
-      </div>
+    <div class="selector-group">
+      <label>ALyC</label>
+      <select id="cartAlyc" onchange="App.filtrarCartera()">
+        <option value="">Todas</option>
+      </select>
     </div>
-    <div class="ac-wrap col" style="min-width:130px;">
-      <label class="lbl">ALyC</label>
-      <div class="ac-box">
-        <input class="ac-input" id="acAlycC" type="text" placeholder="ej: ADCAP..." oninput="AC.filter('acAlycC','acAlycCList')" onfocus="AC.open('acAlycC','acAlycCList')" autocomplete="off" />
-        <div class="ac-list" id="acAlycCList"></div>
-      </div>
-    </div>
-    <button class="btn btn-out btn-sm" onclick="App.clearCartFilter()">Limpiar</button>
-    <button class="btn btn-out btn-sm" onclick="App.exportCart()">↓ Excel</button>
+    <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.limpiarFiltroCartera()">Limpiar</button>
+    <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.exportarCartela()">↓ Excel</button>
   </div>
 
-  <!-- KPIs -->
-  <div id="cartKPIs" style="display:none;">
-    <div class="kpi-row" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:16px;">
-      <div class="kpi"><div class="kpi-label">Cartera bruta $</div><div class="kpi-value" id="kBrutaARS">—</div></div>
-      <div class="kpi"><div class="kpi-label">Cartera bruta USD</div><div class="kpi-value" id="kBrutaUSD" style="color:var(--amber);">—</div></div>
-      <div class="kpi accent"><div class="kpi-label">Caución ARS</div><div class="kpi-value" id="kCaucARS" style="color:var(--text2);">—</div></div>
-      <div class="kpi"><div class="kpi-label">Caución USD</div><div class="kpi-value" id="kCaucUSD" style="color:var(--text2);">—</div></div>
-      <div class="kpi green"><div class="kpi-label">Cartera neta $</div><div class="kpi-value" id="kNetaARS" style="color:var(--green);">—</div></div>
-      <div class="kpi"><div class="kpi-label">Cartera neta USD</div><div class="kpi-value" id="kNetaUSD" style="color:var(--green);">—</div></div>
-      <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="kCartPos">—</div></div>
-      <div class="kpi"><div class="kpi-label">Clientes</div><div class="kpi-value" id="kCartCli">—</div></div>
-    </div>
+  <!-- KPIs totales -->
+  <div class="kpi-row" id="cartKPIs" style="display:none; margin-bottom:14px;">
+    <div class="kpi"><div class="kpi-label">Total ARS</div><div class="kpi-value" id="cartTotalARS">—</div></div>
+    <div class="kpi"><div class="kpi-label">Total USD</div><div class="kpi-value" id="cartTotalUSD">—</div></div>
+    <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="cartNPos">—</div></div>
+    <div class="kpi"><div class="kpi-label">Clientes</div><div class="kpi-value" id="cartNCli">—</div></div>
   </div>
 
-  <div class="tbl-wrap" id="cartTblWrap" style="display:none;">
-    <table>
-      <thead><tr>
-        <th class="th-sort" onclick="App.sortCart('alyc')">ALyC <span class="si" id="si-alyc">⇅</span></th>
-        <th class="th-sort" onclick="App.sortCart('cliente')">Cliente <span class="si" id="si-cliente">⇅</span></th>
-        <th class="th-sort" onclick="App.sortCart('ticker')">Ticker <span class="si" id="si-ticker">⇅</span></th>
-        <th class="th-sort" onclick="App.sortCart('tipo')">Tipo <span class="si" id="si-tipo">⇅</span></th>
-        <th class="th-sort td-r" onclick="App.sortCart('tenencia')">Tenencia <span class="si" id="si-tenencia">⇅</span></th>
-        <th class="th-sort td-r" onclick="App.sortCart('pu')">PU $ <span class="si" id="si-pu">⇅</span></th>
-        <th class="th-sort td-r" onclick="App.sortCart('valor')">Importe $ <span class="si" id="si-valor">⇅</span></th>
-        <th class="th-sort td-r" onclick="App.sortCart('valorUSD')">USD <span class="si" id="si-valorUSD">⇅</span></th>
-        <th class="th-sort td-r" onclick="App.sortCart('pctBruto')">% Bruto <span class="si" id="si-pctBruto">⇅</span></th>
-        <th class="th-sort td-r" onclick="App.sortCart('pctNeto')">% Neto <span class="si" id="si-pctNeto">⇅</span></th>
-        <th class="th-sort" onclick="App.sortCart('pais')">País <span class="si" id="si-pais">⇅</span></th>
-        <th class="th-sort" onclick="App.sortCart('grupo')">Grupo <span class="si" id="si-grupo">⇅</span></th>
-        <th class="th-sort" onclick="App.sortCart('subgrupo')">Subgrupo <span class="si" id="si-subgrupo">⇅</span></th>
-      </tr></thead>
-      <tbody id="tbCart"></tbody>
+  <!-- Tabla principal -->
+  <div class="table-wrap" id="cartTablaWrap">
+    <table id="cartTabla">
+      <thead>
+        <tr>
+          <th onclick="App.sortCartera('alyc')"      class="th-sort">ALyC <span class="sort-icon" id="si-alyc">⇅</span></th>
+          <th onclick="App.sortCartera('cliente')"   class="th-sort">Cliente <span class="sort-icon" id="si-cliente">⇅</span></th>
+          <th onclick="App.sortCartera('ticker')"    class="th-sort">Ticker <span class="sort-icon" id="si-ticker">⇅</span></th>
+          <th onclick="App.sortCartera('tipo')"      class="th-sort">Tipo <span class="sort-icon" id="si-tipo">⇅</span></th>
+          <th onclick="App.sortCartera('tenencia')"  class="th-sort text-right">Tenencia <span class="sort-icon" id="si-tenencia">⇅</span></th>
+          <th onclick="App.sortCartera('precioUnit')" class="th-sort text-right">PU $ <span class="sort-icon" id="si-precioUnit">⇅</span></th>
+          <th onclick="App.sortCartera('valor')"     class="th-sort text-right">Importe $ <span class="sort-icon" id="si-valor">⇅</span></th>
+          <th onclick="App.sortCartera('valorUSD')"  class="th-sort text-right">Importe USD <span class="sort-icon" id="si-valorUSD">⇅</span></th>
+          <th onclick="App.sortCartera('pct')"       class="th-sort text-right">% <span class="sort-icon" id="si-pct">⇅</span></th>
+          <th onclick="App.sortCartera('pais')"      class="th-sort">País <span class="sort-icon" id="si-pais">⇅</span></th>
+          <th onclick="App.sortCartera('grupo')"     class="th-sort">Grupo <span class="sort-icon" id="si-grupo">⇅</span></th>
+          <th onclick="App.sortCartera('subgrupo')"  class="th-sort">Subgrupo <span class="sort-icon" id="si-subgrupo">⇅</span></th>
+        </tr>
+      </thead>
+      <tbody id="tbCartaGlobal"></tbody>
     </table>
   </div>
-  <div id="cartEmpty" class="empty"><div class="ico">📋</div><p>Cargá las fuentes de datos primero</p></div>
+
+  <div id="cartEmpty" class="empty-state">
+    <div class="es-icon">📋</div>
+    <p>Cargá las fuentes de datos primero</p>
+    <small>Fuentes de datos → Cargar todo desde Drive</small>
+  </div>
 </div>
 
-<!-- ═══ DASHBOARD ═══ -->
+<!-- ══════════ PANEL: DASHBOARD ══════════ -->
 <div class="panel" id="panel-dashboard">
-  <!-- Selector -->
-  <div class="row mb16" style="align-items:flex-end;">
-    <div class="ac-wrap col" style="min-width:130px;">
-      <label class="lbl">ALyC</label>
-      <div class="ac-box">
-        <input class="ac-input" id="acAlycD" type="text" placeholder="Todas..." oninput="AC.filter('acAlycD','acAlycDList');App.onDashAlycChange()" onfocus="AC.open('acAlycD','acAlycDList')" autocomplete="off" />
-        <div class="ac-list" id="acAlycDList"></div>
-      </div>
+
+  <!-- Selector cliente -->
+  <div class="selector-row" style="margin-bottom:14px;">
+    <div class="selector-group">
+      <label>ALyC</label>
+      <select id="selAlyc" onchange="App.onAlycChange()">
+        <option value="">— Todas —</option>
+      </select>
     </div>
-    <div class="ac-wrap col" style="flex:1;min-width:220px;">
-      <label class="lbl">Cliente / CC</label>
-      <div class="ac-box">
-        <input class="ac-input" id="acCliD" type="text" placeholder="Escribí nombre o CC..." oninput="AC.filter('acCliD','acCliDList')" onfocus="AC.open('acCliD','acCliDList')" autocomplete="off" />
-        <div class="ac-list" id="acCliDList"></div>
-      </div>
+    <div class="selector-group" style="flex:1; min-width:200px;">
+      <label>Buscar cliente / CC</label>
+      <input type="text" id="selClienteBuscar" placeholder="Nombre o CC..." oninput="App.filtrarSelectorCliente()" style="width:100%;" />
     </div>
-    <div id="dashPerfil" style="display:none;padding-bottom:1px;">
-      <span id="dashPerfilVal" class="pill p-blue" style="padding:7px 14px;font-size:12px;">—</span>
+    <div class="selector-group" style="flex:1; min-width:200px;">
+      <label>Cliente</label>
+      <select id="selCliente" onchange="App.onClienteChange()" size="1">
+        <option value="">— Seleccioná —</option>
+      </select>
+    </div>
+    <div id="clientePerfil" style="display:none;">
+      <div class="selector-group">
+        <label>Perfil</label>
+        <div id="clientePerfilVal" class="pill pill-blue" style="padding:7px 14px; font-size:12px;">—</div>
+      </div>
     </div>
   </div>
 
-  <!-- KPIs -->
-  <div id="dashKPIs" style="display:none;">
-    <div class="kpi-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px;">
-      <div class="kpi"><div class="kpi-label">Cartera bruta $</div><div class="kpi-value" id="dkBruta">—</div></div>
-      <div class="kpi"><div class="kpi-label">Cartera bruta USD</div><div class="kpi-value" id="dkBrutaUSD" style="color:var(--amber);">—</div></div>
-      <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="dkPos">—</div></div>
-      <div class="kpi"><div class="kpi-label">MEP</div><div class="kpi-value" id="dkMEP">—</div></div>
+  <div id="clienteKPIs" style="display:none;">
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">Valor cartera ARS</div><div class="kpi-value" id="kCarteraARS">—</div></div>
+      <div class="kpi"><div class="kpi-label">Valor cartera USD MEP</div><div class="kpi-value" id="kCarteraUSD">—</div></div>
+      <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="kPosiciones">—</div></div>
+      <div class="kpi"><div class="kpi-label">MEP vigente</div><div class="kpi-value" id="kMEP">—</div></div>
     </div>
   </div>
 
-  <!-- Filtros cruzados -->
-  <div id="dashFilters" style="display:none;margin-bottom:14px;">
-    <div class="row" style="gap:10px;flex-wrap:wrap;align-items:flex-end;">
-      <div class="col"><label class="lbl">País</label><select id="fPais" onchange="App.applyDashFilters()" style="min-width:120px;"><option value="">Todos</option></select></div>
-      <div class="col"><label class="lbl">Grupo</label><select id="fGrupo" onchange="App.applyDashFilters()" style="min-width:100px;"><option value="">Todos</option></select></div>
-      <div class="col"><label class="lbl">Subgrupo</label><select id="fSubgrupo" onchange="App.applyDashFilters()" style="min-width:110px;"><option value="">Todos</option></select></div>
-      <div class="col"><label class="lbl">Sector</label><select id="fSector" onchange="App.applyDashFilters()" style="min-width:120px;"><option value="">Todos</option></select></div>
-      <div class="col"><label class="lbl">Subtipo</label><select id="fSubtipo" onchange="App.applyDashFilters()" style="min-width:110px;"><option value="">Todos</option></select></div>
-      <button class="btn btn-out btn-sm" onclick="App.clearDashFilters()">Limpiar</button>
+  <!-- Filtros allocation -->
+  <div id="filterRow" style="display:none; margin-bottom:14px; margin-top:14px;">
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+      <div class="selector-group">
+        <label>País</label>
+        <select id="fPais" onchange="App.applyFilters()"><option value="">Todos</option></select>
+      </div>
+      <div class="selector-group">
+        <label>Grupo</label>
+        <select id="fGrupo" onchange="App.applyFilters()"><option value="">Todos</option></select>
+      </div>
+      <div class="selector-group">
+        <label>Subgrupo</label>
+        <select id="fSubgrupo" onchange="App.applyFilters()"><option value="">Todos</option></select>
+      </div>
+      <div class="selector-group">
+        <label>Sector</label>
+        <select id="fSector" onchange="App.applyFilters()"><option value="">Todos</option></select>
+      </div>
+      <div class="selector-group">
+        <label>Subtipo</label>
+        <select id="fSubtipo" onchange="App.applyFilters()"><option value="">Todos</option></select>
+      </div>
+      <button class="btn-secondary" style="font-size:11px; padding:6px 14px;" onclick="App.clearFilters()">Limpiar filtros</button>
     </div>
   </div>
 
   <!-- Gráficos -->
-  <div id="dashCharts" style="display:none;">
-    <div class="dash-grid">
-      <div class="chart-block"><div class="chart-title">Grupo (RF / RV / CASH)</div><div class="chart-wrap"><canvas id="cGrupo"></canvas></div></div>
-      <div class="chart-block"><div class="chart-title">País</div><div class="chart-wrap"><canvas id="cPais"></canvas></div></div>
-      <div class="chart-block"><div class="chart-title">Subgrupo</div><div class="chart-wrap"><canvas id="cSubgrupo"></canvas></div></div>
-      <div class="chart-block"><div class="chart-title">Subtipo</div><div class="chart-wrap"><canvas id="cSubtipo"></canvas></div></div>
-    </div>
-    <div class="chart-block">
-      <div class="chart-title">Sector</div>
-      <div class="chart-bar-wrap"><canvas id="cSector"></canvas></div>
+  <div id="clienteCharts" style="display:none;">
+    <div class="dash-row">
+      <div class="block"><div class="block-title">Por grupo (RF/RV/CASH)</div><div class="chart-wrap"><canvas id="chartGrupo"></canvas></div></div>
+      <div class="block"><div class="block-title">Por país</div><div class="chart-wrap"><canvas id="chartPais"></canvas></div></div>
+      <div class="block"><div class="block-title">Por subgrupo</div><div class="chart-wrap"><canvas id="chartSector"></canvas></div></div>
     </div>
   </div>
 
-  <div id="dashEmpty" class="empty"><div class="ico">📊</div><p>Seleccioná un cliente para ver los gráficos</p></div>
+  <!-- Tabla cliente -->
+  <div id="clienteTabla" style="display:none;">
+    <div class="section-head">
+      <h3>Posiciones</h3>
+      <button class="btn-secondary" style="font-size:11px;" onclick="App.exportarCartela()">↓ Excel</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th><th>Tipo</th><th class="text-right">Tenencia</th>
+            <th class="text-right">PU $</th><th class="text-right">Importe $</th>
+            <th class="text-right">Importe USD</th>
+            <th class="text-right">%</th>
+            <th>País</th><th>Grupo</th><th>Subgrupo</th>
+          </tr>
+        </thead>
+        <tbody id="tbCartera"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="dashEmpty" class="empty-state">
+    <div class="es-icon">📊</div>
+    <p>Seleccioná un cliente para ver su cartera</p>
+    <small>Primero cargá las fuentes de datos</small>
+  </div>
 </div>
 
+<!-- ══════════ PANEL: CARTERAS MODELO ══════════ -->
+<div class="panel" id="panel-carteras">
+  <div class="subtab-row">
+    <div class="subtab active" data-profile="AGRESIVO">Agresivo</div>
+    <div class="subtab" data-profile="MODERADO">Moderado</div>
+    <div class="subtab" data-profile="CONSERVADOR">Conservador</div>
+  </div>
+
+  <div style="display:flex; gap:12px; margin-bottom:14px; flex-wrap:wrap;">
+    <div class="selector-group">
+      <label>Plazo</label>
+      <select id="modeloPlazo" onchange="App.renderModelo()">
+        <option value="">Todos</option>
+        <option>LARGO</option><option>MEDIANO</option><option>CORTO</option><option>CASH</option>
+      </select>
+    </div>
+    <div class="selector-group">
+      <label>Buscar ticker</label>
+      <input id="modeloTicker" type="text" placeholder="Ej: TSLA" style="min-width:180px;" oninput="App.renderModelo()" />
+    </div>
+  </div>
+
+  <div id="modeloTabla">
+    <div class="empty-state">
+      <div class="es-icon">📋</div>
+      <p>Cargá el archivo de Carteras Modelo</p>
+      <small>Formato: hojas AGRESIVO / MODERADO / CONSERVADOR con tablas por plazo</small>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PANEL: ROTACIÓN ══════════ -->
+<div class="panel" id="panel-rotacion">
+  <div class="subtab-row">
+    <div class="subtab rot-subtab active" data-rsub="inicio">Cartera inicial</div>
+    <div class="subtab rot-subtab" data-rsub="compras">Compras / Nueva</div>
+    <div class="subtab rot-subtab" data-rsub="operaciones">Operaciones</div>
+    <div class="subtab rot-subtab" data-rsub="resultado">Cartera resultado</div>
+  </div>
+
+  <div class="rot-controls">
+    <div class="selector-group">
+      <label>ALyC</label>
+      <select id="rotAlyc" onchange="App.onRotAlycChange()"><option value="">—</option></select>
+    </div>
+    <div class="selector-group">
+      <label>Comitente</label>
+      <select id="rotCliente" onchange="App.calcularRotacion()"><option value="">—</option></select>
+    </div>
+    <div class="selector-group">
+      <label>% Ventas a operar</label>
+      <select id="rotPctVenta" onchange="App.calcularRotacion()">
+        <option value="0">0%</option>
+        <option value="25">25%</option>
+        <option value="50">50%</option>
+        <option value="75">75%</option>
+        <option value="100" selected>100%</option>
+        <option value="manual">Manual...</option>
+      </select>
+    </div>
+    <div class="selector-group">
+      <label>% Compras a operar</label>
+      <select id="rotPctCompra" onchange="App.calcularRotacion()">
+        <option value="0">0%</option>
+        <option value="25">25%</option>
+        <option value="50">50%</option>
+        <option value="75">75%</option>
+        <option value="100" selected>100%</option>
+        <option value="manual">Manual...</option>
+      </select>
+    </div>
+    <div class="selector-group">
+      <label>Comisión venta %</label>
+      <input type="text" id="comVenta" value="0.3" style="width:80px;" oninput="App.calcularRotacion()" />
+    </div>
+    <div class="selector-group">
+      <label>Gasto venta %</label>
+      <input type="text" id="gastVenta" value="0.1" style="width:80px;" oninput="App.calcularRotacion()" />
+    </div>
+    <div class="selector-group">
+      <label>Comisión compra %</label>
+      <input type="text" id="comCompra" value="0.3" style="width:80px;" oninput="App.calcularRotacion()" />
+    </div>
+    <div class="selector-group">
+      <label>Gasto compra %</label>
+      <input type="text" id="gastCompra" value="0.1" style="width:80px;" oninput="App.calcularRotacion()" />
+    </div>
+  </div>
+
+  <!-- CARTERA INICIAL -->
+  <div id="rsub-inicio">
+    <div id="rotInicioTabla">
+      <div class="empty-state"><div class="es-icon">📂</div><p>Seleccioná ALyC y comitente</p></div>
+    </div>
+  </div>
+
+  <!-- COMPRAS -->
+  <div id="rsub-compras" style="display:none;">
+    <div id="rotComprasTabla">
+      <div class="empty-state"><div class="es-icon">🛒</div><p>Calculá primero la cartera inicial</p></div>
+    </div>
+  </div>
+
+  <!-- OPERACIONES -->
+  <div id="rsub-operaciones" style="display:none;">
+    <div id="rotOperTabla">
+      <div class="empty-state"><div class="es-icon">📋</div><p>Sin operaciones calculadas</p></div>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+      <button class="btn-primary" onclick="App.cargarOrdenesYResultado()">Cargar órdenes y cartera resultado</button>
+      <button class="btn-secondary" onclick="App.exportarOperaciones()">↓ Exportar Excel</button>
+      <button class="btn-secondary" onclick="App.subirOperacionesDrive()">↑ Subir a Drive</button>
+    </div>
+  </div>
+
+  <!-- CARTERA RESULTADO -->
+  <div id="rsub-resultado" style="display:none;">
+    <div id="rotResultTabla">
+      <div class="empty-state"><div class="es-icon">✅</div><p>Cargá las órdenes para ver el resultado</p></div>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+      <button class="btn-secondary" onclick="App.exportarResultado()">↓ Exportar Excel</button>
+      <button class="btn-secondary" onclick="App.subirResultadoDrive()">↑ Subir a Drive</button>
+    </div>
+  </div>
+</div>
 </main>
 
-<!-- Drive picker -->
-<div class="overlay" id="pickerOverlay">
-  <div class="modal">
-    <div class="modal-hdr"><h3 id="pickerTitle">Seleccionar archivo</h3><button class="btn btn-out btn-sm" onclick="App.closePicker()">✕</button></div>
-    <div class="modal-body">
-      <div class="breadcrumb" id="pickerBread"></div>
-      <div id="pickerList"></div>
+<!-- DRIVE FILE PICKER MODAL -->
+<div class="drive-picker-overlay" id="drivePickerOverlay">
+  <div class="drive-picker-modal">
+    <div class="dpm-header">
+      <h3 id="dpmTitle">Seleccionar archivo de Drive</h3>
+      <button class="btn-secondary" style="padding:4px 10px; font-size:12px;" onclick="App.closeDrivePicker()">✕</button>
     </div>
-    <div class="modal-ftr">
-      <button class="btn btn-out btn-sm" onclick="App.closePicker()">Cancelar</button>
-      <button class="btn btn-red btn-sm" id="pickerOk" disabled onclick="App.confirmPick()">Seleccionar</button>
+    <div class="dpm-body">
+      <div class="dpm-breadcrumb" id="dpmBreadcrumb">
+        <span onclick="App.driveBrowse('root')">Mi Drive</span>
+      </div>
+      <div id="dpmList">
+        <div class="flex-center" style="padding:20px; justify-content:center;">
+          <div class="inline-spinner"></div>
+          <span style="color:var(--text3); font-size:12px;">Cargando...</span>
+        </div>
+      </div>
+    </div>
+    <div class="dpm-footer">
+      <button class="btn-secondary" onclick="App.closeDrivePicker()">Cancelar</button>
+      <button class="btn-primary" id="dpmSelectBtn" disabled onclick="App.confirmDrivePick()">Seleccionar</button>
     </div>
   </div>
 </div>
 
+<!-- HIDDEN FILE INPUT -->
 <input type="file" id="fileInput" style="display:none;" accept=".xlsx,.xls,.csv" />
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-//  SIBRA ROTADOR — v2 clean
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+//  SIBRA ROTADOR — Core App
+// ═══════════════════════════════════════════════════════
+const App = (() => {
 
-// ── Constantes ──
-const CLIENT_ID = '891275909999-25to444ggoo9k1inji4lqbaq1h99ij41.apps.googleusercontent.com';
-const SCOPES    = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file';
-const FOLDERS   = {
-  ADCAP:      '1B8-FaVvgZ-uXYXb073FCNq8SrTmw4oD2',
-  IEB:        '16ed3PZqYeMOgM8jhU_Efgx47RyizTlJQ',
-  clientes:   '1HBVS0yIWUO_ywEowbovGnN2eUrj5I3n2',
-  allocation: '1N1iMCqBeLnA6AxJMiOwP8ifHxwQkyvnI',
-};
-
-// ── Estado global ──
+// ── STATE ──
 const S = {
-  token: null, tokenExp: null,
-  mep: null, ccl: null,
+  token: null,
+  tokenExpiry: null,
+  clientId: '891275909999-25to444ggoo9k1inji4lqbaq1h99ij41.apps.googleusercontent.com',
+  mep: null,
   priceIndex: {},
-  posiciones: [],
-  clientes: [],
-  allocation: {},
-  alycFiles: [],
+  posiciones: [],      // [{alyc, comitente, ticker, tenencia}]
+  clientes: [],        // [{ccc, cliente, cuit, alyc, monto, perfil, LP, MP, CP, CASH, PALANCA, CarteraTotal}]
+  allocation: {},      // ticker -> {pais, sector, grupo, industria, subgrupo, subtipo, moneda}
+  modelos: {},         // {AGRESIVO:{LARGO:[{ticker,ponderacion,precioRef}],...},...}
+  currentProfile: 'AGRESIVO',
+  currentDashSub: 'cliente',
+  currentRotSub: 'inicio',
+  currentRotacion: null,
+  loadedOperaciones: null,
+  loadedResultado: null,
+  alycFiles: [],       // [{name, alyc, data: ArrayBuffer}]
+  drivePickerCb: null,
+  drivePickerSelected: null,
+  drivePickerStack: [{id:'root', name:'Mi Drive'}],
   charts: {},
-  cartData: [],
-  cartSort: { col: 'valor', dir: 'desc' },
-  dashCartela: [],
-  dashFilters: { pais:'', grupo:'', subgrupo:'', sector:'', subtipo:'' },
-  picker: { cb: null, sel: null, stack: [] },
+  activeFilters: {pais:'', sector:'', grupo:'', subtipo:''},
 };
 
-// ── Utils ──
+// ── HELPERS ──
 const $ = id => document.getElementById(id);
-const fmt    = (n, d=0) => isFinite(n) ? n.toLocaleString('es-AR',{minimumFractionDigits:d,maximumFractionDigits:d}) : '—';
-const fmtPct = n => isFinite(n) ? n.toFixed(2)+'%' : '—';
-
+function fmt(n, dec=0) {
+  if (!isFinite(n)) return '—';
+  return n.toLocaleString('es-AR', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+}
+function fmtPct(n) { return isFinite(n) ? n.toFixed(2)+'%' : '—'; }
 function log(msg, cls='') {
-  const el = $('logEl');
+  const el = $('processLog');
   el.style.display = 'block';
   el.innerHTML += `<div class="${cls}">${msg}</div>`;
   el.scrollTop = el.scrollHeight;
 }
-
-function setSrc(key, status, msg) {
+function setSourceStatus(key, status, msg) {
+  const el = $(`sc-${key}-status`);
   const card = $(`sc-${key}`);
-  const stat = $(`scs-${key}`);
-  const val  = $(`scv-${key}`);
-  if (card) card.className = `card ${status==='ok'?'ok':status==='loading'?'loading':status==='err'?'err':''}`;
-  if (stat) { stat.className=`card-status ${status==='ok'?'s-ok':status==='loading'?'s-load':status==='err'?'s-err':'s-idle'}`; stat.innerHTML=`<span>●</span> ${msg}`; }
+  if (!el || !card) return;
+  card.className = 'source-card ' + (status === 'ok' ? 'linked' : status === 'loading' ? 'loading' : status === 'error' ? 'error' : '');
+  el.className = `sc-status ${status === 'ok' ? 'ok' : status === 'error' ? 'err' : status === 'loading' ? 'warn' : 'idle'}`;
+  el.innerHTML = `<span>●</span> ${msg}`;
 }
-
-function readBuf(file) {
-  return new Promise((res,rej) => { const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsArrayBuffer(file); });
+function readFileAsArrayBuffer(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsArrayBuffer(file);
+  });
 }
 
 // ── NAV ──
 function initNav() {
   document.querySelectorAll('.nav-tab').forEach(t => {
     t.addEventListener('click', () => {
-      document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
       t.classList.add('active');
-      $('panel-'+t.dataset.tab).classList.add('active');
+      $('panel-' + t.dataset.tab).classList.add('active');
     });
   });
-  // Cerrar autocompletes al click afuera
-  document.addEventListener('click', e => {
-    document.querySelectorAll('.ac-list.open').forEach(l => {
-      const box = l.closest('.ac-box');
-      if (box && !box.contains(e.target)) l.classList.remove('open');
+
+  // Dashboard subtabs
+  document.querySelectorAll('.dash-subtab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.dash-subtab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      S.currentDashSub = t.dataset.dsub;
+      $('dsub-cliente').style.display = S.currentDashSub === 'cliente' ? '' : 'none';
+      $('dsub-tickers').style.display = S.currentDashSub === 'tickers' ? '' : 'none';
     });
-  }, true);
+  });
+
+  // Modelo subtabs
+  document.querySelectorAll('[data-profile]').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('[data-profile]').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      S.currentProfile = t.dataset.profile;
+      renderModelo();
+    });
+  });
+
+  // Rotacion subtabs
+  document.querySelectorAll('.rot-subtab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.rot-subtab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      S.currentRotSub = t.dataset.rsub;
+      ['inicio','compras','operaciones','resultado'].forEach(k => {
+        $('rsub-' + k).style.display = k === S.currentRotSub ? '' : 'none';
+      });
+    });
+  });
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  OAUTH
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════
+//  GOOGLE OAUTH — Popup flow (PKCE-ready)
+// ══════════════════════════════════════════
+const SCOPES = [
+  'https://www.googleapis.com/auth/drive.readonly',
+  'https://www.googleapis.com/auth/drive.file',
+].join(' ');
+
 function driveAuth() {
-  const cid = $('cfgClientId')?.value?.trim() || CLIENT_ID;
-  const redirect = location.href.split('?')[0].split('#')[0];
+  const clientId = $('cfgClientId').value.trim() || S.clientId;
+  if (!clientId) {
+    alert('Ingresá el Client ID en el panel de configuración.');
+    return;
+  }
+  S.clientId = clientId;
+  localStorage.setItem('sibra_client_id', clientId);
+
+  const redirectUri = location.href.split('?')[0].split('#')[0];
   const state = Math.random().toString(36).slice(2);
-  sessionStorage.setItem('oauthState', state);
-  const url = `https://accounts.google.com/o/oauth2/v2/auth?` + new URLSearchParams({
-    client_id: cid, redirect_uri: redirect,
-    response_type: 'token', scope: SCOPES,
-    state, prompt: 'select_account',
+  sessionStorage.setItem('oauth_state', state);
+
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: 'token',
+    scope: SCOPES,
+    state,
+    prompt: 'select_account',
   });
-  const popup = window.open(url, 'gauth', 'width=520,height=640,left=200,top=100');
+
+  const popup = window.open(
+    'https://accounts.google.com/o/oauth2/v2/auth?' + params,
+    'googleOAuth',
+    'width=520,height=640,left=200,top=100'
+  );
+
+  // Listen for redirect with token in hash
   const timer = setInterval(() => {
     try {
-      const pu = popup.location.href;
-      if (pu.includes('access_token') || pu.includes('error')) {
-        clearInterval(timer); popup.close();
-        const h = new URLSearchParams(new URL(pu).hash.slice(1));
-        if (h.get('error')) { log('❌ Auth error: '+h.get('error'),'log-err'); return; }
-        setToken(h.get('access_token'), parseInt(h.get('expires_in')||3600));
+      const url = popup.location.href;
+      if (url.includes('access_token') || url.includes('error')) {
+        clearInterval(timer);
+        popup.close();
+        const hash = new URLSearchParams(new URL(url).hash.slice(1));
+        const err = hash.get('error');
+        if (err) { log('❌ Auth error: ' + err, 'log-err'); return; }
+        const tok = hash.get('access_token');
+        const exp = parseInt(hash.get('expires_in') || '3600');
+        setToken(tok, exp);
       }
-    } catch(e) {}
+    } catch(e) { /* cross-origin, still loading */ }
     if (popup.closed) clearInterval(timer);
   }, 500);
 }
 
-function setToken(tok, exp) {
-  S.token = tok; S.tokenExp = new Date(Date.now()+exp*1000);
-  localStorage.setItem('sibra_tok', tok);
-  localStorage.setItem('sibra_tok_exp', S.tokenExp.toISOString());
-  updateAuthUI(true);
-  log('✅ Conectado a Google Drive','log-ok');
+function setToken(token, expiresIn) {
+  S.token = token;
+  S.tokenExpiry = new Date(Date.now() + expiresIn * 1000);
+  localStorage.setItem('sibra_token', token);
+  localStorage.setItem('sibra_token_exp', S.tokenExpiry.toISOString());
+  updateDriveUI(true);
+  log('✅ Conectado a Google Drive', 'log-ok');
 }
 
 function driveRevoke() {
   S.token = null;
-  localStorage.removeItem('sibra_tok'); localStorage.removeItem('sibra_tok_exp');
-  updateAuthUI(false);
+  localStorage.removeItem('sibra_token');
+  localStorage.removeItem('sibra_token_exp');
+  updateDriveUI(false);
 }
 
-function updateAuthUI(on) {
-  $('driveDot').className = 'drive-dot'+(on?' on':'');
-  $('driveLabel').textContent = on ? 'Drive conectado' : 'Sin conectar';
-  $('btnAuth').textContent = on ? '✓ Reconectar' : '☁ Conectar Drive';
-  $('tokenInfo').style.display = on ? '' : 'none';
-  if (on && $('tokenExp')) $('tokenExp').textContent = S.tokenExp?.toLocaleTimeString('es-AR')||'—';
+function updateDriveUI(connected) {
+  const dot = $('driveDot');
+  const lbl = $('driveLabel');
+  const btn = $('btnDriveAuth');
+  const info = $('driveTokenInfo');
+  dot.className = 'drive-dot' + (connected ? ' connected' : '');
+  lbl.textContent = connected ? 'Drive conectado' : 'Sin conectar';
+  btn.className = 'btn-drive' + (connected ? ' connected' : '');
+  btn.textContent = connected ? '✓ Reconectar' : 'Conectar Drive';
+  if (info) info.style.display = connected ? '' : 'none';
+  if (connected && $('tokenExpiry')) {
+    $('tokenExpiry').textContent = S.tokenExpiry?.toLocaleTimeString('es-AR') || '—';
+  }
 }
 
 function restoreToken() {
-  const tok = localStorage.getItem('sibra_tok');
-  const exp = localStorage.getItem('sibra_tok_exp');
-  if (tok && exp && new Date(exp) > new Date()) { S.token=tok; S.tokenExp=new Date(exp); updateAuthUI(true); }
+  const DEFAULT_CLIENT_ID = '891275909999-25to444ggoo9k1inji4lqbaq1h99ij41.apps.googleusercontent.com';
+  // Prioridad: localStorage → hardcoded default
+  const id = localStorage.getItem('sibra_client_id') || DEFAULT_CLIENT_ID;
+  S.clientId = id;
+  if ($('cfgClientId')) $('cfgClientId').value = id;
+
+  const tok = localStorage.getItem('sibra_token');
+  const exp = localStorage.getItem('sibra_token_exp');
+  if (tok && exp) {
+    const expDate = new Date(exp);
+    if (expDate > new Date()) { S.token = tok; S.tokenExpiry = expDate; updateDriveUI(true); }
+    else driveRevoke();
+  }
 }
 
-// ── Config lock ──
-function unlockCfg() {
-  if ($('cfgClave')?.value?.trim() === '091285') {
-    $('cfgHidden').style.display=''; $('cfgLock').style.display='none';
-  } else { alert('Clave incorrecta'); }
-}
-function lockCfg() {
-  $('cfgHidden').style.display='none'; $('cfgLock').style.display='';
-  if($('cfgClave')) $('cfgClave').value='';
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  DRIVE API
-// ═══════════════════════════════════════════════════════════════
-async function driveGet(path, params={}) {
-  if (!S.token) throw new Error('Sin token. Conectá Drive primero.');
-  const url = new URL('https://www.googleapis.com/drive/v3/'+path);
-  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
-  const r = await fetch(url, {headers:{Authorization:'Bearer '+S.token}});
-  if (!r.ok) throw new Error(`Drive API ${r.status}: ${await r.text()}`);
+// ── Drive API calls ──
+async function driveGet(path, params = {}) {
+  if (!S.token) throw new Error('No hay token. Autorizá Drive primero.');
+  const url = new URL('https://www.googleapis.com/drive/v3/' + path);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+  const r = await fetch(url.toString(), { headers: { Authorization: 'Bearer ' + S.token } });
+  if (!r.ok) throw new Error(`Drive API error ${r.status}: ${await r.text()}`);
   return r.json();
 }
 
 async function driveDownload(fileId) {
-  if (!S.token) throw new Error('Sin token.');
-  const r = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {headers:{Authorization:'Bearer '+S.token}});
-  if (!r.ok) throw new Error(`Drive download ${r.status}`);
+  if (!S.token) throw new Error('No hay token.');
+  const r = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+    headers: { Authorization: 'Bearer ' + S.token }
+  });
+  if (!r.ok) throw new Error(`Drive download error ${r.status}`);
   return r.arrayBuffer();
 }
 
-async function latestInFolder(folderId) {
-  const data = await driveGet('files', {
-    q: `'${folderId}' in parents and trashed=false`,
-    orderBy: 'modifiedTime desc',
-    pageSize: '10',
-    fields: 'files(id,name,modifiedTime,mimeType)',
+async function driveUploadMultipart(name, content, mimeType, folderId = null) {
+  if (!S.token) throw new Error('No hay token.');
+  const meta = { name, mimeType };
+  if (folderId) meta.parents = [folderId];
+  const boundary = '--------sibra_boundary';
+  const body = [
+    `--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(meta)}\r\n`,
+    `--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`,
+  ];
+  const encoder = new TextEncoder();
+  const parts = [encoder.encode(body[0] + body[1]), new Uint8Array(content), encoder.encode(`\r\n--${boundary}--`)];
+  const blob = new Blob(parts);
+
+  const r = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + S.token,
+      'Content-Type': `multipart/related; boundary=${boundary}`,
+    },
+    body: blob
   });
-  const files = (data.files||[]).filter(f=>f.name.match(/\.(xlsx|xls|csv)$/i)||f.mimeType.includes('spreadsheet'));
-  if (!files.length) throw new Error('No hay archivos Excel en la carpeta');
-  return files[0];
+  if (!r.ok) throw new Error(`Drive upload error ${r.status}: ${await r.text()}`);
+  return r.json();
 }
 
-// ── Drive picker ──
-function openPicker(title, cb) {
-  S.picker = { cb, sel: null, stack: [{id:'root',name:'Mi Drive'}] };
-  $('pickerTitle').textContent = title;
-  $('pickerOverlay').classList.add('open');
-  $('pickerOk').disabled = true;
-  browsePicker('root');
+// ── Drive Picker Modal ──
+function openDrivePicker(title, cb) {
+  S.drivePickerCb = cb;
+  S.drivePickerSelected = null;
+  S.drivePickerStack = [{id:'root', name:'Mi Drive'}];
+  $('dpmTitle').textContent = title;
+  $('drivePickerOverlay').classList.add('open');
+  $('dpmSelectBtn').disabled = true;
+  driveBrowse('root');
 }
-function closePicker() { $('pickerOverlay').classList.remove('open'); }
 
-async function browsePicker(folderId) {
-  $('pickerList').innerHTML = '<div style="padding:20px;text-align:center;"><div class="spin"></div></div>';
+function closeDrivePicker() {
+  $('drivePickerOverlay').classList.remove('open');
+  S.drivePickerSelected = null;
+}
+
+async function driveBrowse(folderId) {
+  if (!S.token) { alert('Conectá Drive primero.'); return; }
+  const list = $('dpmList');
+  list.innerHTML = `<div class="flex-center" style="padding:20px; justify-content:center;">
+    <div class="inline-spinner"></div><span style="color:var(--text3); font-size:12px; margin-left:8px;">Cargando...</span>
+  </div>`;
+
   try {
     const data = await driveGet('files', {
-      q: `'${folderId}' in parents and trashed=false`,
-      fields: 'files(id,name,mimeType,modifiedTime)',
-      pageSize: '100', orderBy: 'folder,name',
+      q: `'${folderId}' in parents and trashed = false`,
+      fields: 'files(id,name,mimeType,modifiedTime,size)',
+      pageSize: 100,
+      orderBy: 'folder,name'
     });
-    // Breadcrumb
-    const stack = S.picker.stack;
-    $('pickerBread').innerHTML = stack.map((item,i)=>{
-      const isLast = i===stack.length-1;
-      return isLast ? `<strong style="color:var(--text);">${item.name}</strong>`
-                    : `<span onclick="App._pickerNav('${item.id}','${item.name}',${i})">${item.name}</span> ›`;
-    }).join(' ');
 
-    const files = data.files||[];
-    if (!files.length) { $('pickerList').innerHTML='<div style="padding:20px;color:var(--text3);font-size:12px;">Carpeta vacía</div>'; return; }
-    $('pickerList').innerHTML = files.map(f => {
-      const isFolder = f.mimeType.includes('folder');
-      const icon = isFolder ? '📁' : '📊';
-      return `<div class="dpm-item" id="dpi-${f.id}" onclick="App._pickerClick('${f.id}','${f.name.replace(/'/g,"\\'")}',${isFolder})">
-        <span style="font-size:16px;">${icon}</span>
-        <span style="flex:1;">${f.name}</span>
-        <span style="font-size:10px;color:var(--text3);">${isFolder?'':new Date(f.modifiedTime).toLocaleDateString('es-AR')}</span>
-      </div>`;
-    }).join('');
+    updateBreadcrumb(folderId);
+    list.innerHTML = '';
+    if (!data.files || data.files.length === 0) {
+      list.innerHTML = '<div style="padding:20px; color:var(--text3); font-size:12px;">Carpeta vacía</div>';
+      return;
+    }
+
+    data.files.forEach(f => {
+      const isFolder = f.mimeType === 'application/vnd.google-apps.folder';
+      const isSheet = f.mimeType.includes('spreadsheet') || f.name.endsWith('.xlsx') || f.name.endsWith('.xls');
+      const icon = isFolder ? '📁' : isSheet ? '📊' : '📄';
+      const div = document.createElement('div');
+      div.className = 'dpm-item';
+      div.innerHTML = `
+        <span class="dpm-item-icon">${icon}</span>
+        <span class="dpm-item-name">${f.name}</span>
+        <span class="dpm-item-meta">${isFolder ? '' : (f.size ? Math.round(f.size/1024)+'KB' : '')}</span>
+      `;
+      if (isFolder) {
+        div.onclick = () => {
+          S.drivePickerStack.push({id: f.id, name: f.name});
+          driveBrowse(f.id);
+        };
+      } else {
+        div.onclick = () => {
+          document.querySelectorAll('.dpm-item').forEach(x => x.classList.remove('selected'));
+          div.classList.add('selected');
+          S.drivePickerSelected = f;
+          $('dpmSelectBtn').disabled = false;
+        };
+        div.ondblclick = () => { S.drivePickerSelected = f; confirmDrivePick(); };
+      }
+      list.appendChild(div);
+    });
   } catch(e) {
-    $('pickerList').innerHTML = `<div style="padding:20px;color:var(--red);font-size:12px;">Error: ${e.message}</div>`;
+    list.innerHTML = `<div style="padding:20px; color:var(--red); font-size:12px;">Error: ${e.message}</div>`;
   }
 }
 
-function _pickerNav(id, name, idx) {
-  S.picker.stack = S.picker.stack.slice(0, idx+1);
-  browsePicker(id);
+function updateBreadcrumb(currentId) {
+  const el = $('dpmBreadcrumb');
+  // If we navigated into a subfolder, trim stack to current
+  const stack = S.drivePickerStack;
+  const idx = stack.findIndex(x => x.id === currentId);
+  if (idx >= 0) S.drivePickerStack = stack.slice(0, idx + 1);
+
+  el.innerHTML = S.drivePickerStack.map((item, i) => {
+    const isLast = i === S.drivePickerStack.length - 1;
+    return isLast
+      ? `<strong style="color:var(--text);">${item.name}</strong>`
+      : `<span onclick="App.driveBrowse('${item.id}')">${item.name}</span> ›`;
+  }).join(' ');
 }
 
-function _pickerClick(id, name, isFolder) {
-  if (isFolder) {
-    S.picker.stack.push({id, name});
-    browsePicker(id);
-  } else {
-    document.querySelectorAll('.dpm-item').forEach(x=>x.classList.remove('sel'));
-    $(`dpi-${id}`)?.classList.add('sel');
-    S.picker.sel = {id, name};
-    $('pickerOk').disabled = false;
+async function confirmDrivePick() {
+  if (!S.drivePickerSelected) return;
+  const f = S.drivePickerSelected;
+  closeDrivePicker();
+  if (S.drivePickerCb) S.drivePickerCb(f);
+}
+
+// ── File pickers ──
+// ── Cargar archivo más reciente de una carpeta Drive ──
+async function archivoMasRecienteDeCarpeta(folderId) {
+  // Busca el archivo xlsx/xls más reciente (por modifiedTime) en la carpeta
+  const data = await driveGet('files', {
+    q: `'${folderId}' in parents and trashed = false and (mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' or mimeType='application/vnd.ms-excel' or name contains '.xlsx' or name contains '.xls')`,
+    orderBy: 'modifiedTime desc',
+    pageSize: '5',
+    fields: 'files(id,name,modifiedTime,mimeType)',
+  });
+  if (!data.files || data.files.length === 0) throw new Error('No hay archivos Excel en esta carpeta');
+  return data.files[0]; // el más reciente
+}
+
+async function cargarFuenteDesdeCarpeta(key, folderId) {
+  if (!S.token) { alert('Conectá Drive primero.'); return; }
+  try {
+    setSourceStatus(key, 'loading', 'Buscando archivo más reciente...');
+    const file = await archivoMasRecienteDeCarpeta(folderId);
+    log(`☁ ${key}: encontrado "${file.name}" (${new Date(file.modifiedTime).toLocaleDateString('es-AR')})`, 'log-ok');
+    setSourceStatus(key, 'loading', `Descargando ${file.name}...`);
+    $(`sc-${key}-name`).textContent = file.name;
+    const buf = await driveDownload(file.id);
+    await processSourceFile(key, buf, file.name);
+  } catch(e) {
+    setSourceStatus(key, 'error', 'Error: ' + e.message);
+    log(`❌ ${key}: ${e.message}`, 'log-err');
   }
 }
 
-function confirmPick() {
-  if (S.picker.sel && S.picker.cb) { S.picker.cb(S.picker.sel); closePicker(); }
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  CARGA DE ARCHIVOS
-// ═══════════════════════════════════════════════════════════════
-async function loadAlycFolder(alycName, folderId) {
+async function cargarAlycDesdeCarpeta(alycName, folderId) {
   if (!S.token) { alert('Conectá Drive primero.'); return; }
   const key = alycName.toLowerCase();
   try {
-    setSrc(key, 'loading', 'Buscando...');
-    const file = await latestInFolder(folderId);
-    setSrc(key, 'loading', `Descargando ${file.name}...`);
-    const sVal = $(`scv-${key}`); if (sVal) sVal.textContent = file.name;
+    setSourceStatus(key, 'loading', 'Buscando archivo más reciente...');
+    const file = await archivoMasRecienteDeCarpeta(folderId);
+    log(`☁ ${alycName}: encontrado "${file.name}" (${new Date(file.modifiedTime).toLocaleDateString('es-AR')})`, 'log-ok');
+    setSourceStatus(key, 'loading', `Descargando ${file.name}...`);
+    $(`sc-${key}-name`).textContent = file.name;
     const buf = await driveDownload(file.id);
-    S.alycFiles = S.alycFiles.filter(f=>f.alyc!==alycName);
-    S.alycFiles.push({name:file.name, alyc:alycName, data:buf});
+    // Quitar entrada previa de esta ALyC y agregar la nueva
+    S.alycFiles = S.alycFiles.filter(f => f.alyc !== alycName);
+    S.alycFiles.push({ name: file.name, alyc: alycName, data: buf });
     updateAlycTags();
-    setSrc(key, 'ok', file.name);
-    log(`✅ ${alycName}: ${file.name}`,'log-ok');
+    setSourceStatus(key, 'ok', file.name);
   } catch(e) {
-    setSrc(key,'err','Error: '+e.message);
-    log(`❌ ${alycName}: ${e.message}`,'log-err');
+    setSourceStatus(key, 'error', 'Error: ' + e.message);
+    log(`❌ ${alycName}: ${e.message}`, 'log-err');
   }
 }
 
-async function loadFolder(key, folderId) {
+async function cargarTodoDesdeDrive() {
   if (!S.token) { alert('Conectá Drive primero.'); return; }
-  try {
-    setSrc(key,'loading','Buscando...');
-    const file = await latestInFolder(folderId);
-    setSrc(key,'loading',`Descargando ${file.name}...`);
-    const sVal = $(`scv-${key}`); if (sVal) sVal.textContent = file.name;
-    const buf = await driveDownload(file.id);
-    await processFile(key, buf, file.name);
-  } catch(e) {
-    setSrc(key,'err','Error: '+e.message);
-    log(`❌ ${key}: ${e.message}`,'log-err');
-  }
-}
-
-async function loadAll() {
-  if (!S.token) { alert('Conectá Drive primero.'); return; }
-  $('logEl').innerHTML=''; log('☁ Cargando todo desde Drive...');
+  $('processLog').innerHTML = '';
+  log('☁ Cargando todos los archivos desde Drive...', 'log-ok');
+  // Cargar en paralelo
   await Promise.all([
-    loadAlycFolder('ADCAP', FOLDERS.ADCAP),
-    loadAlycFolder('IEB',   FOLDERS.IEB),
-    loadFolder('clientes',  FOLDERS.clientes),
-    loadFolder('allocation',FOLDERS.allocation),
+    cargarAlycDesdeCarpeta('ADCAP',      '1B8-FaVvgZ-uXYXb073FCNq8SrTmw4oD2'),
+    cargarAlycDesdeCarpeta('IEB',        '16ed3PZqYeMOgM8jhU_Efgx47RyizTlJQ'),
+    cargarFuenteDesdeCarpeta('clientes', '1HBVS0yIWUO_ywEowbovGnN2eUrj5I3n2'),
+    cargarFuenteDesdeCarpeta('allocation','1N1iMCqBeLnA6AxJMiOwP8ifHxwQkyvnI'),
   ]);
-  log('⚡ Procesando...','log-ok');
-  await procesar();
+  log('✅ Todos los archivos cargados. Procesando...', 'log-ok');
+  await procesarArchivos();
 }
 
-function pickLocal(alycName) {
-  const inp = $('fileInput');
-  inp.onchange = async () => {
-    const f = inp.files[0]; if (!f) return;
-    const buf = await readBuf(f);
-    S.alycFiles = S.alycFiles.filter(x=>x.alyc!==alycName);
-    S.alycFiles.push({name:f.name, alyc:alycName, data:buf});
-    updateAlycTags();
-    inp.value='';
-  };
-  inp.click();
+function pickDriveFile(key, folder) {
+  if (!S.token) { alert('Conectá Drive primero.'); return; }
+  openDrivePicker(`Seleccionar ${key} desde Drive`, async (file) => {
+    try {
+      setSourceStatus(key, 'loading', 'Descargando...');
+      $(`sc-${key}-name`).textContent = file.name;
+      const buf = await driveDownload(file.id);
+      await processSourceFile(key, buf, file.name);
+    } catch(e) {
+      setSourceStatus(key, 'error', 'Error: ' + e.message);
+    }
+  });
 }
 
 function pickLocalFile(key) {
-  const inp = $('fileInput');
-  inp.onchange = async () => {
-    const f = inp.files[0]; if (!f) return;
-    setSrc(key,'loading','Leyendo...');
-    const sVal = $(`scv-${key}`); if (sVal) sVal.textContent = f.name;
-    const buf = await readBuf(f);
-    await processFile(key, buf, f.name);
-    inp.value='';
+  const input = $('fileInput');
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+    setSourceStatus(key, 'loading', 'Leyendo...');
+    $(`sc-${key}-name`).textContent = file.name;
+    const buf = await readFileAsArrayBuffer(file);
+    await processSourceFile(key, buf, file.name);
+    input.value = '';
   };
-  inp.click();
+  input.click();
+}
+
+async function pickAlycFile(alycName) {
+  const input = $('fileInput');
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+    const buf = await readFileAsArrayBuffer(file);
+    S.alycFiles = S.alycFiles.filter(f => f.alyc !== alycName);
+    S.alycFiles.push({ name: file.name, alyc: alycName, data: buf });
+    updateAlycTags();
+    input.value = '';
+  };
+  input.click();
+}
+
+function pickDriveFolder(folder) {
+  if (!S.token) { alert('Conectá Drive primero.'); return; }
+  openDrivePicker('Seleccionar carpeta de ALyC', async (file) => {
+    try {
+      const buf = await driveDownload(file.id);
+      const alyc = detectAlycFromName(file.name);
+      S.alycFiles.push({ name: file.name, alyc, data: buf });
+      updateAlycTags();
+    } catch(e) { alert('Error al descargar: ' + e.message); }
+  });
+}
+
+function detectAlycFromName(name) {
+  const n = name.toUpperCase();
+  if (n.includes('ADCAP')) return 'ADCAP';
+  if (n.includes('IEB')) return 'IEB';
+  if (n.includes('BALANCE')) return 'BALANCE';
+  if (n.includes('BOLSA') || n.includes('CHACO')) return 'BOLSA_CHACO';
+  if (n.includes('BINANCE')) return 'BINANCE';
+  return 'ALYC';
 }
 
 function updateAlycTags() {
-  $('alycTags').innerHTML = S.alycFiles.map((f,i)=>`
-    <div class="alyc-tag">${f.alyc} · ${f.name}<span class="rm" onclick="App.removeAlyc(${i})">✕</span></div>`).join('');
-}
-function removeAlyc(i) { S.alycFiles.splice(i,1); updateAlycTags(); }
-
-// ═══════════════════════════════════════════════════════════════
-//  PARSERS
-// ═══════════════════════════════════════════════════════════════
-function parseADCAP(buf) {
-  const wb = XLSX.read(buf,{type:'array'});
-  const ws = wb.Sheets['Reporte']||wb.Sheets[wb.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
-  const pos=[], IGNORAR=/posici[oó]n informativa|posiciones tomadas|colocadas/i;
-  const CASH_ARS=/^\$\s*-|^pesos/i, CASH_USD=/dolar\s*7000|dolar\s*mep|dolar\s*cable|usd\s*7000|usd\s*[cdo]\s*-/i;
-  let ticker=null, ignorar=false;
-  rows.forEach(row => {
-    const c0=String(row[0]??'').trim(), c3=row[3];
-    if (!c0) return;
-    if (IGNORAR.test(c0)) { ignorar=true; ticker=null; return; }
-    let esNum=false; try{parseFloat(c0);esNum=!isNaN(c0)&&c0!==''}catch(e){}
-    if (!esNum && c0.includes(' / ') && !c0.includes(' - ')) { ignorar=false; ticker=null; return; }
-    if (!esNum && c0.includes(' - ')) {
-      if (ignorar) return;
-      if (CASH_ARS.test(c0)) ticker='CASH_ARS';
-      else if (CASH_USD.test(c0)) ticker='CASH_USD';
-      else ticker=c0.split(' ')[0].trim().toUpperCase();
-      return;
-    }
-    if (esNum && ticker && !ignorar) {
-      const ten=parseFloat(c3);
-      if (!isFinite(ten)) return;
-      const esCash=ticker==='CASH_ARS'||ticker==='CASH_USD';
-      if (esCash?ten!==0:ten>0) pos.push({alyc:'ADCAP',comitente:c0,ticker,tenencia:ten});
-    }
-  });
-  return pos;
+  const el = $('alycTags');
+  el.innerHTML = S.alycFiles.map((f, i) => `
+    <div class="alyc-tag">
+      ${f.alyc} · ${f.name}
+      <span class="rm" onclick="App.removeAlyc(${i})">✕</span>
+    </div>
+  `).join('');
+  $('alycCount').textContent = `${S.alycFiles.length} archivo(s) cargado(s)`;
 }
 
-function parseIEB(buf) {
-  const wb = XLSX.read(buf,{type:'array'});
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
-  const CASH_ARS=new Set(['Pesos','PESOS','$']);
-  const CASH_USD=new Set(['USD','DOLARUSA','DOLAR EXT.','DÓLAR','DOLAR']);
-  const SKIP=new Set(['-','']);
-  return rows.slice(1).reduce((acc,row)=>{
-    const com=String(row[1]??'').trim(), tkr=String(row[5]??'').trim();
-    const ten=parseFloat(row[8]);
-    if (!com||SKIP.has(tkr)||!isFinite(ten)||ten===0) return acc;
-    const t=CASH_ARS.has(tkr)?'CASH_ARS':CASH_USD.has(tkr)?'CASH_USD':tkr.toUpperCase();
-    const esCash=t==='CASH_ARS'||t==='CASH_USD';
-    if (!esCash&&ten<0) return acc;
-    acc.push({alyc:'IEB',comitente:com,ticker:t,tenencia:ten});
-    return acc;
-  },[]);
+function removeAlyc(i) {
+  S.alycFiles.splice(i, 1);
+  updateAlycTags();
 }
 
-function parseGeneric(buf, alycName) {
-  const wb=XLSX.read(buf,{type:'array'});
-  const ws=wb.Sheets[wb.SheetNames[0]];
-  const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-  const keys=Object.keys(rows[0]||{});
-  const fk=(aliases)=>keys.find(k=>aliases.some(a=>k.toLowerCase().includes(a)));
-  const cKey=fk(['comitente','cuenta','cliente','ccc','cc']);
-  const tKey=fk(['ticker','simbolo','symbol','papel']);
-  const qKey=fk(['cantidad','tenencia','saldo','subtotal']);
-  if (!cKey||!tKey||!qKey) return [];
-  return rows.filter(r=>r[tKey]&&r[tKey]!=='-'&&parseFloat(r[qKey]||0)!==0).map(r=>({
-    alyc:alycName, comitente:String(r[cKey]).trim(),
-    ticker:String(r[tKey]).trim().toUpperCase(), tenencia:parseFloat(r[qKey]||0),
-  }));
-}
+// ══════════════════════════════════════════
+//  DATA 912 — Precios
+// ══════════════════════════════════════════
+const DATA912 = 'https://data912.com/live';
 
-function parseClientes(wb) {
-  const ws=wb.Sheets[wb.SheetNames[0]];
-  const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-  S.clientes=rows.map(r=>({
-    cc:          String(r.cc||r.CC||'').trim(),
-    cliente:     String(r.cliente||r.Cliente||'').trim(),
-    cuit:        String(r.CUIT||r.cuit||'').trim(),
-    alyc:        String(r.alyc||r.ALyC||'').trim().toUpperCase(),
-    perfil:      String(r.perfil||r.Perfil||'AGRESIVO').trim().toUpperCase(),
-    LP:          parseFloat(r.LP)||0,
-    MP:          parseFloat(r.MP)||0,
-    CP:          parseFloat(r.CP)||0,
-    CASH:        parseFloat(r.CASH)||0,
-    PALANCA:     parseFloat(r.PALANCA)||1,
-    caucionARS:  parseFloat(r['Cacion en pesos']||r['Caucion en pesos']||r.caucionPesos)||0,
-    caucionUSD:  parseFloat(r['Caucion en Dolares']||r.caucionDolares)||0,
-  })).filter(r=>r.cc);
-}
-
-function parseAllocation(wb) {
-  const ws=wb.Sheets['PAPELES']||wb.Sheets[wb.SheetNames[0]];
-  const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-  S.allocation={};
-  rows.forEach(r=>{
-    const sym=String(r.SIMBOLO||r.Simbolo||'').trim().toUpperCase();
-    if (!sym) return;
-    S.allocation[sym]={
-      subgrupo:  String(r.SUBGRUPO||'').trim(),
-      grupo:     String(r.GRUPO||'').trim(),
-      pais:      String(r.PAIS||'').trim(),
-      moneda:    String(r.MONEDA||'').trim(),
-      subtipo:   String(r.SUBTIPO||'').trim(),
-      sector:    String(r.SECTOR||'').trim(),
-      industria: String(r.INDUSTRIA||'').trim(),
-    };
-  });
-}
-
-async function processFile(key, buf, name) {
-  try {
-    const wb=XLSX.read(buf,{type:'array'});
-    if (key==='clientes') {
-      parseClientes(wb);
-      setSrc(key,'ok',`${S.clientes.length} clientes`);
-      $('kCli').textContent=S.clientes.length;
-      log(`✅ Clientes: ${S.clientes.length}`,'log-ok');
-    } else if (key==='allocation') {
-      parseAllocation(wb);
-      const n=Object.keys(S.allocation).length;
-      setSrc(key,'ok',`${n} tickers`);
-      $('kAlloc').textContent=n;
-      log(`✅ Allocation: ${n} tickers`,'log-ok');
-    }
-    refreshACs();
-  } catch(e) {
-    setSrc(key,'err','Error: '+e.message);
-    log(`❌ ${key}: ${e.message}`,'log-err');
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  PRECIOS DATA912
-// ═══════════════════════════════════════════════════════════════
 async function fetchPrices() {
-  const panels=[
-    ['arg_stocks','ACCION_ARG'],['arg_cedears','CEDEAR'],
-    ['arg_bonds','RENTA_FIJA'],['arg_notes','RENTA_FIJA'],['arg_corp','ON'],
+  const panels = [
+    ['arg_stocks',  'ACCION_ARG'],
+    ['arg_cedears', 'CEDEAR'],
+    ['arg_bonds',   'RENTA_FIJA'],
+    ['arg_notes',   'RENTA_FIJA'],
+    ['arg_corp',    'ON'],
+    // usa_stocks y usa_adrs NO — todas las ALyCs argentinas operan en pesos
   ];
-  setSrc('precios','loading','Descargando...');
-  log('📡 Descargando precios Data912...');
-  S.priceIndex={};
-  for (const [panel,tipo] of panels) {
+  setSourceStatus('precios', 'loading', 'Descargando paneles...');
+  log('📡 Descargando precios Data912...', 'log-ok');
+
+  for (const [panel, tipo] of panels) {
     try {
-      const r=await fetch(`https://data912.com/live/${panel}`);
+      const r = await fetch(`${DATA912}/${panel}`);
       if (!r.ok) throw new Error(r.status);
-      const data=await r.json();
-      const rows=Array.isArray(data)?data:(data.data||data.items||[]);
-      rows.forEach(row=>{
-        const sym=(row.symbol||'').trim().toUpperCase();
-        const price=parseFloat(row.c??0);
-        if (!sym||!isFinite(price)||price<=0) return;
-        if (!S.priceIndex[sym]) S.priceIndex[sym]=[];
-        S.priceIndex[sym].push({price,panel,tipo});
+      const data = await r.json();
+      const rows = Array.isArray(data) ? data : (data.data || data.items || []);
+      rows.forEach(row => {
+        // Data912 siempre devuelve: symbol (string) y c (float = precio cierre/last)
+        const sym = (row.symbol || '').trim().toUpperCase();
+        if (!sym) return;
+        const price = parseFloat(row.c ?? 0);
+        if (!isFinite(price) || price <= 0) return; // descartar filas sin precio
+        if (!S.priceIndex[sym]) S.priceIndex[sym] = [];
+        S.priceIndex[sym].push({ price, panel, tipo });
       });
-      log(`  ✓ ${panel}: ${rows.length} tickers`,'log-ok');
-    } catch(e) { log(`  ⚠ ${panel}: ${e.message}`,'log-warn'); }
+      log(`  ✓ ${panel}: ${rows.length} tickers`, 'log-ok');
+    } catch(e) {
+      log(`  ⚠ ${panel}: ${e.message}`, 'log-warn');
+    }
   }
-  const n=Object.keys(S.priceIndex).length;
-  setSrc('precios','ok',`${n} tickers indexados`);
-  $('kPrices').textContent=n;
+  setSourceStatus('precios', 'ok', Object.keys(S.priceIndex).length + ' tickers indexados');
+  $('kpiPrecios').textContent = Object.keys(S.priceIndex).length;
   await fetchMEP();
 }
 
 async function fetchMEP() {
   try {
-    // Asegurar que tengamos precios
-    if (!Object.keys(S.priceIndex).length) await fetchPrices();
-    const al30  = getRawPrice('AL30');
-    const al30d = getRawPrice('AL30D');
-    const gd30  = getRawPrice('GD30');
-    const gd30c = getRawPrice('GD30C');
-    if (al30&&al30d&&al30d>0) {
-      S.mep = al30/al30d;
-      $('mepVal').textContent=fmt(S.mep,2);
-      $('dkMEP').textContent=fmt(S.mep,2);
-      log(`💱 MEP: ${fmt(S.mep,2)} (AL30=${fmt(al30,2)} / AL30D=${fmt(al30d,4)})`,'log-ok');
+    if (!S.priceIndex['AL30'] || !S.priceIndex['AL30D']) {
+      if (Object.keys(S.priceIndex).length === 0) await fetchPrices();
+      return;
     }
-    if (gd30&&gd30c&&gd30c>0) {
-      S.ccl=gd30/gd30c;
-      log(`💱 CCL: ${fmt(S.ccl,2)} (GD30/GD30C)`,'log-ok');
+    // AL30 cotiza en ARS cada 100 VN → precio "c" ya es por 100 VN
+    // AL30D cotiza en USD cada 100 VN → precio "c" ya es por 100 VN
+    // MEP = precio_ARS / precio_USD
+    const al30  = getPrice('AL30',  'RENTA_FIJA');  // ARS / 100 VN
+    const al30d = getPrice('AL30D', 'RENTA_FIJA');  // USD / 100 VN
+    if (al30 && al30d && al30d > 0) {
+      S.mep = al30 / al30d;
+      const ccl = calcularCCL();
+      $('mepVal').textContent = fmt(S.mep, 2);
+      log(`💱 MEP: AL30(ARS)=${fmt(al30,2)} / AL30D(USD)=${fmt(al30d,4)} = $${fmt(S.mep,2)}`, 'log-ok');
+      if (ccl) log(`💱 CCL aprox: $${fmt(ccl,2)}`, 'log-ok');
     }
-  } catch(e) { log('⚠ MEP: '+e.message,'log-warn'); }
+  } catch(e) {
+    log('⚠ MEP no calculado: ' + e.message, 'log-warn');
+  }
 }
 
-function getRawPrice(ticker) {
-  const e=S.priceIndex[ticker]; return e&&e.length?e[0].price:null;
+// ── Sufijos Data912 (bonos/letras/ONs) ──
+// O = ARS (pesos, liquidación en pesos)   → precio ya en ARS / 100 VN
+// D = USD MEP                             → precio en USD / 100 VN → × MEP para ARS
+// C = USD CCL (cable)                     → precio en USD / 100 VN → × CCL para ARS
+//
+// Para acciones/CEDEARs/ADRs no hay sufijo de liquidación en estos paneles;
+// arg_stocks y arg_cedears devuelven precio en ARS directamente.
+
+function sufijoBono(ticker) {
+  const last = ticker.slice(-1);
+  if (last === 'O') return 'ARS';
+  if (last === 'D') return 'MEP';
+  if (last === 'C') return 'CCL';
+  return null; // no es bono con sufijo conocido
 }
 
-function getPrecio(ticker, tipo) {
-  // Todo en ARS. Bonos ÷100. Cash especial.
-  if (ticker==='CASH_ARS') return 1;
-  if (ticker==='CASH_USD') return S.mep||1;
-  const e=S.priceIndex[ticker]; if (!e||!e.length) return null;
-  const raw=e[0].price;
-  if (tipo==='RENTA_FIJA'||tipo==='ON') return raw/100;
+// Busca el ticker exacto en el índice.
+// Si no lo encuentra, para bonos intenta primero la versión O (ARS, más directa).
+function resolveTickerInIndex(ticker) {
+  if (S.priceIndex[ticker]) return ticker;
+  // Fallback: si el ticker viene sin sufijo (raro pero posible), buscar O → D → C
+  for (const suf of ['O','D','C']) {
+    if (S.priceIndex[ticker + suf]) return ticker + suf;
+  }
+  return null;
+}
+
+function getPrice(ticker, tipo) {
+  const resolved = resolveTickerInIndex(ticker);
+  if (!resolved) return null;
+  const entries = S.priceIndex[resolved];
+  if (!entries || entries.length === 0) return null;
+  const priority = {
+    ACCION_ARG: ['arg_stocks','arg_cedears','usa_adrs','usa_stocks'],
+    CEDEAR:     ['arg_cedears','usa_stocks','usa_adrs'],
+    ETF:        ['arg_cedears','usa_stocks'],
+    RENTA_FIJA: ['arg_bonds','arg_notes','arg_corp'],
+    ON:         ['arg_corp','arg_bonds','arg_notes'],
+    ADR:        ['usa_adrs','usa_stocks','arg_stocks'],
+    USA:        ['usa_stocks','usa_adrs'],
+  };
+  const prio = priority[tipo];
+  if (prio) {
+    for (const p of prio) {
+      const found = entries.find(e => e.panel === p);
+      if (found) return found.price;
+    }
+  }
+  return entries[0].price;
+}
+
+// CCL = GD30 (ARS) / GD30C (USD cable)
+function calcularCCL() {
+  const gd30  = S.priceIndex['GD30']  ? S.priceIndex['GD30'][0].price  : null;
+  const gd30c = S.priceIndex['GD30C'] ? S.priceIndex['GD30C'][0].price : null;
+  if (gd30 && gd30c && gd30c > 0) return gd30 / gd30c;
+  // Si no hay GD30C, aproximar CCL como MEP + 2%
+  return S.mep ? S.mep * 1.02 : null;
+}
+
+function getPrecioUnitario(ticker, tipo) {
+  if (tipo === 'CASH_ARS') return 1;
+  if (tipo === 'CASH_USD') return S.mep || 1;
+
+  const raw = getPrice(ticker, tipo);
+  if (raw === null) return null;
+
+  // Todas las ALyCs argentinas (ADCAP, IEB, BALANCE, BCCH) operan en pesos.
+  // Data912 devuelve arg_stocks, arg_cedears, arg_bonds, arg_notes, arg_corp
+  // todos en ARS directamente. Nunca usamos usa_stocks ni usa_adrs.
+
+  // Acciones / CEDEARs / ETFs / ADRs / FCI → precio ARS directo
+  if (['ACCION_ARG','CEDEAR','ETF','ADR','FCI'].includes(tipo)) return raw;
+
+  // Bonos / Letras / ONs → precio cada 100 VN en ARS
+  if (['RENTA_FIJA','ON','DESCONOCIDO'].includes(tipo)) return raw / 100;
+
   return raw;
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  CLASIFICACIÓN
-// ═══════════════════════════════════════════════════════════════
-function clasificar(ticker, alloc) {
-  if (ticker==='CASH_ARS') return 'CASH_ARS';
-  if (ticker==='CASH_USD') return 'CASH_USD';
+// ── Clasificación de activos ──
+function clasificarTicker(ticker, alloc) {
+  // Cash normalizado por los parsers
+  if (ticker === 'CASH_ARS') return 'CASH_ARS';
+  if (ticker === 'CASH_USD') return 'CASH_USD';
+
   if (alloc) {
-    const g=(alloc.grupo||'').toUpperCase(), sg=(alloc.subgrupo||'').toUpperCase(), st=(alloc.subtipo||'').toUpperCase();
-    if (g==='CASH')                            return 'CASH_ARS';
-    if (sg==='CEDEAR')                         return 'CEDEAR';
-    if (sg==='LIDER'||sg==='GENERAL')          return 'ACCION_ARG';
-    if (sg==='ON')                             return 'ON';
-    if (sg==='BONOS'||sg==='LETRAS')           return 'RENTA_FIJA';
-    if (sg==='FCI'||g==='FCI')                 return 'FCI';
-    if (st==='ETF'||st==='ET')                 return 'ETF';
+    const grupo    = (alloc.grupo    || '').toUpperCase().trim();
+    const subgrupo = (alloc.subgrupo || '').toUpperCase().trim();
+    const subtipo  = (alloc.subtipo  || '').toUpperCase().trim();
+
+    // GRUPO y SUBGRUPO son la fuente más confiable (valores reales del archivo PAPELES)
+    if (grupo    === 'CASH')                            return 'CASH_ARS';
+    if (subgrupo === 'CEDEAR')                          return 'CEDEAR';
+    if (subgrupo === 'LIDER' || subgrupo === 'GENERAL') return 'ACCION_ARG';
+    if (subgrupo === 'ON')                              return 'ON';
+    if (subgrupo === 'BONOS' || subgrupo === 'LETRAS')  return 'RENTA_FIJA';
+    if (subgrupo === 'FCI'   || grupo    === 'FCI')     return 'FCI';
+    if (subtipo  === 'ETF'   || subtipo  === 'ET')      return 'ETF';
   }
-  const t=ticker.toUpperCase();
-  if (/^(AL|GD|AE|TX|TZX|T2X|DICP|PARP|CUAP)/.test(t)) return 'RENTA_FIJA';
+
+  // Fallback heurístico por ticker si no está en allocation
+  const t = ticker.toUpperCase();
+  if (/^(AL|GD|AE|TX|TZX|T2X|DICP|PARP|CUAP|TTD|TZV|BPOC|BPOD)/.test(t)) return 'RENTA_FIJA';
   if (/^S\d{1,2}[A-Z]|^T\d/.test(t)) return 'RENTA_FIJA';
+
   return 'DESCONOCIDO';
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  PROCESAR
-// ═══════════════════════════════════════════════════════════════
-async function procesar() {
-  $('logEl').innerHTML=''; log('🔄 Procesando...');
-  S.posiciones=[];
+// ══════════════════════════════════════════
+//  PARSEO DE ARCHIVOS
+// ══════════════════════════════════════════
+async function processSourceFile(key, buf, name) {
+  try {
+    const wb = XLSX.read(buf, { type: 'array' });
+    if (key === 'clientes') {
+      parseClientes(wb);
+      setSourceStatus('clientes', 'ok', `${S.clientes.length} clientes`);
+      $('kpiCli').textContent = S.clientes.length;
+      log(`✅ Clientes: ${S.clientes.length} registros`, 'log-ok');
+    } else if (key === 'allocation') {
+      parseAllocation(wb);
+      setSourceStatus('allocation', 'ok', `${Object.keys(S.allocation).length} tickers`);
+      $('kpiAlloc').textContent = Object.keys(S.allocation).length;
+      log(`✅ Allocation: ${Object.keys(S.allocation).length} tickers`, 'log-ok');
+    } else if (key === 'modelo') {
+      parseModelo(wb);
+      const total = Object.values(S.modelos).reduce((a,p) => a + Object.values(p).reduce((b,arr) => b+arr.length, 0), 0);
+      setSourceStatus('modelo', 'ok', `${total} posiciones modelo`);
+      log(`✅ Modelo: ${total} posiciones`, 'log-ok');
+      renderModelo();
+    }
+    actualizarSelectores();
+  } catch(e) {
+    setSourceStatus(key, 'error', 'Error: ' + e.message);
+    log(`❌ Error en ${key}: ${e.message}`, 'log-err');
+  }
+}
+
+function parseClientes(wb) {
+  // Columnas exactas del archivo:
+  // cc | cliente | CUIT | alyc | monto | perfil | LP | MP | CP | CASH | PALANCA
+  // Cartera | Total | Cacion en pesos | Caucion en Dolares
+  //
+  // Para este módulo: cc, cliente, alyc.
+  // Guardamos todo en memoria para rotación.
+
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+  S.clientes = rows.map(r => ({
+    cc:               String(r.cc || r.CC || '').trim(),
+    cliente:          String(r.cliente || r.Cliente || '').trim(),
+    cuit:             String(r.CUIT || r.cuit || '').trim(),
+    alyc:             String(r.alyc || r.ALyC || r.ALYC || '').trim().toUpperCase(),
+    monto:            parseFloat(r.monto) || 0,
+    perfil:           String(r.perfil || r.Perfil || 'AGRESIVO').trim().toUpperCase(),
+    LP:               parseFloat(r.LP) || 0,
+    MP:               parseFloat(r.MP) || 0,
+    CP:               parseFloat(r.CP) || 0,
+    CASH:             parseFloat(r.CASH) || 0,
+    PALANCA:          parseFloat(r.PALANCA) || 1,
+    cartera:          parseFloat(r.Cartera) || 0,
+    total:            parseFloat(r.Total) || 0,
+    caucionPesos:     parseFloat(r['Cacion en pesos'] || r['Caucion en pesos'] || r.caucionPesos) || 0,
+    caucionDolares:   parseFloat(r['Caucion en Dolares'] || r.caucionDolares) || 0,
+  })).filter(r => r.cc);
+}
+
+function parseAllocation(wb) {
+  // Hoja PAPELES — columnas exactas:
+  // SIMBOLO | VTO. | MONEDA | MONEDA DE CARTERA | GRUPO | PAIS | SUBTIPO | INDUSTRIA | SECTOR | SUBGRUPO
+  //
+  // GRUPO:    RF / RV / CASH / FCI
+  // SUBGRUPO: BONOS / LETRAS / ON / LIDER / CEDEAR / GENERAL / CASH / FCI
+  // PAIS:     ARG / USA / BRASIL / etc.
+  // MONEDA:   ARS / USD / EXT
+  // SUBTIPO:  ACCION / BONO / ETF / LETRA / CASH / CER / DUAL / etc.
+  // SECTOR:   sectores de mercado (Sovereign Debt, Energy, Technology, etc.)
+
+  const ws = wb.Sheets['PAPELES'] || wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+  S.allocation = {};
+  rows.forEach(r => {
+    const sym = String(r.SIMBOLO || r.Simbolo || '').trim().toUpperCase();
+    if (!sym) return;
+    S.allocation[sym] = {
+      subgrupo:  String(r.SUBGRUPO  || '').trim(),
+      grupo:     String(r.GRUPO     || '').trim(),
+      pais:      String(r.PAIS      || '').trim(),
+      moneda:    String(r.MONEDA    || '').trim(),
+      subtipo:   String(r.SUBTIPO   || '').trim(),
+      sector:    String(r.SECTOR    || '').trim(),
+      industria: String(r.INDUSTRIA || '').trim(),
+      vto:       String(r['VTO.']   || '').trim(),
+      monedaCartera: String(r['MONEDA DE CARTERA'] || '').trim(),
+    };
+  });
+}
+
+function parseModelo(wb) {
+  const perfiles = ['AGRESIVO','MODERADO','CONSERVADOR'];
+  const plazos = ['LARGO','MEDIANO','CORTO','CASH','PALANCA'];
+  S.modelos = {};
+
+  perfiles.forEach(p => {
+    S.modelos[p] = {};
+    const sheetName = wb.SheetNames.find(n => n.toUpperCase().includes(p)) || wb.SheetNames[0];
+    const ws = wb.Sheets[sheetName];
+    if (!ws) return;
+    const rows = XLSX.utils.sheet_to_json(ws, { defval: '', header: 1 });
+
+    let currentPlazo = null;
+    rows.forEach(row => {
+      const cell0 = String(row[0] || '').trim().toUpperCase();
+      const matchPlazo = plazos.find(pl => cell0.includes(pl));
+      if (matchPlazo) { currentPlazo = matchPlazo; if (!S.modelos[p][currentPlazo]) S.modelos[p][currentPlazo] = []; return; }
+
+      if (currentPlazo && currentPlazo !== 'PALANCA') {
+        const ticker = String(row[0] || row[1] || '').trim().toUpperCase();
+        if (!ticker || ticker.length < 1) return;
+        let pond = parseFloat(row[1] || row[2] || 0);
+        if (!isFinite(pond)) return;
+        if (pond > 1) pond = pond / 100;
+        const precioRef = parseFloat(row[2] || row[3] || 0) || null;
+        S.modelos[p][currentPlazo].push({ ticker, ponderacion: pond, precioRef });
+      }
+    });
+  });
+}
+
+// ── Parse ALyC files ──
+function parseADCAP(buf) {
+  // Estructura hoja "Reporte" ADCAP:
+  // Col 0: categoría ("Acciones / Pesos") | ticker ("PAMP - 457 / PAMPA ENERGIA") | comitente (número)
+  // Col 3: tenencia total
+  //
+  // Lógica de precios: todo se busca en pesos en Data912 con el ticker tal cual.
+  // Excepción: cash ARS → precio 1 | cash USD (Dolar 7000, USD C, USD D) → precio MEP
+  // Los tickers de cash se normalizan a CASH_ARS o CASH_USD.
+
+  const wb = XLSX.read(buf, { type: 'array' });
+  const ws = wb.Sheets['Reporte'] || wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { defval: '', header: 1 });
+  const posiciones = [];
+
+  const IGNORAR    = /posici[oó]n informativa|posiciones tomadas|colocadas/i;
+  const CASH_ARS   = /^\$\s*-|^pesos/i;
+  const CASH_USD   = /dolar\s*7000|dolar\s*mep|dolar\s*cable|usd\s*7000|usd\s*[cdo]\s*-/i;
+
+  let currentTicker  = null;
+  let ignorarBloque  = false;
+
+  rows.forEach(row => {
+    const col0 = String(row[0] ?? '').trim();
+    const col3 = row[3];
+    if (!col0) return;
+
+    // Bloques a ignorar
+    if (IGNORAR.test(col0)) { ignorarBloque = true; currentTicker = null; return; }
+
+    const esNumerico = !isNaN(col0) && col0 !== '';
+
+    // Línea de categoría: " / " sin " - " → puede ser cash o agrupador
+    if (!esNumerico && col0.includes(' / ') && !col0.includes(' - ')) {
+      ignorarBloque = false;
+      currentTicker = null;
+      return;
+    }
+
+    // Línea de ticker: "PAMP - 457 / PAMPA ENERGIA" o "USD 7000 - Dolar 7000" o "$ - Pesos"
+    if (!esNumerico && col0.includes(' - ')) {
+      if (ignorarBloque) return;
+      const rawTicker = col0.split(' - ')[0].trim().toUpperCase();
+      // Normalizar cash
+      if (CASH_ARS.test(col0))      currentTicker = 'CASH_ARS';
+      else if (CASH_USD.test(col0)) currentTicker = 'CASH_USD';
+      else                          currentTicker = rawTicker;
+      return;
+    }
+
+    // Fila de datos: col 0 numérico = comitente
+    if (esNumerico && currentTicker && !ignorarBloque) {
+      const tenencia = parseFloat(col3);
+      // Para cash incluimos negativos (saldo en cuenta), para activos solo positivos
+      const esCash = currentTicker === 'CASH_ARS' || currentTicker === 'CASH_USD';
+      if (isFinite(tenencia) && (esCash ? tenencia !== 0 : tenencia > 0)) {
+        posiciones.push({ alyc: 'ADCAP', comitente: col0, ticker: currentTicker, tenencia });
+      }
+    }
+  });
+
+  return posiciones;
+}
+
+function parseIEB(buf) {
+  // Estructura IEB — tabla directa, fila 0 = headers, resto = datos
+  // Col 1:  Comitente  (CC)
+  // Col 5:  Ticker
+  // Col 8:  SubtotalCantidad  (tenencia)
+  // Col 15: SubtotalTipoEspecie (0=accion/cedear, 1=bono/letra, 4=cash/saldo)
+  //
+  // Cash:
+  //   'Pesos'      → CASH_ARS
+  //   'USD'        → CASH_USD  (saldo en USD, valuado × MEP)
+  //   'DOLARUSA'   → CASH_USD  (USD físicos, mismo tratamiento)
+  //   'DOLAR EXT.' → CASH_USD
+  //   '-'          → ignorar (cliente sin posiciones)
+  //
+  // Precio: todo en pesos desde Data912 tal cual el ticker.
+
+  const wb = XLSX.read(buf, { type: 'array' });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { defval: '', header: 1 });
+
+  const CASH_ARS_T = new Set(['Pesos', 'PESOS', '$']);
+  const CASH_USD_T = new Set(['USD', 'DOLARUSA', 'DOLAR EXT.', 'DÓLAR', 'DOLAR']);
+  const IGNORAR_T  = new Set(['-', '']);
+
+  const posiciones = [];
+
+  rows.slice(1).forEach(row => {
+    const comitente = String(row[1] ?? '').trim();
+    const ticker    = String(row[5] ?? '').trim();
+    const tenencia  = parseFloat(row[8]);
+
+    if (!comitente || IGNORAR_T.has(ticker)) return;
+    if (!isFinite(tenencia) || tenencia === 0) return;
+
+    let tickerNorm;
+    if (CASH_ARS_T.has(ticker))      tickerNorm = 'CASH_ARS';
+    else if (CASH_USD_T.has(ticker)) tickerNorm = 'CASH_USD';
+    else                             tickerNorm = ticker.toUpperCase();
+
+    // Para cash incluir negativos (saldo deudor), para activos solo positivos
+    const esCash = tickerNorm === 'CASH_ARS' || tickerNorm === 'CASH_USD';
+    if (!esCash && tenencia < 0) return;
+
+    posiciones.push({ alyc: 'IEB', comitente, ticker: tickerNorm, tenencia });
+  });
+
+  return posiciones;
+}
+
+function parseGenericAlyc(buf, alycName) {
+  const wb = XLSX.read(buf, { type: 'array' });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+  const keys = Object.keys(rows[0] || {});
+  const findKey = (aliases) => keys.find(k => aliases.some(a => k.toLowerCase().includes(a)));
+  const cKey = findKey(['comitente','cuenta','cliente','ccc']);
+  const tKey = findKey(['ticker','simbolo','symbol','papel']);
+  const qKey = findKey(['cantidad','tenencia','saldo','subtotal']);
+  if (!cKey || !tKey || !qKey) return [];
+  return rows
+    .filter(r => r[tKey] && r[tKey] !== '-' && parseFloat(r[qKey] || 0) !== 0)
+    .map(r => ({
+      alyc: alycName,
+      comitente: String(r[cKey] || '').trim(),
+      ticker: String(r[tKey] || '').trim().toUpperCase(),
+      tenencia: parseFloat(r[qKey] || 0),
+    }));
+}
+
+async function procesarArchivos() {
+  $('processLog').innerHTML = '';
+  log('🔄 Iniciando procesamiento...');
+
+  if (S.alycFiles.length === 0) {
+    log('⚠ No hay archivos de ALyC cargados', 'log-warn');
+  }
+
+  S.posiciones = [];
   for (const f of S.alycFiles) {
     try {
-      let pos=[];
-      if (f.alyc==='ADCAP') pos=parseADCAP(f.data);
-      else if (f.alyc==='IEB') pos=parseIEB(f.data);
-      else pos=parseGeneric(f.data,f.alyc);
-      // Consolidar cash duplicado
-      const map={};
-      pos.forEach(p=>{ const k=`${p.alyc}|${p.comitente}|${p.ticker}`; if(!map[k]) map[k]={...p}; else map[k].tenencia+=p.tenencia; });
-      pos=Object.values(map);
+      let pos = [];
+      if (f.alyc === 'ADCAP') pos = parseADCAP(f.data);
+      else if (f.alyc === 'IEB') pos = parseIEB(f.data);
+      else pos = parseGenericAlyc(f.data, f.alyc);
       S.posiciones.push(...pos);
-      log(`  ✓ ${f.alyc} (${f.name}): ${pos.length} posiciones`,'log-ok');
-    } catch(e) { log(`  ❌ ${f.alyc}: ${e.message}`,'log-err'); }
+      log(`  ✓ ${f.alyc} (${f.name}): ${pos.length} posiciones`, 'log-ok');
+    } catch(e) {
+      log(`  ❌ Error en ${f.name}: ${e.message}`, 'log-err');
+    }
   }
-  if (!Object.keys(S.priceIndex).length) await fetchPrices();
-  $('kPos').textContent=S.posiciones.length;
-  $('resumen').style.display='';
-  log(`✅ ${S.posiciones.length} posiciones totales.`,'log-ok');
-  refreshACs();
-  buildCartData();
+
+  if (Object.keys(S.priceIndex).length === 0) {
+    log('📡 Descargando precios Data912...', '');
+    await fetchPrices();
+  }
+
+  $('kpiPos').textContent = S.posiciones.length;
+  $('dataResumen').style.display = '';
+  actualizarSelectores();
+  log(`\n✅ Listo. ${S.posiciones.length} posiciones totales.`, 'log-ok');
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  AUTOCOMPLETE ENGINE
-// ═══════════════════════════════════════════════════════════════
-const AC = {
-  opts: {},
-  sel:  {},
+// ══════════════════════════════════════════
+//  SELECTORES
+// ══════════════════════════════════════════
+// Estado de ordenamiento tabla global
+const CART_SORT = { col: 'valor', dir: 'desc' };
+let cartDataCache = []; // cache de todas las posiciones valuadas
 
-  init(id, listId, opts) {
-    this.opts[id]=opts; this.sel[id]='';
-    this._render(id,listId,opts);
-  },
-
-  open(id, listId) {
-    $(listId)?.classList.add('open');
-    this.filter(id,listId);
-  },
-
-  filter(id, listId) {
-    const inp=$(id); const list=$(listId);
-    if (!inp||!list) return;
-    const q=inp.value.toLowerCase().trim();
-    const all=this.opts[id]||[];
-    const filtered=q?all.filter(o=>o.label.toLowerCase().includes(q)||(o.sub||'').toLowerCase().includes(q)):all;
-    this._render(id,listId,filtered);
-    list.classList.add('open');
-  },
-
-  _render(id, listId, opts) {
-    const list=$(listId); if (!list) return;
-    const curSel=this.sel[id]||'';
-    list.innerHTML=opts.slice(0,100).map(o=>{
-      const v=o.value.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-      const l=o.label.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-      return `<div class="ac-item${o.value===curSel?' sel':''}" onclick="AC.select('${id}','${listId}','${v}','${l}')">
-        ${o.label}${o.sub?`<div class="ac-sub">${o.sub}</div>`:''}
-      </div>`;
-    }).join('');
-  },
-
-  select(id, listId, value, label) {
-    const inp=$(id); if (inp) inp.value=label;
-    this.sel[id]=value;
-    $(listId)?.classList.remove('open');
-    // Trigger callbacks
-    if (['acCli','acTkr','acAlycC'].includes(id)) App.filterCart();
-    if (['acCliD','acAlycD'].includes(id)) App.onDashSelect();
-  },
-
-  get(id) { return this.sel[id]||''; },
-
-  reset(id, listId) {
-    this.sel[id]='';
-    const inp=$(id); if (inp) inp.value='';
-    this.filter(id,listId);
-  },
-};
-
-function refreshACs() {
-  const mep=S.mep||1;
-  const clis=S.clientes.map(c=>({value:`${c.alyc}|${c.cc}`,label:c.cliente||c.cc,sub:`${c.alyc} · ${c.cc}`})).sort((a,b)=>a.label.localeCompare(b.label));
-  const tkrs=[...new Set(S.posiciones.map(p=>p.ticker))].sort().map(t=>({value:t,label:t}));
-  const alycs=[...new Set(S.posiciones.map(p=>p.alyc))].sort().map(a=>({value:a,label:a}));
-  AC.init('acCli',  'acCliList',  clis);
-  AC.init('acTkr',  'acTkrList',  tkrs);
-  AC.init('acAlycC','acAlycCList',alycs);
-  AC.init('acAlycD','acAlycDList',alycs);
-  AC.init('acCliD', 'acCliDList', clis);
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  PESTAÑA CARTERA
-// ═══════════════════════════════════════════════════════════════
-function valuarPos(pos) {
-  // Consolidar por ticker
-  const map={};
-  pos.forEach(p=>{
-    if (!map[p.ticker]) map[p.ticker]={...p};
-    else map[p.ticker].tenencia+=p.tenencia;
+function actualizarSelectores() {
+  const alycs = [...new Set(S.posiciones.map(p => p.alyc))].sort();
+  ['selAlyc', 'rotAlyc', 'cartAlyc'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    const cur = el.value;
+    el.innerHTML = '<option value="">— Todas —</option>' + alycs.map(a => `<option>${a}</option>`).join('');
+    if (cur) el.value = cur;
   });
-  return Object.values(map).map(p=>{
-    const alloc=S.allocation[p.ticker];
-    const tipo=clasificar(p.ticker,alloc);
-    const pu=getPrecio(p.ticker,tipo)??0;
-    return {...p,alloc:alloc||{},tipo,pu,valor:p.tenencia*pu};
-  }).filter(p=>p.valor!==0);
+  // Poblar tabla global de cartera
+  renderCartaGlobal();
 }
 
-function buildCartData() {
-  const mep=S.mep||1;
-  const grupos={};
-  S.posiciones.forEach(p=>{
-    const k=`${p.alyc}|${p.comitente}`;
-    if (!grupos[k]) grupos[k]=[];
-    grupos[k].push(p);
+function renderCartaGlobal() {
+  // Valuar todas las posiciones de todas las ALyCs y clientes
+  const mep = S.mep || 1;
+  const allValuada = [];
+
+  // Agrupar posiciones por alyc+comitente
+  const grupos = {};
+  S.posiciones.forEach(p => {
+    const key = `${p.alyc}|${p.comitente}`;
+    if (!grupos[key]) grupos[key] = [];
+    grupos[key].push(p);
   });
 
-  S.cartData=[];
-  Object.entries(grupos).forEach(([k,pos])=>{
-    const [alyc,com]=k.split('|');
-    const cli=S.clientes.find(c=>c.cc===com&&c.alyc===alyc)||S.clientes.find(c=>c.cc===com);
-    const cartela=valuarPos(pos);
-    const brutaARS=cartela.reduce((s,p)=>s+p.valor,0);
-    const caucARS=(cli?.caucionARS||0);
-    const caucUSD=(cli?.caucionUSD||0)*mep;
-    const netaARS=Math.max(brutaARS-(caucARS+caucUSD),0);
-
-    cartela.forEach(p=>{
-      const esCash=p.tipo==='CASH_ARS'||p.tipo==='CASH_USD';
-      let vNeto=p.valor;
-      if (esCash&&p.valor<0) vNeto=Math.max(p.valor+(caucARS+caucUSD),0);
-      S.cartData.push({
-        alyc,comitente:com,cliente:cli?.cliente||com,
-        ticker:p.ticker,tipo:p.tipo,tenencia:p.tenencia,
-        pu:p.pu,valor:p.valor,valorUSD:p.valor/mep,
-        pctBruto:brutaARS>0?p.valor/brutaARS*100:0,
-        pctNeto:netaARS>0?Math.max(vNeto,0)/netaARS*100:0,
-        pais:p.alloc.pais||'',grupo:p.alloc.grupo||'',
-        subgrupo:p.alloc.subgrupo||'',alloc:p.alloc,
+  Object.entries(grupos).forEach(([key, pos]) => {
+    const [alyc, comitente] = key.split('|');
+    const cli = S.clientes.find(c => c.cc === comitente);
+    const cartela = valuarCartera(pos);
+    const totalCliente = cartela.reduce((s, p) => s + p.valor, 0);
+    cartela.forEach(p => {
+      allValuada.push({
+        alyc,
+        comitente,
+        cliente: cli?.cliente || comitente,
+        ticker: p.ticker,
+        tipo: p.tipo,
+        tenencia: p.tenencia,
+        precioUnit: p.precioUnit,
+        valor: p.valor,
+        valorUSD: p.valor / mep,
+        pct: totalCliente > 0 ? p.valor / totalCliente * 100 : 0,
+        pais: p.alloc.pais || '',
+        grupo: p.alloc.grupo || '',
+        subgrupo: p.alloc.subgrupo || '',
+        alloc: p.alloc,
       });
     });
   });
-  filterCart();
+
+  cartDataCache = allValuada;
+  filtrarCartera();
 }
 
-function filterCart() {
-  const cliVal=AC.get('acCli'), tkrVal=AC.get('acTkr'), alycVal=AC.get('acAlycC');
-  const cliTxt=($('acCli')?.value||'').toLowerCase().trim();
-  const tkrTxt=($('acTkr')?.value||'').toLowerCase().trim();
-  const alycTxt=($('acAlycC')?.value||'').toLowerCase().trim();
+function filtrarCartera() {
+  const buscar = ($('cartBuscar')?.value || '').toLowerCase().trim();
+  const alyc   = $('cartAlyc')?.value || '';
 
-  let data=S.cartData.filter(p=>{
-    if (alycVal&&p.alyc!==alycVal) return false;
-    if (!alycVal&&alycTxt&&!p.alyc.toLowerCase().includes(alycTxt)) return false;
-    if (cliVal) { const [a,c]=cliVal.split('|'); if (p.alyc!==a||p.comitente!==c) return false; }
-    else if (cliTxt&&!p.cliente.toLowerCase().includes(cliTxt)&&!p.comitente.includes(cliTxt)) return false;
-    if (tkrVal&&p.ticker!==tkrVal) return false;
-    if (!tkrVal&&tkrTxt&&!p.ticker.toLowerCase().includes(tkrTxt)) return false;
+  let data = cartDataCache.filter(p => {
+    if (alyc && p.alyc !== alyc) return false;
+    if (buscar) {
+      return p.ticker.toLowerCase().includes(buscar) ||
+             p.cliente.toLowerCase().includes(buscar) ||
+             p.comitente.toLowerCase().includes(buscar);
+    }
     return true;
   });
 
-  const sc=S.cartSort;
-  data=[...data].sort((a,b)=>{
-    let va=a[sc.col]??'', vb=b[sc.col]??'';
-    if (typeof va==='string') { va=va.toLowerCase(); vb=vb.toLowerCase(); }
-    if (va<vb) return sc.dir==='asc'?-1:1;
-    if (va>vb) return sc.dir==='asc'?1:-1;
+  // Ordenar
+  data = sortData(data, CART_SORT.col, CART_SORT.dir);
+  renderCartaTabla(data);
+}
+
+function sortData(data, col, dir) {
+  return [...data].sort((a, b) => {
+    let va = a[col] ?? '';
+    let vb = b[col] ?? '';
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    if (va < vb) return dir === 'asc' ? -1 : 1;
+    if (va > vb) return dir === 'asc' ? 1 : -1;
     return 0;
   });
-  renderCart(data);
 }
 
-function sortCart(col) {
-  const sc=S.cartSort;
-  sc.dir = sc.col===col?(sc.dir==='asc'?'desc':'asc'):(['valor','valorUSD','pctBruto','pctNeto','tenencia','pu'].includes(col)?'desc':'asc');
-  sc.col=col;
-  document.querySelectorAll('.si').forEach(el=>{el.className='si';el.textContent='⇅';});
-  const icon=$(`si-${col}`);
-  if (icon){icon.className=`si ${sc.dir}`;icon.textContent=sc.dir==='asc'?'↑':'↓';}
-  filterCart();
-}
-
-const TPILL={ACCION_ARG:'p-green',CEDEAR:'p-blue',RENTA_FIJA:'p-amber',ON:'p-amber',ETF:'p-blue',FCI:'p-blue',CASH_ARS:'p-gray',CASH_USD:'p-gray',DESCONOCIDO:'p-gray'};
-
-function renderCart(data) {
-  const mep=S.mep||1;
-  const empty=$('cartEmpty'), wrap=$('cartTblWrap'), kpis=$('cartKPIs');
-  if (!S.cartData.length) {
-    empty.style.display=''; wrap.style.display='none'; kpis.style.display='none'; return;
+function sortCartera(col) {
+  if (CART_SORT.col === col) {
+    CART_SORT.dir = CART_SORT.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    CART_SORT.col = col;
+    CART_SORT.dir = col === 'valor' || col === 'valorUSD' || col === 'pct' ? 'desc' : 'asc';
   }
-  empty.style.display='none'; wrap.style.display=''; kpis.style.display='';
+  // Actualizar iconos
+  document.querySelectorAll('.sort-icon').forEach(el => {
+    el.className = 'sort-icon';
+    el.textContent = '⇅';
+  });
+  const icon = $(`si-${col}`);
+  if (icon) {
+    icon.className = `sort-icon ${CART_SORT.dir}`;
+    icon.textContent = CART_SORT.dir === 'asc' ? '↑' : '↓';
+  }
+  filtrarCartera();
+}
+
+function limpiarFiltroCartera() {
+  if ($('cartBuscar')) $('cartBuscar').value = '';
+  if ($('cartAlyc'))   $('cartAlyc').value   = '';
+  filtrarCartera();
+}
+
+function renderCartaTabla(data) {
+  const mep = S.mep || 1;
+  const empty = $('cartEmpty');
+  const wrap  = $('cartTablaWrap');
+  const kpis  = $('cartKPIs');
+
+  if (data.length === 0 && cartDataCache.length === 0) {
+    empty.style.display = ''; wrap.style.display = 'none'; if(kpis) kpis.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none'; wrap.style.display = '';
 
   // KPIs
-  const brutaARS=data.reduce((s,p)=>s+p.valor,0);
-  const coms=[...new Set(data.map(p=>`${p.alyc}|${p.comitente}`))];
-  let cARS=0,cUSD=0;
-  coms.forEach(k=>{
-    const [a,c]=k.split('|');
-    const cli=S.clientes.find(x=>x.cc===c&&x.alyc===a)||S.clientes.find(x=>x.cc===c);
-    cARS+=cli?.caucionARS||0; cUSD+=cli?.caucionUSD||0;
-  });
-  const netaARS=Math.max(brutaARS-(cARS+cUSD*mep),0);
-  $('kBrutaARS').textContent='$'+fmt(brutaARS);
-  $('kBrutaUSD').textContent='U$S '+fmt(brutaARS/mep);
-  $('kCaucARS').textContent='$'+fmt(cARS);
-  $('kCaucUSD').textContent='U$S '+fmt(cUSD);
-  $('kNetaARS').textContent='$'+fmt(netaARS);
-  $('kNetaUSD').textContent='U$S '+fmt(netaARS/mep);
-  $('kCartPos').textContent=data.length;
-  $('kCartCli').textContent=new Set(data.map(p=>p.comitente)).size;
+  if (kpis) {
+    kpis.style.display = '';
+    const totalARS = data.reduce((s, p) => s + p.valor, 0);
+    const clientes = new Set(data.map(p => p.comitente)).size;
+    $('cartTotalARS').textContent = '$' + fmt(totalARS);
+    $('cartTotalUSD').textContent = 'U$S ' + fmt(totalARS / mep);
+    $('cartNPos').textContent     = data.length;
+    $('cartNCli').textContent     = clientes;
+  }
 
-  $('tbCart').innerHTML=data.map(p=>{
-    const ec=p.tipo==='CASH_ARS'||p.tipo==='CASH_USD';
-    const neg=p.valor<0?'color:var(--red);':'';
+  const tipoPill = {
+    ACCION_ARG:'pill-green', CEDEAR:'pill-blue', RENTA_FIJA:'pill-amber',
+    ON:'pill-amber', ADR:'pill-blue', ETF:'pill-blue', FCI:'pill-blue',
+    CASH_ARS:'pill-gray', CASH_USD:'pill-gray', DESCONOCIDO:'pill-gray'
+  };
+
+  $('tbCartaGlobal').innerHTML = data.map(p => `<tr>
+    <td><span class="pill pill-gray" style="font-size:10px;">${p.alyc}</span></td>
+    <td style="max-width:160px; overflow:hidden; text-overflow:ellipsis;">${p.cliente}</td>
+    <td><strong>${p.ticker}</strong></td>
+    <td><span class="pill ${tipoPill[p.tipo]||'pill-gray'}" style="font-size:10px;">${p.tipo.replace('_',' ')}</span></td>
+    <td class="td-num">${fmt(p.tenencia, p.tipo==='CASH_ARS'||p.tipo==='CASH_USD'?2:0)}</td>
+    <td class="td-num">$${fmt(p.precioUnit, 2)}</td>
+    <td class="td-num td-pos">$${fmt(p.valor, 0)}</td>
+    <td class="td-num" style="color:var(--amber);">U$S ${fmt(p.valorUSD, 0)}</td>
+    <td class="td-num"><strong>${fmtPct(p.pct)}</strong></td>
+    <td class="td-muted">${p.pais}</td>
+    <td class="td-muted">${p.grupo}</td>
+    <td class="td-muted">${p.subgrupo}</td>
+  </tr>`).join('');
+}
+
+// Buscador en tiempo real para selector de cliente en Dashboard
+function filtrarSelectorCliente() {
+  const buscar = ($('selClienteBuscar')?.value || '').toLowerCase().trim();
+  const alyc   = $('selAlyc')?.value || '';
+  const comitentes = [...new Set(
+    S.posiciones.filter(p => !alyc || p.alyc === alyc).map(p => p.comitente)
+  )].sort();
+  const filtrados = comitentes.filter(c => {
+    if (!buscar) return true;
+    const cli = S.clientes.find(cl => cl.cc === c);
+    return c.includes(buscar) || (cli?.cliente || '').toLowerCase().includes(buscar);
+  });
+  const sel = $('selCliente');
+  sel.innerHTML = '<option value="">— Seleccioná —</option>' +
+    filtrados.map(c => {
+      const cli = S.clientes.find(cl => cl.cc === c);
+      const label = cli ? `${c} · ${cli.cliente}` : c;
+      return `<option value="${c}">${label}</option>`;
+    }).join('');
+}
+
+function onAlycChange() {
+  if ($('selClienteBuscar')) $('selClienteBuscar').value = '';
+  filtrarSelectorCliente();
+}
+
+function onRotAlycChange() {
+  const alyc = $('rotAlyc').value;
+  const comitentes = [...new Set(
+    S.posiciones.filter(p => !alyc || p.alyc === alyc).map(p => p.comitente)
+  )].sort();
+  const sel = $('rotCliente');
+  sel.innerHTML = '<option value="">—</option>' + comitentes.map(c => `<option>${c}</option>`).join('');
+}
+
+// ══════════════════════════════════════════
+//  DASHBOARD CLIENTE
+// ══════════════════════════════════════════
+function onClienteChange() {
+  const alyc = $('selAlyc').value;
+  const comitente = $('selCliente').value;
+  if (!comitente) { $('dashEmpty').style.display = ''; $('clienteKPIs').style.display = 'none'; return; }
+  $('dashEmpty').style.display = 'none';
+
+  const cli = S.clientes.find(c => c.cc === comitente);
+  if (cli) {
+    $('clientePerfil').style.display = '';
+    $('clientePerfilVal').textContent = cli.perfil || '—';
+  }
+
+  const pos = S.posiciones.filter(p => p.comitente === comitente && (!alyc || p.alyc === alyc));
+  const cartela = valuarCartera(pos);
+
+  renderClienteKPIs(cartela);
+  renderClienteCharts(cartela);
+  renderClienteTabla(cartela);
+  populateFilters(cartela);
+  S.activeFilters = {pais:'', sector:'', grupo:'', subtipo:''};
+  ['fPais','fSector','fGrupo','fSubtipo'].forEach(id => { if ($(id)) $(id).value = ''; });
+}
+
+function valuarCartera(pos) {
+  // Primero consolidar: sumar tenencias del mismo ticker por si hay múltiples filas
+  // (IEB puede tener USD + DOLARUSA + DOLAR EXT. → todos normalizados a CASH_USD)
+  const mapa = {};
+  pos.forEach(p => {
+    const key = p.ticker;
+    if (!mapa[key]) mapa[key] = { ...p };
+    else mapa[key] = { ...mapa[key], tenencia: mapa[key].tenencia + p.tenencia };
+  });
+
+  return Object.values(mapa).map(p => {
+    const alloc = S.allocation[p.ticker];
+    const tipo = clasificarTicker(p.ticker, alloc);
+    const precioUnit = getPrecioUnitario(p.ticker, tipo) ?? 0;
+    const valor = p.tenencia * precioUnit;
+    return { ...p, alloc: alloc || {}, tipo, precioUnit, valor };
+  }).filter(p => p.valor !== 0); // sacar posiciones con valor 0
+}
+
+function renderClienteKPIs(cartela) {
+  const totalARS = cartela.reduce((s, p) => s + p.valor, 0);
+  const mep = S.mep || 1;
+  $('clienteKPIs').style.display = '';
+  $('kCarteraARS').textContent = '$' + fmt(totalARS);
+  $('kCarteraUSD').textContent = 'U$S ' + fmt(totalARS / mep);
+  $('kPosiciones').textContent = cartela.length;
+  $('kMEP').textContent = fmt(mep, 2);
+}
+
+function populateFilters(cartela) {
+  $('filterRow').style.display = '';
+  const uniq = (key) => [...new Set(cartela.map(p => p.alloc[key]).filter(Boolean))].sort();
+  const fill = (id, vals) => {
+    const el = $(id); if (!el) return;
+    const cur = el.value;
+    el.innerHTML = '<option value="">Todos</option>' + vals.map(v => `<option>${v}</option>`).join('');
+    if (cur) el.value = cur;
+  };
+  fill('fPais',     uniq('pais'));
+  fill('fGrupo',    uniq('grupo'));
+  fill('fSubgrupo', uniq('subgrupo'));
+  fill('fSector',   uniq('sector'));
+  fill('fSubtipo',  uniq('subtipo'));
+}
+
+function applyFilters() {
+  S.activeFilters = {
+    pais:     $('fPais')?.value     || '',
+    grupo:    $('fGrupo')?.value    || '',
+    subgrupo: $('fSubgrupo')?.value || '',
+    sector:   $('fSector')?.value   || '',
+    subtipo:  $('fSubtipo')?.value  || '',
+  };
+  const alyc      = $('selAlyc').value;
+  const comitente = $('selCliente').value;
+  if (!comitente) return;
+  const pos = S.posiciones.filter(p => p.comitente === comitente && (!alyc || p.alyc === alyc));
+  const cartela = valuarCartera(pos).filter(p => {
+    const f = S.activeFilters;
+    return (!f.pais     || p.alloc.pais     === f.pais)     &&
+           (!f.grupo    || p.alloc.grupo    === f.grupo)    &&
+           (!f.subgrupo || p.alloc.subgrupo === f.subgrupo) &&
+           (!f.sector   || p.alloc.sector   === f.sector)   &&
+           (!f.subtipo  || p.alloc.subtipo  === f.subtipo);
+  });
+  renderClienteKPIs(cartela);
+  renderClienteCharts(cartela);
+  renderClienteTabla(cartela);
+}
+
+function clearFilters() {
+  ['fPais','fGrupo','fSubgrupo','fSector','fSubtipo'].forEach(id => { if($(id)) $(id).value = ''; });
+  applyFilters();
+}
+
+function renderClienteCharts(cartela) {
+  $('clienteCharts').style.display = '';
+  const totalARS = cartela.reduce((s, p) => s + p.valor, 0);
+  const aggBy = (key) => {
+    const map = {};
+    cartela.forEach(p => {
+      const k = p.alloc[key] || (key === 'grupo' ? clasificarTicker(p.ticker, null) : 'Sin datos');
+      if (k) map[k] = (map[k] || 0) + p.valor;
+    });
+    // Ordenar por valor descendente
+    return Object.fromEntries(Object.entries(map).sort((a,b) => b[1]-a[1]));
+  };
+  const COLORS = ['#E10600','#ff6b35','#f59e0b','#22c55e','#3b82f6','#a855f7','#ec4899','#14b8a6','#f97316','#64748b'];
+  const makeChart = (id, data) => {
+    const labels = Object.keys(data);
+    const vals   = Object.values(data);
+    if (S.charts[id]) S.charts[id].destroy();
+    S.charts[id] = new Chart($(id), {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{ data: vals, backgroundColor: COLORS.slice(0, labels.length), borderWidth: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: 'right', labels: { color: '#a0a0a0', font: { family: 'Montserrat', size: 10 }, boxWidth: 10, padding: 8 } },
+          tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: $${fmt(ctx.raw)} (${fmtPct(ctx.raw/totalARS*100)})` } }
+        }
+      }
+    });
+  };
+  // Gráficos por las 3 dimensiones más útiles
+  makeChart('chartGrupo',   aggBy('grupo'));
+  makeChart('chartPais',    aggBy('pais'));
+  makeChart('chartSector',  aggBy('subgrupo')); // subgrupo es más granular que sector
+}
+
+function renderClienteTabla(cartela) {
+  $('clienteTabla').style.display = '';
+  const mep = S.mep || 1;
+  const totalARS = cartela.reduce((s, p) => s + p.valor, 0);
+  const sorted = [...cartela].sort((a, b) => b.valor - a.valor);
+  const tipoPill = {
+    ACCION_ARG: 'pill-green', CEDEAR: 'pill-blue', RENTA_FIJA: 'pill-amber',
+    ON: 'pill-amber', ADR: 'pill-blue', ETF: 'pill-blue',
+    CASH_ARS: 'pill-gray', CASH_USD: 'pill-gray', DESCONOCIDO: 'pill-gray'
+  };
+  $('tbCartera').innerHTML = sorted.map(p => {
+    const importeUSD = p.valor / mep;
+    const pct = totalARS > 0 ? p.valor / totalARS * 100 : 0;
+    const pill = tipoPill[p.tipo] || 'pill-gray';
+    // Cantidad: enteros para bonos/acciones, 2 decimales para cash
+    const esCash = p.tipo === 'CASH_ARS' || p.tipo === 'CASH_USD';
+    const fmtTen = esCash ? fmt(p.tenencia, 2) : fmt(p.tenencia, 0);
     return `<tr>
-      <td><span class="pill p-gray">${p.alyc}</span></td>
-      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;" title="${p.cliente}">${p.cliente}</td>
       <td><strong>${p.ticker}</strong></td>
-      <td><span class="pill ${TPILL[p.tipo]||'p-gray'}">${p.tipo.replace('_',' ')}</span></td>
-      <td class="td-r">${fmt(p.tenencia,ec?2:0)}</td>
-      <td class="td-r">$${fmt(p.pu,2)}</td>
-      <td class="td-r" style="${neg}">${p.valor<0?'-':''}$${fmt(Math.abs(p.valor),0)}</td>
-      <td class="td-r" style="color:var(--amber);">U$S ${fmt(Math.abs(p.valorUSD),0)}</td>
-      <td class="td-r">${fmtPct(p.pctBruto)}</td>
-      <td class="td-r"><strong>${fmtPct(p.pctNeto)}</strong></td>
-      <td class="td-muted">${p.pais}</td>
-      <td class="td-muted">${p.grupo}</td>
-      <td class="td-muted">${p.subgrupo}</td>
+      <td><span class="pill ${pill}" style="font-size:10px;">${p.tipo.replace('_',' ')}</span></td>
+      <td class="td-num">${fmtTen}</td>
+      <td class="td-num">$${fmt(p.precioUnit, 2)}</td>
+      <td class="td-num td-pos">$${fmt(p.valor, 0)}</td>
+      <td class="td-num" style="color:var(--amber);">U$S ${fmt(importeUSD, 0)}</td>
+      <td class="td-num"><strong>${fmtPct(pct)}</strong></td>
+      <td class="td-muted">${p.alloc.pais || '—'}</td>
+      <td class="td-muted">${p.alloc.sector || '—'}</td>
+      <td class="td-muted">${p.alloc.grupo || '—'}</td>
+      <td class="td-muted">${p.alloc.subgrupo || '—'}</td>
     </tr>`;
   }).join('');
 }
 
-function clearCartFilter() {
-  AC.reset('acCli','acCliList'); AC.reset('acTkr','acTkrList'); AC.reset('acAlycC','acAlycCList');
-  filterCart();
+// ══════════════════════════════════════════
+//  FILTRO POR TICKERS
+// ══════════════════════════════════════════
+function buscarTickers() {
+  const raw = $('tickerSearch').value.trim();
+  if (!raw) return;
+  const tickers = raw.split(/[\s,;]+/).map(t => t.toUpperCase()).filter(Boolean);
+  const alycFilter = $('tickerAlyc').value;
+
+  const clientesMap = {};
+  S.posiciones
+    .filter(p => !alycFilter || p.alyc === alycFilter)
+    .filter(p => tickers.includes(p.ticker))
+    .forEach(p => {
+      const key = `${p.alyc}|${p.comitente}`;
+      if (!clientesMap[key]) clientesMap[key] = { alyc: p.alyc, comitente: p.comitente, posiciones: [] };
+      clientesMap[key].posiciones.push(p);
+    });
+
+  // Calcular carteras totales
+  const result = Object.values(clientesMap).map(c => {
+    const allPos = S.posiciones.filter(p => p.alyc === c.alyc && p.comitente === c.comitente);
+    const cartela = valuarCartera(allPos);
+    const totalCartera = cartela.reduce((s, p) => s + p.valor, 0);
+    const matchCartela = valuarCartera(c.posiciones);
+    const totalMatch = matchCartela.reduce((s, p) => s + p.valor, 0);
+    const cli = S.clientes.find(cl => cl.cc === c.comitente);
+    return {
+      alyc: c.alyc, comitente: c.comitente,
+      cliente: cli?.cliente || '—',
+      tickers: [...new Set(c.posiciones.map(p => p.ticker))].join(', '),
+      valorTickers: totalMatch,
+      valorCartera: totalCartera,
+      pctCartera: totalCartera > 0 ? totalMatch / totalCartera * 100 : 0,
+      detalle: matchCartela,
+    };
+  }).sort((a, b) => b.valorTickers - a.valorTickers);
+
+  const el = $('tickerResult');
+  if (result.length === 0) {
+    el.innerHTML = '<div class="empty-state"><p>Sin resultados para esos tickers</p></div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="section-head" style="margin-bottom:10px;"><h3>Clientes con ${tickers.join(', ')}</h3></div>
+    <div class="table-wrap" style="margin-bottom:20px;">
+      <table>
+        <thead><tr>
+          <th>ALyC</th><th>Comitente</th><th>Cliente</th><th>Tickers</th>
+          <th class="text-right">Valor tickers</th><th class="text-right">Valor cartera</th><th class="text-right">% cartera</th>
+        </tr></thead>
+        <tbody>${result.map(r => `<tr>
+          <td><span class="pill pill-gray">${r.alyc}</span></td>
+          <td>${r.comitente}</td><td>${r.cliente}</td>
+          <td style="font-size:11px; color:var(--text2);">${r.tickers}</td>
+          <td class="td-num td-pos">$${fmt(r.valorTickers)}</td>
+          <td class="td-num">$${fmt(r.valorCartera)}</td>
+          <td class="td-num">${fmtPct(r.pctCartera)}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <div class="section-head" style="margin-bottom:10px;"><h3>Detalle</h3></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>ALyC</th><th>Comitente</th><th>Cliente</th><th>Ticker</th><th>Tipo</th>
+          <th class="text-right">Tenencia</th><th class="text-right">P. Unit.</th>
+          <th class="text-right">Valor ARS</th><th class="text-right">% cartera</th>
+        </tr></thead>
+        <tbody>${result.flatMap(r => r.detalle.map(p => `<tr>
+          <td>${r.alyc}</td><td>${r.comitente}</td><td>${r.cliente}</td>
+          <td><strong>${p.ticker}</strong></td>
+          <td><span class="pill pill-gray" style="font-size:10px;">${p.tipo.replace('_',' ')}</span></td>
+          <td class="td-num">${fmt(p.tenencia,2)}</td>
+          <td class="td-num">$${fmt(p.precioUnit,4)}</td>
+          <td class="td-num td-pos">$${fmt(p.valor)}</td>
+          <td class="td-num">${fmtPct(r.valorCartera > 0 ? p.valor/r.valorCartera*100 : 0)}</td>
+        </tr>`)).join('')}</tbody>
+      </table>
+    </div>
+  `;
 }
 
-function exportCart() {
-  if (!S.cartData.length) return;
-  const ws=XLSX.utils.aoa_to_sheet([
-    ['ALyC','Cliente','Ticker','Tipo','Tenencia','PU $','Importe $','Importe USD','% Bruto','% Neto','País','Grupo','Subgrupo'],
-    ...S.cartData.map(p=>[p.alyc,p.cliente,p.ticker,p.tipo,p.tenencia,p.pu,p.valor,p.valorUSD,p.pctBruto,p.pctNeto,p.pais,p.grupo,p.subgrupo])
-  ]);
-  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Cartera');
-  XLSX.writeFile(wb,`SIBRA_Cartera_${new Date().toISOString().slice(0,10)}.xlsx`);
-}
+// ══════════════════════════════════════════
+//  CARTERAS MODELO
+// ══════════════════════════════════════════
+function renderModelo() {
+  const perfil = S.currentProfile;
+  const plazoFilter = $('modeloPlazo')?.value || '';
+  const tickerFilter = ($('modeloTicker')?.value || '').toUpperCase().trim();
+  const modelo = S.modelos[perfil];
+  const el = $('modeloTabla');
 
-// ═══════════════════════════════════════════════════════════════
-//  PESTAÑA DASHBOARD
-// ═══════════════════════════════════════════════════════════════
-function onDashAlycChange() {
-  const alycVal=AC.get('acAlycD');
-  const clis=S.clientes
-    .filter(c=>!alycVal||c.alyc===alycVal)
-    .map(c=>({value:`${c.alyc}|${c.cc}`,label:c.cliente||c.cc,sub:`${c.alyc} · ${c.cc}`}))
-    .sort((a,b)=>a.label.localeCompare(b.label));
-  AC.opts['acCliD']=clis;
-  AC.filter('acCliD','acCliDList');
-}
+  if (!modelo || Object.keys(modelo).length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">📋</div><p>Cargá el archivo de Carteras Modelo</p></div>';
+    return;
+  }
 
-function onDashSelect() {
-  const val=AC.get('acCliD');
-  if (!val) { resetDash(); return; }
-  const [alyc,com]=val.split('|');
-  const cli=S.clientes.find(c=>c.cc===com&&c.alyc===alyc)||S.clientes.find(c=>c.cc===com);
-  if (cli) { $('dashPerfil').style.display=''; $('dashPerfilVal').textContent=cli.perfil||'—'; }
-  const pos=S.posiciones.filter(p=>p.comitente===com&&(!alyc||p.alyc===alyc));
-  S.dashCartela=valuarPos(pos);
-  populateDashFilters(S.dashCartela);
-  renderDash(S.dashCartela);
-  $('dashEmpty').style.display='none';
-}
-
-function resetDash() {
-  $('dashKPIs').style.display='none'; $('dashFilters').style.display='none';
-  $('dashCharts').style.display='none'; $('dashEmpty').style.display='';
-  $('dashPerfil').style.display='none';
-}
-
-function populateDashFilters(cartela) {
-  $('dashFilters').style.display='';
-  const uniq=(k)=>[...new Set(cartela.map(p=>p.alloc[k]).filter(Boolean))].sort();
-  const fill=(id,vals)=>{ const el=$(id); if (!el) return; const cur=el.value; el.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option>${v}</option>`).join(''); if (cur) el.value=cur; };
-  fill('fPais',uniq('pais')); fill('fGrupo',uniq('grupo')); fill('fSubgrupo',uniq('subgrupo'));
-  fill('fSector',uniq('sector')); fill('fSubtipo',uniq('subtipo'));
-}
-
-function applyDashFilters() {
-  S.dashFilters={pais:$('fPais').value,grupo:$('fGrupo').value,subgrupo:$('fSubgrupo').value,sector:$('fSector').value,subtipo:$('fSubtipo').value};
-  const filtered=S.dashCartela.filter(p=>{
-    const f=S.dashFilters;
-    return (!f.pais||p.alloc.pais===f.pais)&&(!f.grupo||p.alloc.grupo===f.grupo)&&
-           (!f.subgrupo||p.alloc.subgrupo===f.subgrupo)&&(!f.sector||p.alloc.sector===f.sector)&&
-           (!f.subtipo||p.alloc.subtipo===f.subtipo);
+  const plazos = Object.keys(modelo).filter(p => !plazoFilter || p === plazoFilter);
+  let html = '';
+  plazos.forEach(plazo => {
+    let rows = modelo[plazo] || [];
+    if (tickerFilter) rows = rows.filter(r => r.ticker.includes(tickerFilter));
+    if (rows.length === 0) return;
+    html += `
+      <div style="margin-bottom:16px;">
+        <div class="flex-center mb-12">
+          <span class="pill pill-blue">${perfil}</span>
+          <strong style="font-size:13px;">${plazo}</strong>
+          <span style="font-size:11px; color:var(--text3);">${rows.length} posiciones</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Ticker</th><th class="text-right">Ponderación</th><th class="text-right">P. Referencia</th><th class="text-right">P. Mercado</th></tr></thead>
+            <tbody>${rows.map(r => {
+              const alloc = S.allocation[r.ticker];
+              const tipo = clasificarTicker(r.ticker, alloc);
+              const precioMkt = getPrecioUnitario(r.ticker, tipo);
+              return `<tr>
+                <td><strong>${r.ticker}</strong></td>
+                <td class="td-num">${fmtPct(r.ponderacion * 100)}</td>
+                <td class="td-num td-muted">${r.precioRef ? '$'+fmt(r.precioRef,2) : '—'}</td>
+                <td class="td-num ${precioMkt ? 'td-pos' : 'td-muted'}">${precioMkt ? '$'+fmt(precioMkt,2) : '—'}</td>
+              </tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>
+      </div>`;
   });
-  renderDash(filtered);
+  el.innerHTML = html || '<div class="empty-state"><p>Sin datos con ese filtro</p></div>';
 }
 
-function clearDashFilters() {
-  ['fPais','fGrupo','fSubgrupo','fSector','fSubtipo'].forEach(id=>{if($(id))$(id).value='';});
-  applyDashFilters();
+// ══════════════════════════════════════════
+//  ROTACIÓN
+// ══════════════════════════════════════════
+function calcularRotacion() {
+  const alyc = $('rotAlyc').value;
+  const comitente = $('rotCliente').value;
+  if (!comitente) return;
+
+  const pos = S.posiciones.filter(p => p.comitente === comitente && (!alyc || p.alyc === alyc));
+  const cartela = valuarCartera(pos);
+  const totalCartera = cartela.reduce((s, p) => s + p.valor, 0);
+
+  const cli = S.clientes.find(c => c.cc === comitente);
+  const perfil = (cli?.perfil || 'AGRESIVO').toUpperCase();
+  const modelo = S.modelos[perfil] || {};
+
+  // Calcular objetivos
+  const LP = (cli?.LP || 0) / 100;
+  const MP = (cli?.MP || 0) / 100;
+  const CP = (cli?.CP || 0) / 100;
+  const CASH = (cli?.CASH || 0) / 100;
+  const plazoWeights = { LARGO: LP, MEDIANO: MP, CORTO: CP, CASH };
+
+  const objetivos = {}; // ticker -> peso final
+  Object.entries(modelo).forEach(([plazo, rows]) => {
+    if (plazo === 'PALANCA') return;
+    const pPlazo = plazoWeights[plazo] || 0;
+    rows.forEach(r => {
+      objetivos[r.ticker] = (objetivos[r.ticker] || 0) + r.ponderacion * pPlazo;
+    });
+  });
+
+  // Ventas
+  const pctVentaRaw = $('rotPctVenta').value;
+  const pctVenta = pctVentaRaw === 'manual' ? 1 : parseFloat(pctVentaRaw) / 100;
+
+  const pctCompraRaw = $('rotPctCompra').value;
+  const pctCompra = pctCompraRaw === 'manual' ? 1 : parseFloat(pctCompraRaw) / 100;
+
+  const comV = (parseFloat($('comVenta')?.value || 0) + parseFloat($('gastVenta')?.value || 0)) / 100;
+  const comC = (parseFloat($('comCompra')?.value || 0) + parseFloat($('gastCompra')?.value || 0)) / 100;
+
+  // Cartera inicial con objetivos
+  const inicio = cartela.map(p => {
+    const pesoObj = objetivos[p.ticker] || 0;
+    const montoObj = totalCartera * pesoObj;
+    const cantObj = p.precioUnit > 0 ? Math.floor(montoObj / p.precioUnit) : 0;
+    const actual = p.tenencia;
+    const ventaSug = Math.max(actual - cantObj, 0);
+    const ventaEj = Math.floor(ventaSug * pctVenta);
+    const montoVenta = ventaEj * p.precioUnit;
+    const comisionV = montoVenta * comV;
+    const netoV = montoVenta - comisionV;
+    return { ...p, pesoObj, cantObj, ventaSug, ventaEj, montoVenta, comisionV, netoV };
+  }).sort((a, b) => b.valor - a.valor);
+
+  // Ticker en objetivo pero no en cartera actual
+  const tickersActuales = new Set(cartela.map(p => p.ticker));
+  Object.entries(objetivos).forEach(([ticker, peso]) => {
+    if (tickersActuales.has(ticker)) return;
+    const alloc = S.allocation[ticker];
+    const tipo = clasificarTicker(ticker, alloc);
+    const precioUnit = getPrecioUnitario(ticker, tipo) ?? 0;
+    const montoObj = totalCartera * peso;
+    const cantObj = precioUnit > 0 ? Math.floor(montoObj / precioUnit) : 0;
+    inicio.push({
+      alyc, comitente, ticker, tenencia: 0, alloc: alloc || {}, tipo, precioUnit,
+      valor: 0, pesoObj: peso, cantObj, ventaSug: 0, ventaEj: 0, montoVenta: 0, comisionV: 0, netoV: 0
+    });
+  });
+
+  // Compras
+  const compras = inicio.map(p => {
+    const actualPostVenta = p.tenencia - p.ventaEj;
+    const compraSug = Math.max(p.cantObj - actualPostVenta, 0);
+    const compraEj = Math.floor(compraSug * pctCompra);
+    const montoCompra = compraEj * p.precioUnit;
+    const comisionC = montoCompra * comC;
+    const totalCompra = montoCompra + comisionC;
+    return { ...p, actualPostVenta, compraSug, compraEj, montoCompra, comisionC, totalCompra };
+  });
+
+  // Caja
+  const netoVentas = inicio.reduce((s, p) => s + p.netoV, 0);
+  const totalComprasMonto = compras.reduce((s, p) => s + p.totalCompra, 0);
+  const saldo = netoVentas - totalComprasMonto;
+
+  // Operaciones
+  const operaciones = [
+    ...inicio.filter(p => p.ventaEj > 0).map(p => ({
+      alyc: p.alyc, comitente: p.comitente, cliente: cli?.cliente || '—',
+      op: 'VENTA', ticker: p.ticker, cantidad: p.ventaEj,
+      precioRef: p.precioUnit, monto: p.montoVenta, comision: p.comisionV
+    })),
+    ...compras.filter(p => p.compraEj > 0).map(p => ({
+      alyc: p.alyc, comitente: p.comitente, cliente: cli?.cliente || '—',
+      op: 'COMPRA', ticker: p.ticker, cantidad: p.compraEj,
+      precioRef: p.precioUnit, monto: p.montoCompra, comision: p.comisionC
+    })),
+  ];
+
+  // Resultado
+  const resultado = inicio.map(p => {
+    const comp = compras.find(c => c.ticker === p.ticker);
+    const final = p.tenencia - p.ventaEj + (comp?.compraEj || 0);
+    const valorFinal = final * p.precioUnit;
+    return { ticker: p.ticker, inicial: p.tenencia, ventaEj: p.ventaEj, compraEj: comp?.compraEj || 0, final, precioUnit: p.precioUnit, valorFinal };
+  }).filter(r => r.final > 0 || r.inicial > 0);
+
+  S.currentRotacion = { inicio, compras, operaciones, resultado, netoVentas, totalComprasMonto, saldo };
+  renderRotacion();
 }
 
-function renderDash(cartela) {
-  const mep=S.mep||1;
-  $('dashKPIs').style.display=''; $('dashCharts').style.display='';
-  const total=cartela.reduce((s,p)=>s+p.valor,0);
-  $('dkBruta').textContent='$'+fmt(total);
-  $('dkBrutaUSD').textContent='U$S '+fmt(total/mep);
-  $('dkPos').textContent=cartela.length;
-  if ($('dkMEP')) $('dkMEP').textContent=fmt(mep,2);
+function renderRotacion() {
+  const r = S.currentRotacion;
+  if (!r) return;
 
-  // Solo valores positivos para gráficos
-  const pos=cartela.filter(p=>p.valor>0);
-  const tot=pos.reduce((s,p)=>s+p.valor,0);
+  // Inicio
+  $('rotInicioTabla').innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Ticker</th><th>Tipo</th>
+          <th class="text-right">Tenencia</th><th class="text-right">P. Unit.</th>
+          <th class="text-right">Total</th><th class="text-right">% cartera</th>
+          <th class="text-right">Cant. Obj.</th><th class="text-right">Venta sug.</th>
+          <th class="text-right">Venta ej.</th><th class="text-right">Monto</th><th class="text-right">Neto</th>
+        </tr></thead>
+        <tbody>${r.inicio.filter(p => p.tenencia > 0 || p.cantObj > 0).map(p => {
+          const totalCart = r.inicio.reduce((s,x) => s + x.valor, 0);
+          const pct = totalCart > 0 ? p.valor/totalCart*100 : 0;
+          return `<tr>
+            <td><strong>${p.ticker}</strong></td>
+            <td><span class="pill pill-gray" style="font-size:10px;">${p.tipo.replace('_',' ')}</span></td>
+            <td class="td-num">${fmt(p.tenencia,0)}</td>
+            <td class="td-num">$${fmt(p.precioUnit,2)}</td>
+            <td class="td-num">$${fmt(p.valor)}</td>
+            <td class="td-num">${fmtPct(pct)}</td>
+            <td class="td-num">${fmt(p.cantObj,0)}</td>
+            <td class="td-num ${p.ventaSug > 0 ? 'td-neg' : ''}">${p.ventaSug > 0 ? fmt(p.ventaSug,0) : '—'}</td>
+            <td class="td-num ${p.ventaEj > 0 ? 'td-neg' : ''}">${p.ventaEj > 0 ? fmt(p.ventaEj,0) : '—'}</td>
+            <td class="td-num">${p.montoVenta > 0 ? '$'+fmt(p.montoVenta) : '—'}</td>
+            <td class="td-num td-pos">${p.netoV > 0 ? '$'+fmt(p.netoV) : '—'}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
 
-  const aggBy=key=>{
-    const map={};
-    pos.forEach(p=>{const k=p.alloc[key]||'Sin datos'; map[k]=(map[k]||0)+p.valor;});
-    return Object.fromEntries(Object.entries(map).sort((a,b)=>b[1]-a[1]));
-  };
+  // Compras
+  $('rotComprasTabla').innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Ticker</th><th class="text-right">% Obj.</th><th class="text-right">Monto Obj.</th>
+          <th class="text-right">P. Unit.</th><th class="text-right">Cant. Obj.</th>
+          <th class="text-right">Post ventas</th><th class="text-right">Compra sug.</th>
+          <th class="text-right">Compra ej.</th><th class="text-right">Monto</th><th class="text-right">Total c/com</th>
+        </tr></thead>
+        <tbody>${r.compras.filter(p => p.cantObj > 0 || p.compraEj > 0).map(p => {
+          const totalCart = r.inicio.reduce((s,x) => s + x.valor, 0);
+          const montoObj = totalCart * p.pesoObj;
+          return `<tr>
+            <td><strong>${p.ticker}</strong></td>
+            <td class="td-num">${fmtPct(p.pesoObj*100)}</td>
+            <td class="td-num">$${fmt(montoObj)}</td>
+            <td class="td-num">$${fmt(p.precioUnit,2)}</td>
+            <td class="td-num">${fmt(p.cantObj,0)}</td>
+            <td class="td-num">${fmt(p.actualPostVenta,0)}</td>
+            <td class="td-num ${p.compraSug > 0 ? 'td-pos' : ''}">${p.compraSug > 0 ? fmt(p.compraSug,0) : '—'}</td>
+            <td class="td-num td-pos">${p.compraEj > 0 ? fmt(p.compraEj,0) : '—'}</td>
+            <td class="td-num">${p.montoCompra > 0 ? '$'+fmt(p.montoCompra) : '—'}</td>
+            <td class="td-num td-pos">${p.totalCompra > 0 ? '$'+fmt(p.totalCompra) : '—'}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>
+    <div style="display:flex; gap:16px; margin-top:14px; flex-wrap:wrap; align-items:flex-start;">
+      <div class="caja-table">
+        <div class="block-title mb-12">Caja</div>
+        <div class="caja-row"><span class="cr-label">Neto ventas</span><span class="td-pos">$${fmt(r.netoVentas)}</span></div>
+        <div class="caja-row"><span class="cr-label">Total compras</span><span class="td-neg">-$${fmt(r.totalComprasMonto)}</span></div>
+        <div class="caja-row total"><span class="cr-label">Saldo</span>
+          <span class="${r.saldo >= 0 ? 'td-pos' : 'td-neg'}">$${fmt(r.saldo)}</span>
+        </div>
+      </div>
+      <div class="semaforo ${r.saldo >= 0 ? 'ok' : 'warn'}">
+        ${r.saldo >= 0 ? '✓ SALDO OK' : '⚠ DISMINUIR COMPRAS'}
+      </div>
+    </div>`;
 
-  const COLORS=['#E10600','#ff6b35','#f59e0b','#22c55e','#3b82f6','#a855f7','#ec4899','#14b8a6','#f97316','#64748b','#06b6d4','#84cc16'];
+  // Operaciones
+  $('rotOperTabla').innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>ALyC</th><th>Comitente</th><th>Cliente</th><th>Operación</th>
+          <th>Ticker</th><th class="text-right">Cantidad</th>
+          <th class="text-right">P. Ref.</th><th class="text-right">Monto</th><th class="text-right">Comisión</th>
+        </tr></thead>
+        <tbody>${r.operaciones.map(o => `<tr>
+          <td>${o.alyc}</td><td>${o.comitente}</td><td>${o.cliente}</td>
+          <td><span class="pill ${o.op === 'VENTA' ? 'pill-red' : 'pill-green'}">${o.op}</span></td>
+          <td><strong>${o.ticker}</strong></td>
+          <td class="td-num">${fmt(o.cantidad,0)}</td>
+          <td class="td-num">$${fmt(o.precioRef,2)}</td>
+          <td class="td-num">$${fmt(o.monto)}</td>
+          <td class="td-num td-muted">$${fmt(o.comision)}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
 
-  const makePie=(id,data)=>{
-    const labels=Object.keys(data), vals=Object.values(data);
-    const el=$(id); if (!el) return;
-    if (S.charts[id]) S.charts[id].destroy();
-    S.charts[id]=new Chart(el,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{
-        legend:{display:true,position:'right',labels:{color:'#a0a0a0',font:{family:'Montserrat',size:10},boxWidth:10,padding:8}},
-        tooltip:{callbacks:{label:ctx=>` ${ctx.label}: $${fmt(ctx.raw)} (${fmtPct(ctx.raw/tot*100)})`}}
-      }}});
-  };
-
-  const makeBar=(id,data)=>{
-    const labels=Object.keys(data), vals=Object.values(data);
-    const el=$(id); if (!el) return;
-    if (S.charts[id]) S.charts[id].destroy();
-    el.height=Math.max(labels.length*28,100);
-    S.charts[id]=new Chart(el,{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:'#E10600',borderRadius:3,borderWidth:0}]},
-      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>` $${fmt(ctx.raw)} (${fmtPct(ctx.raw/tot*100)})`}}
-      },scales:{
-        x:{ticks:{color:'#666',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},
-        y:{ticks:{color:'#a0a0a0',font:{size:10}},grid:{display:false}}
-      }}});
-  };
-
-  makePie('cGrupo',aggBy('grupo'));
-  makePie('cPais',aggBy('pais'));
-  makePie('cSubgrupo',aggBy('subgrupo'));
-  makePie('cSubtipo',aggBy('subtipo'));
-  makeBar('cSector',aggBy('sector'));
+  // Resultado
+  const totalFinal = r.resultado.reduce((s, x) => s + x.valorFinal, 0);
+  $('rotResultTabla').innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Ticker</th><th class="text-right">Inicial</th><th class="text-right">Venta ej.</th>
+          <th class="text-right">Compra ej.</th><th class="text-right">Final</th>
+          <th class="text-right">P. Unit.</th><th class="text-right">Valor final</th><th class="text-right">% cartera</th>
+        </tr></thead>
+        <tbody>${r.resultado.sort((a,b) => b.valorFinal - a.valorFinal).map(p => `<tr>
+          <td><strong>${p.ticker}</strong></td>
+          <td class="td-num td-muted">${fmt(p.inicial,0)}</td>
+          <td class="td-num td-neg">${p.ventaEj > 0 ? '-'+fmt(p.ventaEj,0) : '—'}</td>
+          <td class="td-num td-pos">${p.compraEj > 0 ? '+'+fmt(p.compraEj,0) : '—'}</td>
+          <td class="td-num"><strong>${fmt(p.final,0)}</strong></td>
+          <td class="td-num">$${fmt(p.precioUnit,2)}</td>
+          <td class="td-num td-pos">$${fmt(p.valorFinal)}</td>
+          <td class="td-num">${fmtPct(totalFinal > 0 ? p.valorFinal/totalFinal*100 : 0)}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  APP PUBLIC API
-// ═══════════════════════════════════════════════════════════════
-const App = {
-  driveAuth, driveRevoke, unlockCfg, lockCfg,
-  loadAll, loadAlycFolder, loadFolder, pickLocal, pickLocalFile, removeAlyc,
-  fetchPrices, fetchMEP, procesar,
-  filterCart, sortCart, clearCartFilter, exportCart,
-  o
+function cargarOrdenesYResultado() {
+  if (!S.currentRotacion) return;
+  S.loadedOperaciones = [...S.currentRotacion.operaciones];
+  S.loadedResultado = [...S.currentRotacion.resultado];
+  alert(`✅ Órdenes congeladas: ${S.loadedOperaciones.length} operaciones guardadas en memoria.`);
+}
+
+// ══════════════════════════════════════════
+//  EXPORTS
+// ══════════════════════════════════════════
+function exportarCartela() {
+  if (!S.currentRotacion) { alert('No hay datos para exportar'); return; }
+  // simple export via XLSX
+  exportXLSX('cartera_actual', [
+    ['Ticker','Tipo','Tenencia','Precio','Valor ARS','País','Sector','Grupo'],
+    ...S.currentRotacion.inicio.map(p => [p.ticker, p.tipo, p.tenencia, p.precioUnit, p.valor, p.alloc?.pais, p.alloc?.sector, p.alloc?.grupo])
+  ]);
+}
+
+function exportarOperaciones() {
+  if (!S.currentRotacion) { alert('Sin datos'); return; }
+  exportXLSX('operaciones', [
+    ['ALyC','Comitente','Cliente','Operación','Ticker','Cantidad','Precio Ref','Monto','Comisión'],
+    ...S.currentRotacion.operaciones.map(o => [o.alyc, o.comitente, o.cliente, o.op, o.ticker, o.cantidad, o.precioRef, o.monto, o.comision])
+  ]);
+}
+
+function exportarResultado() {
+  if (!S.currentRotacion) { alert('Sin datos'); return; }
+  exportXLSX('cartera_resultado', [
+    ['Ticker','Inicial','Venta Ej.','Compra Ej.','Final','Precio Unit.','Valor Final'],
+    ...S.currentRotacion.resultado.map(r => [r.ticker, r.inicial, r.ventaEj, r.compraEj, r.final, r.precioUnit, r.valorFinal])
+  ]);
+}
+
+function exportXLSX(filename, data) {
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Hoja1');
+  XLSX.writeFile(wb, `SIBRA_${filename}_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+// ── Subir a Drive ──
+async function subirOperacionesDrive() {
+  if (!S.currentRotacion) { alert('Sin datos'); return; }
+  await subirXLSXDrive(
+    `SIBRA_Operaciones_${new Date().toISOString().slice(0,10)}.xlsx`,
+    [['ALyC','Comitente','Cliente','Operación','Ticker','Cantidad','Precio Ref','Monto','Comisión'],
+     ...S.currentRotacion.operaciones.map(o => [o.alyc, o.comitente, o.cliente, o.op, o.ticker, o.cantidad, o.precioRef, o.monto, o.comision])],
+    '04_ROTACIONES_GENERADAS'
+  );
+}
+
+async function subirResultadoDrive() {
+  if (!S.currentRotacion) { alert('Sin datos'); return; }
+  await subirXLSXDrive(
+    `SIBRA_Resultado_${new Date().toISOString().slice(0,10)}.xlsx`,
+    [['Ticker','Inicial','Venta Ej.','Compra Ej.','Final','Precio Unit.','Valor Final'],
+     ...S.currentRotacion.resultado.map(r => [r.ticker, r.inicial, r.ventaEj, r.compraEj, r.final, r.precioUnit, r.valorFinal])],
+    '05_CARTERAS_RESULTANTES'
+  );
+}
+
+async function subirXLSXDrive(filename, data, folderHint) {
+  if (!S.token) { alert('Conectá Drive primero.'); return; }
+  try {
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Hoja1');
+    const buf = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+    const file = await driveUploadMultipart(
+      filename,
+      buf,
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    alert(`✅ Subido a Drive: ${file.name}\nID: ${file.id}`);
+    log(`✅ Subido a Drive: ${filename}`, 'log-ok');
+  } catch(e) {
+    alert('Error al subir: ' + e.message);
+    log('❌ Error Drive upload: ' + e.message, 'log-err');
+  }
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+function init() {
+  initNav();
+  restoreToken();
+  // Restore client ID
+  const cid = localStorage.getItem('sibra_client_id');
+  if (cid && $('cfgClientId')) $('cfgClientId').value = cid;
+}
+
+return {
+  driveAuth, driveRevoke, driveBrowse, closeDrivePicker, confirmDrivePick,
+  pickDriveFile, pickLocalFile, pickAlycFile, pickDriveFolder,
+  cargarFuenteDesdeCarpeta, cargarAlycDesdeCarpeta, cargarTodoDesdeDrive,
+  removeAlyc, procesarArchivos, fetchPrices, fetchMEP,
+  onAlycChange, onClienteChange, onRotAlycChange,
+  filtrarCartera, limpiarFiltroCartera, sortCartera,
+  filtrarSelectorCliente,
+  applyFilters, clearFilters,
+  renderModelo, calcularRotacion,
+  buscarTickers,
+  cargarOrdenesYResultado,
+  exportarCartela, exportarOperaciones, exportarResultado,
+  subirOperacionesDrive, subirResultadoDrive,
+  init,
+};
+
+})();
+
+document.addEventListener('DOMContentLoaded', App.init);
+</script>
+</body>
+</html>

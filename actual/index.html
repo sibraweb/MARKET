@@ -960,14 +960,14 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
 
   <!-- KPIs cartera -->
   <div id="cartKPIs" style="display:none; margin-bottom:14px;">
-    <div class="kpi-row" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+    <div class="kpi-row" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
       <div class="kpi">
-        <div class="kpi-label">Cartera bruta ARS</div>
-        <div class="kpi-value" id="cartBrutaARS">—</div>
+        <div class="kpi-label">Tenencia neta ARS</div>
+        <div class="kpi-value" id="cartNetaARS">—</div>
       </div>
       <div class="kpi">
-        <div class="kpi-label">Cartera bruta USD</div>
-        <div class="kpi-value" id="cartBrutaUSD" style="color:var(--amber);">—</div>
+        <div class="kpi-label">Tenencia neta USD</div>
+        <div class="kpi-value" id="cartNetaUSD" style="color:var(--amber);">—</div>
       </div>
       <div class="kpi">
         <div class="kpi-label">Caución ARS</div>
@@ -977,13 +977,13 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
         <div class="kpi-label">Caución USD</div>
         <div class="kpi-value" id="cartCaucionUSD" style="color:var(--text2);">—</div>
       </div>
-      <div class="kpi" style="border-color: rgba(225,6,0,0.3);">
-        <div class="kpi-label">Cartera neta ARS</div>
-        <div class="kpi-value" id="cartNetaARS" style="color:var(--red-light);">—</div>
+      <div class="kpi" style="border-color:rgba(225,6,0,0.3);">
+        <div class="kpi-label">Tenencia bruta ARS</div>
+        <div class="kpi-value" id="cartBrutaARS" style="color:var(--red-light);">—</div>
       </div>
-      <div class="kpi" style="border-color: rgba(225,6,0,0.3);">
-        <div class="kpi-label">Cartera neta USD</div>
-        <div class="kpi-value" id="cartNetaUSD" style="color:var(--amber);">—</div>
+      <div class="kpi" style="border-color:rgba(225,6,0,0.3);">
+        <div class="kpi-label">Tenencia bruta USD</div>
+        <div class="kpi-value" id="cartBrutaUSD" style="color:var(--amber);">—</div>
       </div>
       <div class="kpi">
         <div class="kpi-label">Posiciones</div>
@@ -1009,7 +1009,8 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
           <th onclick="App.sortCartera('precioUnit')" class="th-sort text-right">PU $ <span class="sort-icon" id="si-precioUnit">⇅</span></th>
           <th onclick="App.sortCartera('valor')"      class="th-sort text-right">Importe $ <span class="sort-icon" id="si-valor">⇅</span></th>
           <th onclick="App.sortCartera('valorUSD')"   class="th-sort text-right">Importe USD <span class="sort-icon" id="si-valorUSD">⇅</span></th>
-          <th onclick="App.sortCartera('pct')"        class="th-sort text-right">% neto <span class="sort-icon" id="si-pct">⇅</span></th>
+          <th onclick="App.sortCartera('pctNeto')"    class="th-sort text-right">% neto <span class="sort-icon" id="si-pctNeto">⇅</span></th>
+          <th onclick="App.sortCartera('pctBruto')"   class="th-sort text-right">% bruto <span class="sort-icon" id="si-pctBruto">⇅</span></th>
           <th onclick="App.sortCartera('pais')"       class="th-sort">País <span class="sort-icon" id="si-pais">⇅</span></th>
           <th onclick="App.sortCartera('grupo')"      class="th-sort">Grupo <span class="sort-icon" id="si-grupo">⇅</span></th>
           <th onclick="App.sortCartera('subgrupo')"   class="th-sort">Subgrupo <span class="sort-icon" id="si-subgrupo">⇅</span></th>
@@ -1057,10 +1058,10 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
   <!-- KPIs cliente -->
   <div id="clienteKPIs" style="display:none; margin-bottom:14px;">
     <div class="kpi-row">
-      <div class="kpi"><div class="kpi-label">Cartera bruta ARS</div><div class="kpi-value" id="kCarteraARS">—</div></div>
-      <div class="kpi"><div class="kpi-label">Cartera bruta USD</div><div class="kpi-value" id="kCarteraUSD" style="color:var(--amber);">—</div></div>
-      <div class="kpi" style="border-color:rgba(225,6,0,0.3);"><div class="kpi-label">Cartera neta ARS</div><div class="kpi-value" id="kNetaARS" style="color:var(--red-light);">—</div></div>
-      <div class="kpi" style="border-color:rgba(225,6,0,0.3);"><div class="kpi-label">Cartera neta USD</div><div class="kpi-value" id="kNetaUSD" style="color:var(--amber);">—</div></div>
+      <div class="kpi"><div class="kpi-label">Tenencia neta ARS</div><div class="kpi-value" id="kCarteraARS">—</div></div>
+      <div class="kpi"><div class="kpi-label">Tenencia neta USD</div><div class="kpi-value" id="kCarteraUSD" style="color:var(--amber);">—</div></div>
+      <div class="kpi" style="border-color:rgba(225,6,0,0.3);"><div class="kpi-label">Tenencia bruta ARS</div><div class="kpi-value" id="kNetaARS" style="color:var(--red-light);">—</div></div>
+      <div class="kpi" style="border-color:rgba(225,6,0,0.3);"><div class="kpi-label">Tenencia bruta USD</div><div class="kpi-value" id="kNetaUSD" style="color:var(--amber);">—</div></div>
       <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="kPosiciones">—</div></div>
       <div class="kpi"><div class="kpi-label">MEP vigente</div><div class="kpi-value" id="kMEP">—</div></div>
     </div>
@@ -1444,7 +1445,7 @@ function initAC() {
       const seen = new Set();
       const items = [];
       S.posiciones.forEach(p => {
-        const cli = S.clientes.find(c => c.cc === p.comitente);
+        const cli = findCliente(p.comitente);
         const key = p.comitente;
         if (seen.has(key)) return;
         seen.add(key);
@@ -1495,7 +1496,7 @@ function initAC() {
         const key = p.comitente;
         if (seen.has(key)) return;
         seen.add(key);
-        const cli = S.clientes.find(c => c.cc === p.comitente);
+        const cli = findCliente(p.comitente);
         const nombre = cli?.cliente || '';
         const full = `${nombre} ${p.comitente}`.toLowerCase();
         if (!q || full.includes(q)) items.push({ value: p.comitente, label: nombre || p.comitente, sub: nombre ? p.comitente : '' });
@@ -1976,26 +1977,61 @@ async function processSourceFile(key, buf, name) {
   }
 }
 
+// Normaliza CC/comitente a string entero limpio (elimina decimales de Excel)
+function normCC(val) {
+  if (val === null || val === undefined || val === '') return '';
+  const s = String(val).trim();
+  const n = parseFloat(s);
+  return isFinite(n) ? String(Math.round(n)) : s;
+}
+
+// Match robusto: normaliza ambos lados antes de comparar
+function findCliente(comitente) {
+  const norm = normCC(comitente);
+  return S.clientes.find(c => normCC(c.cc) === norm);
+}
+
 function parseClientes(wb) {
   const ws = wb.Sheets[wb.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
-  S.clientes = rows.map(r => ({
-    cc:             String(r.cc || r.CC || '').trim(),
-    cliente:        String(r.cliente || r.Cliente || '').trim(),
-    cuit:           String(r.CUIT || r.cuit || '').trim(),
-    alyc:           String(r.alyc || r.ALyC || r.ALYC || '').trim().toUpperCase(),
-    monto:          parseFloat(r.monto) || 0,
-    perfil:         String(r.perfil || r.Perfil || 'AGRESIVO').trim().toUpperCase(),
-    LP:             parseFloat(r.LP) || 0,
-    MP:             parseFloat(r.MP) || 0,
-    CP:             parseFloat(r.CP) || 0,
-    CASH:           parseFloat(r.CASH) || 0,
-    PALANCA:        parseFloat(r.PALANCA) || 1,
-    cartera:        parseFloat(r.Cartera) || 0,
-    total:          parseFloat(r.Total) || 0,
-    caucionPesos:   parseFloat(r['Cacion en pesos'] || r['Caucion en pesos'] || r.caucionPesos) || 0,
-    caucionDolares: parseFloat(r['Caucion en Dolares'] || r.caucionDolares) || 0,
-  })).filter(r => r.cc);
+
+  // Detectar nombre real de columna CC (cc, CC, CCC, Cuenta, Comitente, etc.)
+  const firstRow = rows[0] || {};
+  const ccKey = Object.keys(firstRow).find(k =>
+    /^(cc|ccc|cuenta|comitente|n[^a-z]*comitente)$/i.test(k.trim())
+  ) || Object.keys(firstRow)[0] || 'cc';
+
+  // Detectar columnas de caución con variantes de typos
+  const findCol = (row, aliases) => {
+    const k = Object.keys(row).find(k => aliases.some(a => k.toLowerCase().replace(/[^a-z]/g,'').includes(a)));
+    return k ? row[k] : undefined;
+  };
+
+  S.clientes = rows.map(r => {
+    const rawCC = r[ccKey] ?? r.cc ?? r.CC ?? r.CCC ?? r.Cuenta ?? r.CUENTA ?? '';
+    const caucionP = findCol(r, ['caucionenpesos','cacionenpesos','caucionpesos','cacionpesos']) ?? 0;
+    const caucionD = findCol(r, ['caucionendolares','cacionendolares','cauciondolares','caciondolares']) ?? 0;
+    return {
+      cc:             normCC(rawCC),
+      cliente:        String(r.cliente || r.Cliente || r.CLIENTE || '').trim(),
+      cuit:           String(r.CUIT || r.cuit || '').trim(),
+      alyc:           String(r.alyc || r.ALyC || r.ALYC || '').trim().toUpperCase(),
+      monto:          parseFloat(r.monto) || 0,
+      perfil:         String(r.perfil || r.Perfil || 'AGRESIVO').trim().toUpperCase(),
+      LP:             parseFloat(r.LP) || 0,
+      MP:             parseFloat(r.MP) || 0,
+      CP:             parseFloat(r.CP) || 0,
+      CASH:           parseFloat(r.CASH) || 0,
+      PALANCA:        parseFloat(r.PALANCA) || 1,
+      cartera:        parseFloat(r.Cartera) || 0,
+      total:          parseFloat(r.Total) || 0,
+      caucionPesos:   parseFloat(caucionP) || 0,
+      caucionDolares: parseFloat(caucionD) || 0,
+    };
+  }).filter(r => r.cc);
+
+  // Log para debug de match
+  console.log('[Clientes] CCs cargados (primeros 5):', S.clientes.slice(0,5).map(c => `${c.cc} | ${c.cliente} | cauP=${c.caucionPesos} | cauD=${c.caucionDolares}`));
 }
 
 function parseAllocation(wb) {
@@ -2097,7 +2133,7 @@ function parseADCAP(buf) {
       const tenencia = parseFloat(col3Raw);
       const esCash = currentTicker === 'CASH_ARS' || currentTicker === 'CASH_USD';
       if (isFinite(tenencia) && (esCash ? tenencia !== 0 : tenencia > 0)) {
-        posiciones.push({ alyc: 'ADCAP', comitente: col0, ticker: currentTicker, tenencia });
+        posiciones.push({ alyc: 'ADCAP', comitente: normCC(col0), ticker: currentTicker, tenencia });
       }
     }
   });
@@ -2125,7 +2161,7 @@ function parseIEB(buf) {
 
   rows.slice(1).forEach(row => {
     if (!row) return;                              // ← null-safe
-    const comitente = String(row[1] ?? '').trim();
+    const comitente = normCC(row[1] ?? '');
     const ticker    = String(row[5] ?? '').trim();
     const tenencia  = parseFloat(row[8]);
 
@@ -2200,6 +2236,12 @@ async function procesarArchivos() {
   const dr = $('dataResumen');
   if (dr) dr.style.display = '';
   actualizarSelectores();
+  // Debug match clientes
+  const conCliente = S.posiciones.filter(p => findCliente(p.comitente));
+  const sinCliente = [...new Set(S.posiciones.filter(p => !findCliente(p.comitente)).map(p => p.comitente))];
+  log(`👥 Comitentes con match en clientes: ${new Set(S.posiciones.filter(p=>findCliente(p.comitente)).map(p=>p.comitente)).size} / ${new Set(S.posiciones.map(p=>p.comitente)).size}`, 'log-ok');
+  if (sinCliente.length) log(`⚠ Sin match en clientes (primeros 5): ${sinCliente.slice(0,5).join(', ')}`, 'log-warn');
+
   log(`\n✅ Listo. ${S.posiciones.length} posiciones totales.`, 'log-ok');
 }
 
@@ -2238,21 +2280,17 @@ function renderCartaGlobal() {
 
   Object.entries(grupos).forEach(([key, pos]) => {
     const [alyc, comitente] = key.split('|');
-    const cli = S.clientes.find(c => c.cc === comitente);
+    const cli = findCliente(comitente);
     const cartela = valuarCartera(pos);
 
-    // Cartera bruta = suma de todos los valores (incluyendo cash positivo)
-    const brutaCliente = cartela.reduce((s, p) => s + Math.max(p.valor, 0), 0);
-    // Caución del cliente desde archivo clientes
+    // Tenencia neta = suma de todas las posiciones de la ALyC (incluye cash)
+    const netaCliente = cartela.reduce((s, p) => s + p.valor, 0);
+    // Caución tomadora desde tabla clientes (plata extra invertida)
     const caucionPesos   = cli?.caucionPesos   || 0;
     const caucionDolares = cli?.caucionDolares || 0;
-    const caucionARS     = caucionPesos + caucionDolares * mep;
-    // Cash neto: cash ARS + cash USD valuado
-    const cashNeto = cartela
-      .filter(p => p.tipo === 'CASH_ARS' || p.tipo === 'CASH_USD')
-      .reduce((s, p) => s + p.valor, 0);
-    // Cartera neta = bruta + cashNeto (ya incluye negativos) - caución
-    const netaCliente = Math.max(brutaCliente + Math.min(cashNeto, 0) - caucionARS, 0);
+    const caucionTotalARS = caucionPesos + caucionDolares * mep;
+    // Tenencia bruta = neta + caución total pesificada
+    const brutaCliente = netaCliente + caucionTotalARS;
 
     cartela.forEach(p => {
       allValuada.push({
@@ -2264,15 +2302,17 @@ function renderCartaGlobal() {
         valor: p.valor,
         valorUSD: p.valor / mep,
         // % sobre neta del cliente
-        pct: netaCliente > 0 ? p.valor / netaCliente * 100 : 0,
+        pctNeto:  netaCliente  > 0 ? p.valor / netaCliente  * 100 : 0,
+        pctBruto: brutaCliente > 0 ? p.valor / brutaCliente * 100 : 0,
         pais: p.alloc.pais || '',
         grupo: p.alloc.grupo || '',
         subgrupo: p.alloc.subgrupo || '',
         alloc: p.alloc,
-        _brutaCliente: brutaCliente,
-        _netaCliente: netaCliente,
-        _caucionARS: caucionARS,
+        _netaCliente:    netaCliente,
+        _brutaCliente:   brutaCliente,
+        _caucionPesos:   caucionPesos,
         _caucionDolares: caucionDolares,
+        _caucionTotalARS: caucionTotalARS
       });
     });
   });
@@ -2357,34 +2397,41 @@ function renderCartaTabla(data) {
   if (empty) empty.style.display = 'none';
   if (wrap)  wrap.style.display = '';
 
-  // ── KPIs extendidos ──
+  // ── KPIs ──
   if (kpis) {
     kpis.style.display = '';
-    // Bruta = suma de valores positivos en data visible
-    const brutaARS = data.reduce((s, p) => s + Math.max(p.valor, 0), 0);
-    // Caución: sumar por cliente único para no duplicar
-    const clientesVistos = new Set();
-    let caucionARS = 0, caucionUSD = 0;
-    data.forEach(p => {
-      if (clientesVistos.has(p.comitente)) return;
-      clientesVistos.add(p.comitente);
-      caucionARS += p._caucionARS || 0;
-      caucionUSD += p._caucionDolares || 0;
-    });
-    // Neta: suma de neta por cliente único
-    const netasCliente = {};
-    data.forEach(p => { netasCliente[p.comitente] = p._netaCliente || 0; });
-    const netaARS = Object.values(netasCliente).reduce((s, v) => s + v, 0);
-    const clientes = new Set(data.map(p => p.comitente)).size;
 
-    $('cartBrutaARS').textContent  = '$' + fmt(brutaARS);
-    $('cartBrutaUSD').textContent  = 'U$S ' + fmt(brutaARS / mep);
-    $('cartCaucionARS').textContent = '$' + fmt(caucionARS);
-    $('cartCaucionUSD').textContent = 'U$S ' + fmt(caucionUSD);
-    $('cartNetaARS').textContent   = '$' + fmt(netaARS);
-    $('cartNetaUSD').textContent   = 'U$S ' + fmt(netaARS / mep);
-    $('cartNPos').textContent      = data.length;
-    $('cartNCli').textContent      = clientes;
+    // Acumular neta, bruta y cauciones por cliente único (evitar duplicados por posición)
+    const clientesVistos = new Set();
+    let netaARS = 0, brutaARS = 0, caucionPesos = 0, caucionDolares = 0;
+    data.forEach(p => {
+      if (!clientesVistos.has(p.comitente)) {
+        clientesVistos.add(p.comitente);
+        netaARS  += p._netaCliente    || 0;
+        brutaARS += p._brutaCliente   || 0;
+        caucionPesos   += p._caucionPesos   || 0;
+        caucionDolares += p._caucionDolares || 0;
+      }
+    });
+    const clientes = clientesVistos.size;
+
+    // Tenencia neta
+    $('cartNetaARS').textContent = '$' + fmt(netaARS);
+    $('cartNetaARS').style.color = 'var(--text)';
+    $('cartNetaUSD').textContent = 'U$S ' + fmt(netaARS / mep);
+
+    // Caución: pesos y dólares por separado
+    $('cartCaucionARS').textContent = '$' + fmt(caucionPesos);
+    $('cartCaucionARS').style.color = caucionPesos   > 0 ? 'var(--amber)' : 'var(--text3)';
+    $('cartCaucionUSD').textContent = 'U$S ' + fmt(caucionDolares);
+    $('cartCaucionUSD').style.color = caucionDolares > 0 ? 'var(--amber)' : 'var(--text3)';
+
+    // Tenencia bruta = neta + caución total pesificada
+    $('cartBrutaARS').textContent = '$' + fmt(brutaARS);
+    $('cartBrutaUSD').textContent = 'U$S ' + fmt(brutaARS / mep);
+
+    $('cartNPos').textContent = data.length;
+    $('cartNCli').textContent = clientes;
   }
 
   const tipoPill = {
@@ -2402,7 +2449,8 @@ function renderCartaTabla(data) {
     <td class="td-num">$${fmt(p.precioUnit, 2)}</td>
     <td class="td-num td-pos">$${fmt(p.valor, 0)}</td>
     <td class="td-num" style="color:var(--amber);">U$S ${fmt(p.valorUSD, 0)}</td>
-    <td class="td-num"><strong>${fmtPct(p.pct)}</strong></td>
+    <td class="td-num"><strong>${fmtPct(p.pctNeto)}</strong></td>
+    <td class="td-num" style="color:var(--text2);"><strong>${fmtPct(p.pctBruto)}</strong></td>
     <td class="td-muted">${p.pais}</td>
     <td class="td-muted">${p.grupo}</td>
     <td class="td-muted">${p.subgrupo}</td>
@@ -2436,7 +2484,7 @@ function onClienteChange() {
   if (!comitente) return;
   $('dashEmpty').style.display = 'none';
 
-  const cli = S.clientes.find(c => c.cc === comitente);
+  const cli = findCliente(comitente);
   if (cli) {
     $('clientePerfil').style.display = '';
     $('clientePerfilVal').textContent = cli.perfil || '—';
@@ -2509,7 +2557,7 @@ function applyDashFilters() {
     p.comitente === comitente && (!S.dashCurrentAlyc || p.alyc === S.dashCurrentAlyc)
   );
   const fullCartela = valuarCartera(pos);
-  const cli = S.clientes.find(c => c.cc === comitente);
+  const cli = findCliente(comitente);
 
   // Filtrar cartera con filtros activos
   const cartelaFiltrada = fullCartela.filter(p => {
@@ -2548,7 +2596,7 @@ function clearDashFilters() {
     p.comitente === comitente && (!S.dashCurrentAlyc || p.alyc === S.dashCurrentAlyc)
   );
   const cartela = valuarCartera(pos);
-  const cli = S.clientes.find(c => c.cc === comitente);
+  const cli = findCliente(comitente);
   renderClienteKPIs(cartela, cli);
   renderClienteCharts(cartela);
 }
@@ -2570,21 +2618,19 @@ function valuarCartera(pos) {
 
 function renderClienteKPIs(cartela, cli) {
   const mep = S.mep || 1;
-  const brutaARS = cartela.reduce((s, p) => s + Math.max(p.valor, 0), 0);
-  // Cash neto (puede ser negativo)
-  const cashNeto = cartela
-    .filter(p => p.tipo === 'CASH_ARS' || p.tipo === 'CASH_USD')
-    .reduce((s, p) => s + p.valor, 0);
+  // Tenencia neta = suma de todas las posiciones ALyC (incluye cash)
+  const netaARS        = cartela.reduce((s, p) => s + p.valor, 0);
   const caucionPesos   = cli?.caucionPesos   || 0;
   const caucionDolares = cli?.caucionDolares || 0;
-  const caucionARS     = caucionPesos + caucionDolares * mep;
-  const netaARS = Math.max(brutaARS + Math.min(cashNeto, 0) - caucionARS, 0);
+  const caucionTotalARS = caucionPesos + caucionDolares * mep;
+  // Tenencia bruta = neta + caución pesificada
+  const brutaARS = netaARS + caucionTotalARS;
 
   $('clienteKPIs').style.display = '';
-  $('kCarteraARS').textContent = '$' + fmt(brutaARS);
-  $('kCarteraUSD').textContent = 'U$S ' + fmt(brutaARS / mep);
-  $('kNetaARS').textContent    = '$' + fmt(netaARS);
-  $('kNetaUSD').textContent    = 'U$S ' + fmt(netaARS / mep);
+  $('kCarteraARS').textContent = '$' + fmt(netaARS);
+  $('kCarteraUSD').textContent = 'U$S ' + fmt(netaARS / mep);
+  $('kNetaARS').textContent    = '$' + fmt(brutaARS);
+  $('kNetaUSD').textContent    = 'U$S ' + fmt(brutaARS / mep);
   $('kPosiciones').textContent = cartela.length;
   $('kMEP').textContent        = fmt(mep, 2);
 }
@@ -2734,7 +2780,7 @@ function calcularRotacion() {
   const pos = S.posiciones.filter(p => p.comitente === comitente && (!alyc || p.alyc === alyc));
   const cartela = valuarCartera(pos);
   const totalCartera = cartela.reduce((s, p) => s + p.valor, 0);
-  const cli = S.clientes.find(c => c.cc === comitente);
+  const cli = findCliente(comitente);
   const perfil = (cli?.perfil || 'AGRESIVO').toUpperCase();
   const modelo = S.modelos[perfil] || {};
 

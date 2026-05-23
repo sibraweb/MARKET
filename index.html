@@ -3,21 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIBRA MARKET · Panel de módulos</title>
+  <title>SIBRA Market · Panel de módulos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Raleway:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --red: #E10600;
-      --red-dark: #b00500;
-      --black: #101010;
-      --gray-900: #202020;
-      --gray-700: #555;
-      --gray-500: #888;
-      --gray-200: #e9e9e9;
-      --gray-100: #f6f6f6;
-      --white: #ffffff;
-      --shadow: 0 18px 45px rgba(0,0,0,.12);
+      --red-dark: #A90400;
+      --red-light: #ff3330;
+      --bg: #0d0d0d;
+      --bg2: #141414;
+      --bg3: #1a1a1a;
+      --bg4: #222222;
+      --border: rgba(255,255,255,.08);
+      --border2: rgba(255,255,255,.16);
+      --text: #f0f0f0;
+      --text2: #a6a6a6;
+      --text3: #666666;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --shadow: 0 24px 70px rgba(0,0,0,.34);
       --font-main: 'Montserrat', Arial, sans-serif;
       --font-head: 'Raleway', Arial, sans-serif;
     }
@@ -31,10 +36,11 @@
     body {
       min-height: 100vh;
       font-family: var(--font-main);
-      color: var(--black);
+      color: var(--text);
       background:
-        radial-gradient(circle at 15% 10%, rgba(225,6,0,.10), transparent 28%),
-        linear-gradient(135deg, #ffffff 0%, #f3f3f3 60%, #e8e8e8 100%);
+        radial-gradient(circle at 18% 6%, rgba(225,6,0,.22), transparent 28%),
+        radial-gradient(circle at 88% 88%, rgba(225,6,0,.12), transparent 32%),
+        linear-gradient(135deg, #080808 0%, #0d0d0d 46%, #151515 100%);
     }
 
     .page {
@@ -44,64 +50,66 @@
     }
 
     header {
-      width: 100%;
-      height: 82px;
-      padding: 0 42px;
+      height: 62px;
+      padding: 0 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(255,255,255,.92);
-      border-bottom: 1px solid rgba(0,0,0,.08);
+      background: rgba(20,20,20,.92);
+      border-bottom: 1px solid var(--border2);
       position: sticky;
       top: 0;
       z-index: 10;
+      backdrop-filter: blur(12px);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
+      min-width: 0;
     }
 
     .brand img {
-      height: 48px;
-      max-width: 180px;
+      height: 36px;
+      width: auto;
       object-fit: contain;
       display: block;
     }
 
     .brand-name {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
     }
 
     .brand-name strong {
       font-family: var(--font-head);
-      font-size: 20px;
+      font-size: 18px;
       letter-spacing: 2px;
       font-weight: 700;
-      color: var(--black);
+      color: var(--red);
+      white-space: nowrap;
     }
 
     .brand-name span {
-      font-size: 11px;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 1.1px;
-      font-weight: 700;
+      font-size: 12px;
+      color: var(--text);
+      font-weight: 300;
+      white-space: nowrap;
     }
 
-    .tag {
-      padding: 9px 14px;
+    .header-pill {
+      padding: 7px 13px;
       border-radius: 999px;
+      border: 1px solid rgba(225,6,0,.30);
+      color: var(--red-light);
       background: rgba(225,6,0,.08);
-      border: 1px solid rgba(225,6,0,.22);
-      color: var(--red);
       font-size: 11px;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: .9px;
+      letter-spacing: .8px;
     }
 
     main {
@@ -109,187 +117,235 @@
       width: 100%;
       max-width: 1180px;
       margin: 0 auto;
-      padding: 58px 28px 42px;
+      padding: 64px 24px 42px;
     }
 
     .hero {
-      text-align: center;
-      margin-bottom: 36px;
+      background:
+        linear-gradient(135deg, rgba(225,6,0,.11), rgba(255,255,255,.025)),
+        var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 30px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(225,6,0,.22);
+      filter: blur(8px);
+      pointer-events: none;
     }
 
     .eyebrow {
-      color: var(--red);
-      font-size: 12px;
+      color: var(--red-light);
+      font-size: 11px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1.4px;
       margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
     }
 
     h1 {
       font-family: var(--font-head);
       font-size: clamp(34px, 5vw, 58px);
-      line-height: 1.04;
-      letter-spacing: -1.5px;
-      margin-bottom: 16px;
+      line-height: 1.02;
+      font-weight: 700;
+      letter-spacing: -1.6px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
     }
 
     .subtitle {
-      max-width: 720px;
-      margin: 0 auto;
-      color: var(--gray-700);
-      font-size: 15px;
-      line-height: 1.7;
+      max-width: 760px;
+      color: var(--text2);
+      font-size: 14px;
+      line-height: 1.75;
+      position: relative;
+      z-index: 1;
     }
 
-    .cards {
+    .module-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-      margin-top: 34px;
+      gap: 16px;
+      margin-top: 20px;
     }
 
-    .card {
-      background: var(--white);
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: 24px;
-      padding: 28px;
-      min-height: 285px;
+    .module-card {
       text-decoration: none;
       color: inherit;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      min-height: 270px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 10px 26px rgba(0,0,0,.07);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      overflow: hidden;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
       position: relative;
+      overflow: hidden;
     }
 
-    .card:before {
+    .module-card::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(225,6,0,.09), transparent 55%);
-      opacity: 0;
-      transition: opacity .18s ease;
+      background: linear-gradient(135deg, rgba(225,6,0,.10), transparent 55%);
+      opacity: .35;
+      transition: opacity .16s ease;
       pointer-events: none;
     }
 
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow);
-      border-color: rgba(225,6,0,.38);
+    .module-card:hover {
+      transform: translateY(-4px);
+      background: var(--bg3);
+      border-color: rgba(225,6,0,.45);
+      box-shadow: 0 18px 45px rgba(0,0,0,.28);
     }
 
-    .card:hover:before {
+    .module-card:hover::before {
       opacity: 1;
     }
 
-    .card-content,
-    .card-footer {
+    .module-top,
+    .module-bottom {
       position: relative;
       z-index: 1;
     }
 
     .icon {
-      width: 62px;
-      height: 62px;
-      border-radius: 20px;
+      width: 54px;
+      height: 54px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--black);
-      color: var(--white);
-      font-size: 29px;
-      margin-bottom: 22px;
-    }
-
-    .card h2 {
-      font-family: var(--font-head);
+      background: #0b0b0b;
+      border: 1px solid var(--border2);
+      color: var(--red-light);
       font-size: 25px;
-      margin-bottom: 12px;
-      letter-spacing: -.3px;
+      margin-bottom: 18px;
     }
 
-    .card p {
-      color: var(--gray-700);
-      font-size: 13px;
+    .module-card h2 {
+      font-family: var(--font-head);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .module-card p {
+      color: var(--text2);
+      font-size: 12px;
       line-height: 1.65;
     }
 
-    .card-footer {
-      margin-top: 24px;
-      padding-top: 18px;
-      border-top: 1px solid var(--gray-200);
+    .module-bottom {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
     }
 
-    .route {
-      font-family: monospace;
-      color: var(--gray-500);
+    .path {
+      color: var(--text3);
       font-size: 11px;
+      font-family: monospace;
       word-break: break-all;
     }
 
     .open {
-      color: var(--red);
-      font-size: 13px;
+      color: var(--red-light);
+      font-size: 12px;
       font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .6px;
       white-space: nowrap;
     }
 
     .workflow {
-      margin-top: 34px;
-      background: var(--black);
-      color: var(--white);
-      border-radius: 24px;
-      padding: 24px 28px;
+      margin-top: 18px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
-      box-shadow: var(--shadow);
+      gap: 18px;
     }
 
     .workflow strong {
       font-family: var(--font-head);
-      font-size: 22px;
-      letter-spacing: -.3px;
+      color: var(--text);
+      font-size: 20px;
+      white-space: nowrap;
     }
 
     .workflow span {
-      color: #d1d5db;
-      font-size: 13px;
-      line-height: 1.55;
+      color: var(--text2);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .status-strip {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .status {
+      background: rgba(255,255,255,.025);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 13px;
+      color: var(--text2);
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .status b {
+      color: var(--red-light);
+      font-weight: 800;
     }
 
     footer {
       width: 100%;
       max-width: 1180px;
       margin: 0 auto;
-      padding: 0 28px 28px;
+      padding: 0 24px 26px;
+      color: var(--text3);
+      font-size: 11px;
       display: flex;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      color: var(--gray-500);
-      font-size: 11px;
     }
 
     @media (max-width: 980px) {
-      header {
-        padding: 0 22px;
-      }
-
-      .tag {
-        display: none;
-      }
-
-      .cards {
+      .module-grid,
+      .status-strip {
         grid-template-columns: 1fr;
       }
 
@@ -297,28 +353,33 @@
         flex-direction: column;
         align-items: flex-start;
       }
+
+      .header-pill {
+        display: none;
+      }
     }
 
     @media (max-width: 560px) {
       header {
         height: auto;
-        padding: 16px 18px;
+        padding: 14px 16px;
       }
 
       .brand img {
-        height: 40px;
+        height: 32px;
       }
 
-      .brand-name strong {
-        font-size: 17px;
+      .brand-name {
+        flex-direction: column;
+        gap: 2px;
       }
 
       main {
-        padding: 38px 18px 34px;
+        padding: 36px 16px 30px;
       }
 
-      .card {
-        min-height: 250px;
+      .hero {
+        padding: 22px;
       }
     }
   </style>
@@ -329,61 +390,67 @@
       <div class="brand">
         <img src="assets/logo.png" alt="SIBRATECH" onerror="this.style.display='none'">
         <div class="brand-name">
-          <strong>SIBRA MARKET</strong>
-          <span>Portfolio Management Suite</span>
+          <strong>SIBRA</strong>
+          <span>Market Suite</span>
         </div>
       </div>
-      <div class="tag">Sibratech Investors</div>
+      <div class="header-pill">Portfolio Management</div>
     </header>
 
     <main>
       <section class="hero">
-        <div class="eyebrow">Panel de aplicaciones</div>
-        <h1>Gestión integral de carteras</h1>
+        <div class="eyebrow">SIBRA Investors</div>
+        <h1>Panel de control de carteras.</h1>
         <p class="subtitle">
-          Acceso centralizado a los módulos de análisis, carteras propuestas y rotaciones. Pensado para trabajar el flujo completo de una cartera: actual, objetivo y rebalanceo.
+          Acceso centralizado a los módulos de carteras actuales, propuestas y rotaciones. Flujo completo para leer posiciones reales, construir objetivos por perfil y generar rebalanceos operables.
         </p>
+
+        <div class="status-strip">
+          <div class="status"><span>Fuente actual</span><b>Drive</b></div>
+          <div class="status"><span>Motor</span><b>Allocation</b></div>
+          <div class="status"><span>Salida</span><b>Rotaciones</b></div>
+        </div>
       </section>
 
-      <section class="cards">
-        <a class="card" href="actual/">
-          <div class="card-content">
+      <section class="module-grid">
+        <a class="module-card" href="./actual">
+          <div class="module-top">
             <div class="icon">📊</div>
             <h2>Carteras actuales</h2>
             <p>
-              Visualizá tenencias reales por cliente, ALyC, ticker y criterios de allocation. Base para conocer la foto actual antes de rotar.
+              Lectura de posiciones reales por cliente, ALyC y ticker. Permite ver la cartera existente con criterios de allocation y filtros de análisis.
             </p>
           </div>
-          <div class="card-footer">
-            <span class="route">actual/</span>
+          <div class="module-bottom">
+            <span class="path">./actual</span>
             <span class="open">Abrir →</span>
           </div>
         </a>
 
-        <a class="card" href="propuestas/">
-          <div class="card-content">
+        <a class="module-card" href="./propuestas">
+          <div class="module-top">
             <div class="icon">🎯</div>
             <h2>Carteras propuestas</h2>
             <p>
-              Calculá la cartera objetivo según perfil, horizonte de inversión y ponderación interna de cada cartera tipo.
+              Construcción de cartera objetivo según perfil del cliente, distribución por plazo y ponderación interna de cada cartera tipo.
             </p>
           </div>
-          <div class="card-footer">
-            <span class="route">propuestas/</span>
+          <div class="module-bottom">
+            <span class="path">./propuestas</span>
             <span class="open">Abrir →</span>
           </div>
         </a>
 
-        <a class="card" href="rotaciones/">
-          <div class="card-content">
+        <a class="module-card" href="./rotaciones">
+          <div class="module-top">
             <div class="icon">🔄</div>
             <h2>Rotaciones</h2>
             <p>
-              Compará cartera actual contra cartera propuesta para generar diferencias, compras, ventas y ajustes por cliente.
+              Comparación entre cartera actual y objetivo para detectar diferencias, ventas, compras y ajustes sugeridos por cliente.
             </p>
           </div>
-          <div class="card-footer">
-            <span class="route">rotaciones/</span>
+          <div class="module-bottom">
+            <span class="path">./rotaciones</span>
             <span class="open">Abrir →</span>
           </div>
         </a>
@@ -392,7 +459,7 @@
       <section class="workflow">
         <strong>Actual → Propuesta → Rotación</strong>
         <span>
-          Primero se entiende la cartera real, después se calcula el objetivo por perfil y finalmente se generan las operaciones sugeridas.
+          La suite replica el flujo de trabajo de gestión: primero diagnóstico, luego objetivo y finalmente la orden sugerida.
         </span>
       </section>
     </main>

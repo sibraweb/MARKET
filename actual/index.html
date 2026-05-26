@@ -494,18 +494,50 @@ select:focus { border-color: var(--red); }
 }
 .ac-dropdown.open { display: block; }
 .ac-item {
-  padding: 8px 12px;
+  padding: 7px 12px;
   font-size: 12px;
   cursor: pointer;
   border-bottom: 1px solid var(--border);
   transition: background 0.1s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .ac-item:last-child { border-bottom: none; }
-.ac-item:hover, .ac-item.active { background: rgba(225,6,0,0.1); color: var(--red-light); }
-.ac-item .ac-sub { font-size: 10px; color: var(--text3); margin-left: 6px; }
+.ac-item:hover { background: rgba(225,6,0,0.07); }
+.ac-item.checked { background: rgba(225,6,0,0.12); }
+.ac-item .ac-check {
+  width: 14px; height: 14px; flex-shrink: 0;
+  border: 1.5px solid var(--border2);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: var(--red);
+  transition: all 0.1s;
+}
+.ac-item.checked .ac-check { background: var(--red); border-color: var(--red); color: #fff; }
+.ac-item .ac-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ac-item .ac-sub { font-size: 10px; color: var(--text3); flex-shrink: 0; }
+.ac-chips {
+  display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;
+  min-height: 0;
+}
+.ac-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(225,6,0,0.12);
+  border: 1px solid rgba(225,6,0,0.3);
+  color: var(--red-light);
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 11px; font-weight: 500;
+}
+.ac-chip .xc { cursor:pointer; opacity:0.7; font-size:12px; }
+.ac-chip .xc:hover { opacity:1; }
+.ac-dropdown-header {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: var(--text3);
+}
+.ac-dropdown-header span { cursor:pointer; color:var(--red); }
 .ac-clear {
   position: absolute;
   right: 8px;
@@ -938,34 +970,42 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
 <!-- ══════════ PANEL: CARTERA ══════════ -->
 <div class="panel" id="panel-cartera">
 
-  <!-- Filtros autocomplete -->
-  <div style="display:flex; gap:12px; align-items:flex-end; margin-bottom:14px; flex-wrap:wrap;">
-    <div class="ac-wrap" style="flex:1; min-width:200px;">
-      <label>Cliente / CC</label>
-      <div class="ac-input-wrap">
-        <input type="text" class="ac-input" id="cartBuscarCliente" placeholder="Nombre o CC..." autocomplete="off" oninput="AC.cartCliente.onInput()" onfocus="AC.cartCliente.open()" />
-        <span class="ac-clear" id="cartBuscarClienteClear" onclick="AC.cartCliente.clear()">✕</span>
-        <div class="ac-dropdown" id="cartBuscarClienteDrop"></div>
+  <!-- Filtros globales compartidos con Dashboard -->
+  <div style="margin-bottom:14px;">
+    <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+      <div class="ac-wrap" style="flex:1; min-width:200px;">
+        <label>Cliente / CC</label>
+        <div class="ac-input-wrap">
+          <input type="text" class="ac-input" id="cartBuscarCliente" placeholder="Todos los clientes..." autocomplete="off" oninput="AC.clientes.onInput()" onfocus="AC.clientes.open()" />
+          <span class="ac-clear" id="cartBuscarClienteClear" onclick="AC.clientes.clearInput()">✕</span>
+          <div class="ac-dropdown" id="cartBuscarClienteDrop"></div>
+        </div>
       </div>
-    </div>
-    <div class="ac-wrap" style="min-width:130px;">
-      <label>ALyC</label>
-      <div class="ac-input-wrap">
-        <input type="text" class="ac-input" id="cartBuscarAlyc" placeholder="ALyC..." autocomplete="off" oninput="AC.cartAlyc.onInput()" onfocus="AC.cartAlyc.open()" />
-        <span class="ac-clear" id="cartBuscarAlycClear" onclick="AC.cartAlyc.clear()">✕</span>
-        <div class="ac-dropdown" id="cartBuscarAlycDrop"></div>
+      <div class="ac-wrap" style="min-width:150px;">
+        <label>ALyC</label>
+        <div class="ac-input-wrap">
+          <input type="text" class="ac-input" id="cartBuscarAlyc" placeholder="Todas..." autocomplete="off" oninput="AC.alycs.onInput()" onfocus="AC.alycs.open()" />
+          <span class="ac-clear" id="cartBuscarAlycClear" onclick="AC.alycs.clearInput()">✕</span>
+          <div class="ac-dropdown" id="cartBuscarAlycDrop"></div>
+        </div>
       </div>
-    </div>
-    <div class="ac-wrap" style="min-width:160px;">
-      <label>Ticker</label>
-      <div class="ac-input-wrap">
-        <input type="text" class="ac-input" id="cartBuscarTicker" placeholder="Ticker..." autocomplete="off" oninput="AC.cartTicker.onInput()" onfocus="AC.cartTicker.open()" />
-        <span class="ac-clear" id="cartBuscarTickerClear" onclick="AC.cartTicker.clear()">✕</span>
-        <div class="ac-dropdown" id="cartBuscarTickerDrop"></div>
+      <div class="ac-wrap" style="min-width:170px;">
+        <label>Ticker</label>
+        <div class="ac-input-wrap">
+          <input type="text" class="ac-input" id="cartBuscarTicker" placeholder="Todos..." autocomplete="off" oninput="AC.tickers.onInput()" onfocus="AC.tickers.open()" />
+          <span class="ac-clear" id="cartBuscarTickerClear" onclick="AC.tickers.clearInput()">✕</span>
+          <div class="ac-dropdown" id="cartBuscarTickerDrop"></div>
+        </div>
       </div>
+      <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.limpiarFiltroGlobal()">✕ Limpiar todo</button>
+      <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.exportarCarteraGlobal()">↓ Excel</button>
     </div>
-    <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.limpiarFiltroCartera()">Limpiar</button>
-    <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.exportarCarteraGlobal()">↓ Excel</button>
+    <!-- Chips de selección activos -->
+    <div id="globalChipsRow" style="display:none; margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+      <div class="ac-chips" id="chipsClientes"></div>
+      <div class="ac-chips" id="chipsAlycs"></div>
+      <div class="ac-chips" id="chipsTickers"></div>
+    </div>
   </div>
 
   <!-- KPIs cartera -->
@@ -1040,28 +1080,46 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
 <!-- ══════════ PANEL: DASHBOARD ══════════ -->
 <div class="panel" id="panel-dashboard">
 
-  <!-- Selector cliente con autocomplete -->
-  <div style="display:flex; gap:12px; align-items:flex-end; margin-bottom:14px; flex-wrap:wrap;">
-    <div class="selector-group">
-      <label>ALyC</label>
-      <select id="selAlyc" onchange="App.onAlycChange()" style="min-width:130px;">
-        <option value="">— Todas —</option>
-      </select>
-    </div>
-    <div class="ac-wrap" style="flex:1; min-width:260px;">
-      <label>Cliente / CC</label>
-      <div class="ac-input-wrap">
-        <input type="text" class="ac-input" id="dashBuscarCliente" placeholder="Nombre o CC..." autocomplete="off"
-          oninput="AC.dashCliente.onInput()" onfocus="AC.dashCliente.open()" />
-        <span class="ac-clear" id="dashBuscarClienteClear" onclick="AC.dashCliente.clear()">✕</span>
-        <div class="ac-dropdown" id="dashBuscarClienteDrop"></div>
+  <!-- Filtros compartidos con Cartera (mismos ACs globales) -->
+  <div style="margin-bottom:14px;">
+    <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+      <div class="ac-wrap" style="flex:1; min-width:200px;">
+        <label>Cliente / CC</label>
+        <div class="ac-input-wrap">
+          <input type="text" class="ac-input" id="dashBuscarCliente" placeholder="Todos los clientes..." autocomplete="off" oninput="AC.clientes.onInput('dash')" onfocus="AC.clientes.open('dash')" />
+          <span class="ac-clear" id="dashBuscarClienteClear" onclick="AC.clientes.clearInput()">✕</span>
+          <div class="ac-dropdown" id="dashBuscarClienteDrop"></div>
+        </div>
       </div>
-    </div>
-    <div id="clientePerfil" style="display:none;">
-      <div class="selector-group">
-        <label>Perfil</label>
-        <div id="clientePerfilVal" class="pill pill-blue" style="padding:7px 14px; font-size:12px;">—</div>
+      <div class="ac-wrap" style="min-width:150px;">
+        <label>ALyC</label>
+        <div class="ac-input-wrap">
+          <input type="text" class="ac-input" id="dashBuscarAlyc" placeholder="Todas..." autocomplete="off" oninput="AC.alycs.onInput('dash')" onfocus="AC.alycs.open('dash')" />
+          <span class="ac-clear" id="dashBuscarAlycClear" onclick="AC.alycs.clearInput()">✕</span>
+          <div class="ac-dropdown" id="dashBuscarAlycDrop"></div>
+        </div>
       </div>
+      <div class="ac-wrap" style="min-width:170px;">
+        <label>Ticker</label>
+        <div class="ac-input-wrap">
+          <input type="text" class="ac-input" id="dashBuscarTicker" placeholder="Todos..." autocomplete="off" oninput="AC.tickers.onInput('dash')" onfocus="AC.tickers.open('dash')" />
+          <span class="ac-clear" id="dashBuscarTickerClear" onclick="AC.tickers.clearInput()">✕</span>
+          <div class="ac-dropdown" id="dashBuscarTickerDrop"></div>
+        </div>
+      </div>
+      <button class="btn-secondary" style="font-size:11px; padding:7px 14px;" onclick="App.limpiarFiltroGlobal()">✕ Limpiar todo</button>
+    </div>
+    <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+      <div class="ac-chips" id="dashChipsClientes"></div>
+      <div class="ac-chips" id="dashChipsAlycs"></div>
+      <div class="ac-chips" id="dashChipsTickers"></div>
+    </div>
+  </div>
+  <div id="clientePerfil" style="display:none; margin-bottom:10px;">
+    <div class="flex-center">
+      <span style="font-size:11px; color:var(--text3);">Perfil:</span>
+      <div id="clientePerfilVal" class="pill pill-blue" style="padding:5px 12px; font-size:12px;">—</div>
+      <span id="dashSelLabel" style="font-size:12px; color:var(--text2);"></span>
     </div>
   </div>
 
@@ -1280,75 +1338,129 @@ hr.sep { border:none; border-top:1px solid var(--border); margin:16px 0; }
 // ═══════════════════════════════════════════════════════
 
 // ══════════════════════════════════════════
-//  AUTOCOMPLETE ENGINE
+//  FILTRO GLOBAL COMPARTIDO (Cartera ↔ Dashboard)
 // ══════════════════════════════════════════
+const FG = {
+  clientes: new Set(),  // comitentes seleccionados
+  alycs:    new Set(),  // ALyCs seleccionadas
+  tickers:  new Set(),  // tickers seleccionados
+};
+
+// Motor AC multi-select compartido
 const AC = {};
 
-function createAC(config) {
-  // config: { inputId, dropId, clearId, getItems(query), onSelect(value,label), onClear }
-  let selectedValue = null;
-  let open = false;
+function createMultiAC(cfg) {
+  // cfg: { name, cartInputId, cartDropId, cartClearId, cartChipsId,
+  //              dashInputId, dashDropId, dashClearId, dashChipsId,
+  //        store (Set en FG), getItems(query, store), onAnyChange() }
 
-  const input = () => document.getElementById(config.inputId);
-  const drop  = () => document.getElementById(config.dropId);
-  const clr   = () => document.getElementById(config.clearId);
+  function getInput(ctx)  { return document.getElementById(ctx === 'dash' ? cfg.dashInputId  : cfg.cartInputId); }
+  function getDrop(ctx)   { return document.getElementById(ctx === 'dash' ? cfg.dashDropId   : cfg.cartDropId); }
+  function getClear(ctx)  { return document.getElementById(ctx === 'dash' ? cfg.dashClearId  : cfg.cartClearId); }
+  function getChips(ctx)  { return document.getElementById(ctx === 'dash' ? cfg.dashChipsId  : cfg.cartChipsId); }
 
-  function render(items) {
-    const d = drop();
-    if (!items.length) { d.classList.remove('open'); return; }
-    d.innerHTML = items.slice(0, 60).map((it, i) =>
-      `<div class="ac-item" data-val="${it.value}" data-label="${it.label}" onclick="AC['${config.name}'].select('${it.value}','${it.label.replace(/'/g,"&#39;")}')">
-        ${it.label}${it.sub ? `<span class="ac-sub">${it.sub}</span>` : ''}
-      </div>`
-    ).join('');
-    d.classList.add('open');
-    open = true;
+  const ALL_CTX = ['cart', 'dash'];
+
+  function updateInputPlaceholder() {
+    const store = cfg.store;
+    const txt = store.size === 0 ? '' :
+                store.size === 1 ? [...store][0] :
+                `${store.size} seleccionados`;
+    ALL_CTX.forEach(ctx => {
+      const inp = getInput(ctx);
+      if (inp && document.activeElement !== inp) inp.placeholder = txt || cfg.placeholder;
+    });
   }
 
-  function onInput() {
-    const q = (input().value || '').toLowerCase().trim();
-    clr().style.display = q ? 'block' : 'none';
-    selectedValue = null;
-    const items = config.getItems(q);
-    render(items);
-    if (config.onChange) config.onChange(null);
+  function renderDrop(ctx) {
+    const inp  = getInput(ctx);
+    const drop = getDrop(ctx);
+    if (!drop) return;
+    const q = (inp?.value || '').toLowerCase().trim();
+    const items = cfg.getItems(q);
+
+    if (!items.length) { drop.classList.remove('open'); return; }
+
+    const store = cfg.store;
+    drop.innerHTML =
+      `<div class="ac-dropdown-header">
+        <span style="color:var(--text3);">${items.length} opciones</span>
+        <span onclick="AC['${cfg.name}'].clearAll()">Limpiar selección</span>
+       </div>` +
+      items.slice(0, 80).map(it => {
+        const checked = store.has(it.value);
+        return `<div class="ac-item${checked ? ' checked' : ''}" onclick="AC['${cfg.name}'].toggle('${it.value.replace(/'/g,"&#39;")}','${it.label.replace(/'/g,"&#39;")}')">
+          <div class="ac-check">${checked ? '✓' : ''}</div>
+          <span class="ac-label">${it.label}</span>
+          ${it.sub ? `<span class="ac-sub">${it.sub}</span>` : ''}
+        </div>`;
+      }).join('');
+    drop.classList.add('open');
   }
 
-  function openDrop() {
-    const q = (input().value || '').toLowerCase().trim();
-    const items = config.getItems(q);
-    render(items);
+  function renderChips() {
+    const store = cfg.store;
+    ALL_CTX.forEach(ctx => {
+      const el = getChips(ctx);
+      if (!el) return;
+      el.innerHTML = [...store].map(v => {
+        const label = cfg.labelMap?.[v] || v;
+        return `<div class="ac-chip">${label} <span class="xc" onclick="AC['${cfg.name}'].toggle('${v.replace(/'/g,"&#39;")}','')">✕</span></div>`;
+      }).join('');
+    });
   }
 
-  function select(value, label) {
-    selectedValue = value;
-    input().value = label;
-    drop().classList.remove('open');
-    clr().style.display = 'block';
-    open = false;
-    if (config.onSelect) config.onSelect(value, label);
+  function toggle(value, label) {
+    const store = cfg.store;
+    if (store.has(value)) store.delete(value);
+    else store.add(value);
+    // Re-render todos los dropdowns abiertos
+    ALL_CTX.forEach(ctx => { if (getDrop(ctx)?.classList.contains('open')) renderDrop(ctx); });
+    renderChips();
+    updateInputPlaceholder();
+    cfg.onAnyChange();
   }
 
-  function clear() {
-    selectedValue = null;
-    input().value = '';
-    drop().classList.remove('open');
-    clr().style.display = 'none';
-    open = false;
-    if (config.onClear) config.onClear();
+  function onInput(ctx = 'cart') {
+    const inp = getInput(ctx);
+    const clr = getClear(ctx);
+    if (clr) clr.style.display = (inp?.value || '') ? 'block' : 'none';
+    renderDrop(ctx);
   }
 
-  function getValue() { return selectedValue; }
-  function getRaw() { return (input()?.value || '').toLowerCase().trim(); }
+  function open(ctx = 'cart') { renderDrop(ctx); }
 
-  // Close on outside click
+  function clearInput(ctx) {
+    ALL_CTX.forEach(c => {
+      const inp = getInput(c); if (inp) inp.value = '';
+      const clr = getClear(c); if (clr) clr.style.display = 'none';
+    });
+  }
+
+  function clearAll() {
+    cfg.store.clear();
+    ALL_CTX.forEach(ctx => {
+      const inp = getInput(ctx); if (inp) { inp.value = ''; inp.placeholder = cfg.placeholder; }
+      const clr = getClear(ctx); if (clr) clr.style.display = 'none';
+      const drop = getDrop(ctx); if (drop) drop.classList.remove('open');
+    });
+    renderChips();
+    cfg.onAnyChange();
+  }
+
+  // Cerrar al click fuera
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('#' + config.inputId) && !e.target.closest('#' + config.dropId)) {
-      drop()?.classList.remove('open');
-    }
+    ALL_CTX.forEach(ctx => {
+      const inp  = getInput(ctx);
+      const drop = getDrop(ctx);
+      if (!drop) return;
+      if (!e.target.closest('#' + (inp?.id || '')) && !e.target.closest('#' + drop.id)) {
+        drop.classList.remove('open');
+      }
+    });
   });
 
-  return { onInput, open: openDrop, select, clear, getValue, getRaw };
+  return { toggle, onInput, open, clearInput, clearAll, renderChips, updateInputPlaceholder };
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1445,88 +1557,105 @@ function initNav() {
   });
 }
 
-// ── Init Autocompletes ──
+// ── Init Autocompletes multi-select globales ──
 function initAC() {
-  // Cartera: cliente
-  AC.cartCliente = createAC({
-    name: 'cartCliente',
-    inputId: 'cartBuscarCliente', dropId: 'cartBuscarClienteDrop', clearId: 'cartBuscarClienteClear',
+  const onChange = () => {
+    aplicarFiltroGlobal();
+  };
+
+  AC.clientes = createMultiAC({
+    name: 'clientes',
+    cartInputId: 'cartBuscarCliente', cartDropId: 'cartBuscarClienteDrop',
+    cartClearId: 'cartBuscarClienteClear', cartChipsId: 'chipsClientes',
+    dashInputId: 'dashBuscarCliente',  dashDropId: 'dashBuscarClienteDrop',
+    dashClearId: 'dashBuscarClienteClear', dashChipsId: 'dashChipsClientes',
+    store: FG.clientes,
+    placeholder: 'Todos los clientes...',
     getItems(q) {
+      // Cross-filter: solo mostrar clientes que pasan filtros de alyc y ticker activos
       const seen = new Set();
       const items = [];
       S.posiciones.forEach(p => {
-        const cli = findCliente(p.comitente);
-        const key = p.comitente;
-        if (seen.has(key)) return;
-        seen.add(key);
-        const label = cli ? `${cli.cliente}` : p.comitente;
-        const full = `${label} ${p.comitente}`.toLowerCase();
-        if (!q || full.includes(q)) items.push({ value: p.comitente, label, sub: p.comitente });
-      });
-      return items;
-    },
-    onSelect() { filtrarCartera(); },
-    onClear() { filtrarCartera(); },
-  });
-
-  // Cartera: alyc
-  AC.cartAlyc = createAC({
-    name: 'cartAlyc',
-    inputId: 'cartBuscarAlyc', dropId: 'cartBuscarAlycDrop', clearId: 'cartBuscarAlycClear',
-    getItems(q) {
-      const alycs = [...new Set(S.posiciones.map(p => p.alyc))].sort();
-      return alycs.filter(a => !q || a.toLowerCase().includes(q)).map(a => ({ value: a, label: a }));
-    },
-    onSelect() { filtrarCartera(); },
-    onClear() { filtrarCartera(); },
-  });
-
-  // Cartera: ticker
-  AC.cartTicker = createAC({
-    name: 'cartTicker',
-    inputId: 'cartBuscarTicker', dropId: 'cartBuscarTickerDrop', clearId: 'cartBuscarTickerClear',
-    getItems(q) {
-      const tickers = [...new Set(S.posiciones.map(p => p.ticker))].sort();
-      return tickers.filter(t => !q || t.toLowerCase().includes(q)).map(t => ({ value: t, label: t }));
-    },
-    onSelect() { filtrarCartera(); },
-    onClear() { filtrarCartera(); },
-  });
-
-  // Dashboard: cliente
-  AC.dashCliente = createAC({
-    name: 'dashCliente',
-    inputId: 'dashBuscarCliente', dropId: 'dashBuscarClienteDrop', clearId: 'dashBuscarClienteClear',
-    getItems(q) {
-      const alyc = $('selAlyc')?.value || '';
-      const seen = new Set();
-      const items = [];
-      S.posiciones.forEach(p => {
-        if (alyc && p.alyc !== alyc) return;
-        const key = p.comitente;
+        if (FG.alycs.size  > 0 && !FG.alycs.has(p.alyc))   return;
+        if (FG.tickers.size > 0 && !FG.tickers.has(p.ticker)) return;
+        const key = `${p.alyc}|${p.comitente}`;
         if (seen.has(key)) return;
         seen.add(key);
         const cli = findCliente(p.comitente);
-        const nombre = cli?.cliente || '';
-        const full = `${nombre} ${p.comitente}`.toLowerCase();
-        if (!q || full.includes(q)) items.push({ value: p.comitente, label: nombre || p.comitente, sub: nombre ? p.comitente : '' });
+        const nombre = cli?.cliente || p.comitente;
+        const full = `${nombre} ${p.comitente} ${p.alyc}`.toLowerCase();
+        if (!q || full.includes(q)) {
+          items.push({ value: p.comitente, label: nombre, sub: `${p.comitente} · ${p.alyc}` });
+        }
       });
       return items;
     },
-    onSelect(value) {
-      S.dashCurrentComitente = value;
-      S.dashCurrentAlyc = $('selAlyc')?.value || '';
-      onClienteChange();
-    },
-    onClear() {
-      S.dashCurrentComitente = null;
-      $('dashEmpty').style.display = '';
-      $('clienteKPIs').style.display = 'none';
-      $('clienteCharts').style.display = 'none';
-      $('dashFilterRow').style.display = 'none';
-      $('clientePerfil').style.display = 'none';
-    },
+    onAnyChange: onChange,
   });
+
+  AC.alycs = createMultiAC({
+    name: 'alycs',
+    cartInputId: 'cartBuscarAlyc', cartDropId: 'cartBuscarAlycDrop',
+    cartClearId: 'cartBuscarAlycClear', cartChipsId: 'chipsAlycs',
+    dashInputId: 'dashBuscarAlyc',  dashDropId: 'dashBuscarAlycDrop',
+    dashClearId: 'dashBuscarAlycClear', dashChipsId: 'dashChipsAlycs',
+    store: FG.alycs,
+    placeholder: 'Todas las ALyCs...',
+    getItems(q) {
+      // Cross-filter: solo ALyCs que tienen clientes/tickers seleccionados
+      const alycsDisp = new Set(
+        S.posiciones
+          .filter(p => FG.clientes.size === 0 || FG.clientes.has(p.comitente))
+          .filter(p => FG.tickers.size  === 0 || FG.tickers.has(p.ticker))
+          .map(p => p.alyc)
+      );
+      return [...alycsDisp].sort()
+        .filter(a => !q || a.toLowerCase().includes(q))
+        .map(a => ({ value: a, label: a }));
+    },
+    onAnyChange: onChange,
+  });
+
+  AC.tickers = createMultiAC({
+    name: 'tickers',
+    cartInputId: 'cartBuscarTicker', cartDropId: 'cartBuscarTickerDrop',
+    cartClearId: 'cartBuscarTickerClear', cartChipsId: 'chipsTickers',
+    dashInputId: 'dashBuscarTicker',  dashDropId: 'dashBuscarTickerDrop',
+    dashClearId: 'dashBuscarTickerClear', dashChipsId: 'dashChipsTickers',
+    store: FG.tickers,
+    placeholder: 'Todos los tickers...',
+    getItems(q) {
+      // Cross-filter: solo tickers de clientes/alycs activos
+      const tickersDisp = new Set(
+        S.posiciones
+          .filter(p => FG.clientes.size === 0 || FG.clientes.has(p.comitente))
+          .filter(p => FG.alycs.size    === 0 || FG.alycs.has(p.alyc))
+          .map(p => p.ticker)
+      );
+      return [...tickersDisp].sort()
+        .filter(t => !q || t.toLowerCase().includes(q))
+        .map(t => ({ value: t, label: t }));
+    },
+    onAnyChange: onChange,
+  });
+}
+
+// Aplicar filtro global → actualiza Cartera y Dashboard simultáneamente
+function aplicarFiltroGlobal() {
+  filtrarCartera();
+  actualizarDashboard();
+}
+
+
+function limpiarFiltroGlobal() {
+  FG.clientes.clear();
+  FG.alycs.clear();
+  FG.tickers.clear();
+  AC.clientes?.clearAll();
+  AC.alycs?.clearAll();
+  AC.tickers?.clearAll();
+}
+
 }
 
 // ══════════════════════════════════════════
@@ -2498,31 +2627,12 @@ function renderCartaGlobal() {
 }
 
 function filtrarCartera() {
-  const clienteVal = AC.cartCliente?.getValue() || '';
-  const clienteRaw = AC.cartCliente?.getRaw() || '';
-  const alycVal    = AC.cartAlyc?.getValue()   || '';
-  const tickerVal  = AC.cartTicker?.getValue()  || '';
-  const tickerRaw  = AC.cartTicker?.getRaw()    || '';
-
   let data = cartDataCache.filter(p => {
-    // ALyC: valor exacto del AC
-    if (alycVal && p.alyc !== alycVal) return false;
-    // Cliente: exacto si hay selección, fuzzy si hay texto libre
-    if (clienteVal) {
-      if (p.comitente !== clienteVal) return false;
-    } else if (clienteRaw) {
-      const m = `${p.cliente} ${p.comitente}`.toLowerCase();
-      if (!m.includes(clienteRaw)) return false;
-    }
-    // Ticker: exacto si hay selección, fuzzy si texto libre
-    if (tickerVal) {
-      if (p.ticker !== tickerVal) return false;
-    } else if (tickerRaw) {
-      if (!p.ticker.toLowerCase().includes(tickerRaw)) return false;
-    }
+    if (FG.clientes.size > 0 && !FG.clientes.has(p.comitente)) return false;
+    if (FG.alycs.size    > 0 && !FG.alycs.has(p.alyc))        return false;
+    if (FG.tickers.size  > 0 && !FG.tickers.has(p.ticker))     return false;
     return true;
   });
-
   data = sortData(data, CART_SORT.col, CART_SORT.dir);
   renderCartaTabla(data);
 }
@@ -2644,45 +2754,89 @@ function exportarCarteraGlobal() {
 // ══════════════════════════════════════════
 //  DASHBOARD — sin tabla, 5 gráficos, filtros cruzados
 // ══════════════════════════════════════════
-function onAlycChange() {
-  S.dashCurrentAlyc = $('selAlyc')?.value || '';
-  AC.dashCliente?.clear();
-  S.dashCurrentComitente = null;
-  $('dashEmpty').style.display = '';
-  $('clienteKPIs').style.display = 'none';
-  $('clienteCharts').style.display = 'none';
-  $('dashFilterRow').style.display = 'none';
-  $('clientePerfil').style.display = 'none';
-}
+function onAlycChange() { /* legacy — reemplazado por FG */ }
+function onClienteChange() { /* legacy — reemplazado por actualizarDashboard */ }
 
-function onClienteChange() {
-  const comitente = S.dashCurrentComitente;
-  if (!comitente) return;
-  $('dashEmpty').style.display = 'none';
+// ── Dashboard: actualiza según filtro global FG ──
+function actualizarDashboard() {
+  const hayFiltro = FG.clientes.size > 0 || FG.alycs.size > 0 || FG.tickers.size > 0;
 
-  const cli = findCliente(comitente);
-  if (cli) {
-    $('clientePerfil').style.display = '';
-    $('clientePerfilVal').textContent = cli.perfil || '—';
+  if (!hayFiltro) {
+    $('dashEmpty').style.display = '';
+    $('clienteKPIs').style.display = 'none';
+    $('clienteCharts').style.display = 'none';
+    $('dashFilterRow').style.display = 'none';
+    $('clientePerfil').style.display = 'none';
+    return;
   }
 
-  // Reset filtros
-  S.dashFilters = { grupo:'', subgrupo:'', pais:'', sector:'', subtipo:'' };
-  ['fGrupo','fSubgrupo','fPais','fSector','fSubtipo'].forEach(id => {
-    const el = $(id);
-    if (el) el.value = '';
+  // Posiciones que pasan el filtro global
+  const pos = S.posiciones.filter(p => {
+    if (FG.clientes.size > 0 && !FG.clientes.has(p.comitente)) return false;
+    if (FG.alycs.size    > 0 && !FG.alycs.has(p.alyc))        return false;
+    if (FG.tickers.size  > 0 && !FG.tickers.has(p.ticker))     return false;
+    return true;
   });
 
-  const pos = S.posiciones.filter(p =>
-    p.comitente === comitente && (!S.dashCurrentAlyc || p.alyc === S.dashCurrentAlyc)
-  );
   const cartela = valuarCartera(pos);
 
-  renderClienteKPIs(cartela, cli);
+  // Label informativo
+  const labelEl = $('dashSelLabel');
+  if (labelEl) {
+    if (FG.clientes.size === 1) {
+      const cli = findCliente([...FG.clientes][0]);
+      labelEl.textContent = cli?.cliente ? `· ${cli.cliente}` : '';
+    } else if (FG.clientes.size > 1) {
+      labelEl.textContent = `· ${FG.clientes.size} clientes consolidados`;
+    } else {
+      labelEl.textContent = FG.alycs.size > 0 ? `· ${[...FG.alycs].join(', ')}` : '· Vista global';
+    }
+  }
+
+  // Perfil
+  const perfilEl = $('clientePerfil');
+  if (perfilEl) {
+    if (FG.clientes.size === 1) {
+      const cli = findCliente([...FG.clientes][0]);
+      perfilEl.style.display = cli ? '' : 'none';
+      if (cli) $('clientePerfilVal').textContent = cli.perfil || '—';
+    } else if (FG.clientes.size > 1) {
+      perfilEl.style.display = '';
+      $('clientePerfilVal').textContent = `${FG.clientes.size} clientes`;
+    } else {
+      perfilEl.style.display = 'none';
+    }
+  }
+
+  // Cauciones: sumar todos los clientes seleccionados (o todos si no hay filtro)
+  const cliSel = FG.clientes.size > 0
+    ? [...FG.clientes].map(cc => findCliente(cc)).filter(Boolean)
+    : [];
+  const cliMock = {
+    caucionPesos:   cliSel.reduce((s, c) => s + (c.caucionPesos   || 0), 0),
+    caucionDolares: cliSel.reduce((s, c) => s + (c.caucionDolares || 0), 0),
+  };
+
+  $('dashEmpty').style.display = 'none';
+
+  // Sub-filtros de allocation
+  const cartelaFiltrada = aplicarSubFiltros(cartela);
+
+  renderClienteKPIs(cartelaFiltrada, cliMock);
   populateDashFilters(cartela);
-  renderClienteCharts(cartela);
+  renderClienteCharts(cartelaFiltrada);
   $('dashFilterRow').style.display = '';
-  $('dashActiveChips').innerHTML = '';
+}
+
+function aplicarSubFiltros(cartela) {
+  const f = S.dashFilters;
+  return cartela.filter(p =>
+    (!f.grupo    || p.alloc.grupo    === f.grupo)    &&
+    (!f.subgrupo || p.alloc.subgrupo === f.subgrupo) &&
+    (!f.pais     || p.alloc.pais     === f.pais)     &&
+    (!f.sector   || p.alloc.sector   === f.sector)   &&
+    (!f.subtipo  || p.alloc.subtipo  === f.subtipo)
+  );
 }
 
 function populateDashFilters(cartela) {
@@ -2710,11 +2864,12 @@ function applyDashFilters() {
     sector:   $('fSector')?.value   || '',
     subtipo:  $('fSubtipo')?.value  || '',
   };
-  // Highlight active filters
   Object.entries({ fGrupo:'grupo', fSubgrupo:'subgrupo', fPais:'pais', fSector:'sector', fSubtipo:'subtipo' }).forEach(([id, key]) => {
     const el = $(id);
     if (el) el.className = `filter-select-inline${S.dashFilters[key] ? ' active-filter' : ''}`;
   });
+  actualizarDashboard();
+  return; // lo siguiente ya no aplica
 
   // Chips
   const chips = $('dashActiveChips');
@@ -2753,7 +2908,7 @@ function clearDashFilter(key) {
   S.dashFilters[key] = '';
   const map = { grupo:'fGrupo', subgrupo:'fSubgrupo', pais:'fPais', sector:'fSector', subtipo:'fSubtipo' };
   const el = $(map[key]);
-  if (el) el.value = '';
+  if (el) { el.value = ''; el.className = 'filter-select-inline'; }
   applyDashFilters();
 }
 
@@ -2765,16 +2920,7 @@ function clearDashFilters() {
   });
   const chips = $('dashActiveChips');
   if (chips) chips.innerHTML = '';
-
-  const comitente = S.dashCurrentComitente;
-  if (!comitente) return;
-  const pos = S.posiciones.filter(p =>
-    p.comitente === comitente && (!S.dashCurrentAlyc || p.alyc === S.dashCurrentAlyc)
-  );
-  const cartela = valuarCartera(pos);
-  const cli = findCliente(comitente);
-  renderClienteKPIs(cartela, cli);
-  renderClienteCharts(cartela);
+  actualizarDashboard();
 }
 
 function valuarCartera(pos) {
@@ -3239,8 +3385,9 @@ return {
   cargarFuenteDesdeCarpeta, cargarAlycDesdeCarpeta, cargarTodoDesdeDrive, cargarBCCHDesdeCarpeta,
   removeAlyc, procesarArchivos, fetchPrices, fetchMEP,
   onAlycChange, onClienteChange, onRotAlycChange,
-  filtrarCartera, limpiarFiltroCartera, sortCartera,
+  filtrarCartera, limpiarFiltroGlobal, sortCartera,
   applyDashFilters, clearDashFilter, clearDashFilters,
+  actualizarDashboard,
   renderModelo, calcularRotacion,
   cargarOrdenesYResultado,
   exportarCarteraGlobal, exportarOperaciones, exportarResultado,

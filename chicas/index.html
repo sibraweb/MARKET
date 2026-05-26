@@ -3,247 +3,190 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SIBRA · Mesa de Ventas</title>
+<title>SIBRA · Mesa de Operaciones</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
-  --red: #E10600;
-  --red-dark: #B00500;
-  --red-light: #ff3330;
-  --bg: #0d0d0d;
-  --bg2: #141414;
-  --bg3: #1a1a1a;
-  --bg4: #222222;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
-  --text: #f0f0f0;
-  --text2: #a0a0a0;
-  --text3: #555;
-  --green: #22c55e;
-  --amber: #f59e0b;
-  --wa: #25d366;
-  --wa-bg: #0d2016;
+  --red: #E10600; --red-dark: #B00500; --red-light: #ff3330;
+  --bg: #0d0d0d; --bg2: #141414; --bg3: #1a1a1a; --bg4: #222222;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+  --text: #f0f0f0; --text2: #a0a0a0; --text3: #555;
+  --green: #22c55e; --amber: #f59e0b; --blue: #3b82f6;
+  --wa: #25d366; --wa-bg: #0d2016;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:var(--bg); color:var(--text); font-family:'Montserrat',sans-serif; font-size:13px; min-height:100vh; }
 
-/* ── HEADER ── */
+/* HEADER */
 .app-header {
   background:var(--bg2); border-bottom:2px solid var(--red);
-  padding:0 24px; height:52px;
-  display:flex; align-items:center; gap:16px;
+  padding:0 24px; height:52px; display:flex; align-items:center; gap:16px;
   position:sticky; top:0; z-index:100;
 }
 .logo { font-family:'Raleway',sans-serif; font-weight:700; font-size:18px; letter-spacing:2px; color:var(--red); }
 .logo span { color:var(--text); font-weight:300; }
 .header-sep { flex:1; }
 .drive-status { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text2); }
-.drive-dot { width:7px; height:7px; border-radius:50%; background:var(--text3); transition:background 0.3s; }
+.drive-dot { width:7px; height:7px; border-radius:50%; background:var(--text3); transition:background .3s; }
 .drive-dot.connected { background:var(--green); }
-.drive-dot.error { background:var(--red); }
 .btn-drive {
   background:transparent; border:1px solid var(--border2); color:var(--text2);
   padding:5px 14px; border-radius:4px; cursor:pointer;
   font-family:'Montserrat',sans-serif; font-size:12px; font-weight:500;
-  transition:all 0.15s; display:flex; align-items:center; gap:6px;
+  transition:all .15s; display:flex; align-items:center; gap:6px;
 }
 .btn-drive:hover { border-color:var(--red); color:var(--red); }
 .btn-drive.connected { border-color:var(--green); color:var(--green); }
 
-/* ── MAIN ── */
+/* TABS */
+.nav-tabs {
+  background:var(--bg2); border-bottom:1px solid var(--border);
+  padding:0 24px; display:flex; gap:0;
+}
+.nav-tab {
+  padding:12px 22px; cursor:pointer; font-size:12px; font-weight:500;
+  color:var(--text3); border-bottom:2px solid transparent; transition:all .15s;
+  letter-spacing:.04em; white-space:nowrap;
+}
+.nav-tab:hover { color:var(--text2); }
+.nav-tab.active { color:var(--red); border-bottom-color:var(--red); }
+
+/* MAIN */
 .main { max-width:1100px; margin:0 auto; padding:28px 20px 80px; }
+.panel { display:none; }
+.panel.active { display:block; }
 
-/* ── SECTION TITLE ── */
-.sec-title {
-  font-family:'Raleway',sans-serif; font-size:11px; font-weight:600;
-  letter-spacing:.12em; text-transform:uppercase; color:var(--text3);
-  margin-bottom:12px;
-}
+/* SEC TITLE */
+.sec-title { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; }
 
-/* ── DRIVE PANEL ── */
-.drive-panel {
-  background:var(--bg2); border:1px solid var(--border2); border-radius:10px;
-  padding:20px 24px; margin-bottom:24px;
-}
+/* DRIVE PANEL */
+.drive-panel { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; padding:20px 24px; margin-bottom:24px; }
 .drive-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-top:14px; }
-.source-card {
-  background:var(--bg3); border:1px solid var(--border); border-radius:8px;
-  padding:14px; transition:border-color 0.2s;
-}
+.source-card { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:14px; transition:border-color .2s; }
 .source-card.linked { border-color:rgba(34,197,94,.35); }
 .source-card.loading { border-color:rgba(245,158,11,.35); }
 .source-card.error { border-color:rgba(225,6,0,.35); }
 .sc-title { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text2); margin-bottom:6px; }
 .sc-file { font-size:11px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:6px; }
 .sc-status { font-size:11px; display:flex; align-items:center; gap:5px; }
-.sc-status.ok { color:var(--green); }
-.sc-status.warn { color:var(--amber); }
-.sc-status.err { color:var(--red); }
-.sc-status.idle { color:var(--text3); }
+.sc-status.ok { color:var(--green); } .sc-status.warn { color:var(--amber); }
+.sc-status.err { color:var(--red); } .sc-status.idle { color:var(--text3); }
 .sc-btn { display:flex; gap:6px; margin-top:10px; }
 
-/* ── BUTTONS ── */
-.btn {
-  display:inline-flex; align-items:center; gap:6px;
-  padding:8px 16px; border-radius:6px; cursor:pointer; border:none;
-  font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600;
-  transition:all .15s; white-space:nowrap;
-}
+/* BUTTONS */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:6px; cursor:pointer; border:none; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; transition:all .15s; white-space:nowrap; }
 .btn-primary { background:var(--red); color:#fff; }
 .btn-primary:hover { background:var(--red-dark); }
 .btn-primary:disabled { background:var(--bg4); color:var(--text3); cursor:not-allowed; }
 .btn-secondary { background:transparent; border:1px solid var(--border2); color:var(--text2); }
 .btn-secondary:hover { border-color:var(--text2); color:var(--text); }
+.btn-green { background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.3); color:var(--green); }
+.btn-green:hover { background:rgba(34,197,94,.2); }
 .btn-sm { padding:5px 10px; font-size:11px; }
 
-/* ── FILTROS ── */
-.filter-panel {
-  background:var(--bg2); border:1px solid var(--border2); border-radius:10px;
-  padding:20px 24px; margin-bottom:24px;
-}
+/* FILTER PANEL */
+.filter-panel { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; padding:20px 24px; margin-bottom:24px; }
 .filter-row { display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; }
 .fg { display:flex; flex-direction:column; gap:5px; }
 .fg label { font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); }
-select, input[type=text] {
+select, input[type=text], input[type=number] {
   background:var(--bg3); border:1px solid var(--border2); border-radius:6px;
-  color:var(--text); padding:8px 12px;
-  font-family:'Montserrat',sans-serif; font-size:12px; outline:none;
-  transition:border-color .15s;
+  color:var(--text); padding:8px 12px; font-family:'Montserrat',sans-serif; font-size:12px; outline:none; transition:border-color .15s;
 }
-select:focus, input[type=text]:focus { border-color:var(--red); }
-select { min-width:180px; cursor:pointer; }
+select:focus, input[type=text]:focus, input[type=number]:focus { border-color:var(--red); }
+select { min-width:160px; cursor:pointer; }
 
-/* ── TICKER SEARCH ── */
-.ticker-search-wrap { position:relative; flex:1; min-width:200px; }
-.ticker-input { width:100%; }
+/* TICKER SEARCH */
+.ticker-search-wrap { position:relative; }
+.ticker-input { width:100%; min-width:200px; }
 .ticker-drop {
   display:none; position:absolute; top:calc(100% + 4px); left:0; right:0;
   background:var(--bg3); border:1px solid var(--border2); border-radius:6px;
-  z-index:200; max-height:240px; overflow-y:auto;
-  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  z-index:200; max-height:240px; overflow-y:auto; box-shadow:0 8px 32px rgba(0,0,0,.6);
 }
 .ticker-drop.open { display:block; }
-.ticker-item {
-  padding:9px 14px; cursor:pointer; font-size:12px;
-  border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;
-  transition:background .1s;
-}
+.ticker-item { padding:9px 14px; cursor:pointer; font-size:12px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; transition:background .1s; }
 .ticker-item:last-child { border-bottom:none; }
 .ticker-item:hover { background:rgba(225,6,0,.08); }
 .ticker-item .ti-sym { font-weight:700; }
 .ticker-item .ti-count { font-size:10px; color:var(--text3); }
 
-/* ── ÓRDENES TABLE ── */
-.ordenes-panel {
-  background:var(--bg2); border:1px solid var(--border2); border-radius:10px;
-  overflow:hidden;
-}
-.ordenes-header {
-  padding:16px 24px; border-bottom:1px solid var(--border);
-  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
-}
-.ordenes-title { display:flex; align-items:center; gap:10px; }
-.tag-venta {
+/* TICKER CHIPS */
+.ticker-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.ticker-chip {
+  display:inline-flex; align-items:center; gap:6px;
   background:rgba(225,6,0,.12); border:1px solid rgba(225,6,0,.3);
-  color:var(--red); font-size:10px; font-weight:700;
-  letter-spacing:.1em; text-transform:uppercase;
-  padding:4px 10px; border-radius:4px;
+  color:var(--red-light); padding:4px 12px; border-radius:20px;
+  font-size:12px; font-weight:600;
 }
-.ticker-badge {
-  background:var(--bg3); border:1px solid var(--border2);
-  padding:4px 12px; border-radius:4px; font-weight:700; font-size:15px; letter-spacing:.03em;
-}
+.ticker-chip .xc { cursor:pointer; opacity:.7; font-size:13px; }
+.ticker-chip .xc:hover { opacity:1; }
+.ticker-chip .price { font-size:10px; color:var(--amber); margin-left:4px; }
 
 /* PCT SELECTOR */
 .pct-selector { display:flex; gap:4px; align-items:center; }
-.pct-btn {
-  padding:5px 10px; border-radius:5px; cursor:pointer;
-  font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600;
-  background:var(--bg3); border:1px solid var(--border); color:var(--text2);
-  transition:all .15s;
-}
+.pct-btn { padding:5px 10px; border-radius:5px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; background:var(--bg3); border:1px solid var(--border); color:var(--text2); transition:all .15s; }
 .pct-btn:hover { border-color:var(--red); color:var(--red); }
 .pct-btn.active { background:rgba(225,6,0,.15); border-color:var(--red); color:var(--red-light); }
-.pct-label { font-size:10px; color:var(--text3); margin-right:4px; text-transform:uppercase; letter-spacing:.05em; }
+
+/* ORDENES PANEL */
+.ordenes-panel { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; overflow:hidden; margin-bottom:24px; }
+.ordenes-header { padding:16px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.tag-op { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:4px 10px; border-radius:4px; }
+.tag-venta { background:rgba(225,6,0,.12); border:1px solid rgba(225,6,0,.3); color:var(--red); }
+.tag-compra { background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.3); color:var(--green); }
 
 /* TABLE */
 .table-wrap { overflow-x:auto; }
 table { width:100%; border-collapse:collapse; }
-th {
-  background:var(--bg3); padding:9px 16px; text-align:left;
-  font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
-  color:var(--text3); border-bottom:1px solid var(--border2); white-space:nowrap;
-}
+th { background:var(--bg3); padding:9px 16px; text-align:left; font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--text3); border-bottom:1px solid var(--border2); white-space:nowrap; }
 td { padding:0 16px; border-bottom:1px solid var(--border); font-size:12px; height:52px; white-space:nowrap; }
 tr:last-child td { border-bottom:none; }
 tr.row-sent td { opacity:.4; }
 .td-r { text-align:right; }
-.td-bold { font-weight:700; }
 
-/* CANTIDAD INPUT */
-.cant-wrap { display:flex; align-items:center; gap:6px; }
-.cant-input {
-  width:80px; text-align:right; padding:5px 8px;
-  background:var(--bg4); border:1px solid var(--border2); border-radius:5px;
-  color:var(--text); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600;
-  outline:none;
-}
+/* CANT INPUT */
+.cant-wrap { display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+.cant-input { width:80px; text-align:right; padding:5px 8px; background:var(--bg4); border:1px solid var(--border2); border-radius:5px; color:var(--text); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; outline:none; }
 .cant-input:focus { border-color:var(--red); }
 .cant-sug { font-size:10px; color:var(--text3); }
 
 /* SEND BTN */
-.btn-enviar {
-  display:inline-flex; align-items:center; justify-content:center; gap:5px;
-  padding:8px 14px; border-radius:7px;
-  font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700;
-  background:var(--wa-bg); color:var(--wa);
-  border:1px solid rgba(37,211,102,.2); text-decoration:none;
-  transition:all .15s; white-space:nowrap;
-}
+.btn-enviar { display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:8px 14px; border-radius:7px; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; background:var(--wa-bg); color:var(--wa); border:1px solid rgba(37,211,102,.2); text-decoration:none; transition:all .15s; white-space:nowrap; }
 .btn-enviar:active { transform:scale(.95); }
-.badge-sent {
-  display:inline-flex; align-items:center; gap:5px;
-  padding:8px 14px; border-radius:7px; font-size:11px; font-weight:600;
-  background:rgba(34,197,94,.08); color:var(--green); white-space:nowrap;
-}
+.badge-sent { display:inline-flex; align-items:center; gap:5px; padding:8px 14px; border-radius:7px; font-size:11px; font-weight:600; background:rgba(34,197,94,.08); color:var(--green); white-space:nowrap; }
+
+/* KPI ROW */
+.kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:20px; }
+.kpi { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:14px 16px; }
+.kpi-label { font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--text3); margin-bottom:6px; }
+.kpi-value { font-size:20px; font-weight:700; font-family:'Raleway',sans-serif; color:var(--text); line-height:1; }
+.kpi-sub { font-size:10px; color:var(--text3); margin-top:4px; }
+
+/* LOG */
+.process-log { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:11px; font-family:monospace; color:var(--text2); max-height:120px; overflow-y:auto; margin-top:12px; line-height:1.8; display:none; }
+.log-ok { color:var(--green); } .log-warn { color:var(--amber); } .log-err { color:var(--red); }
 
 /* EMPTY */
 .empty-state { padding:56px 20px; text-align:center; color:var(--text3); }
 .empty-state .es-icon { font-size:38px; margin-bottom:12px; }
 .empty-state p { font-size:13px; color:var(--text2); margin-bottom:4px; }
-.empty-state small { font-size:11px; }
 
-/* LOG */
-.process-log {
-  background:var(--bg3); border:1px solid var(--border); border-radius:6px;
-  padding:10px 14px; font-size:11px; font-family:monospace; color:var(--text2);
-  max-height:120px; overflow-y:auto; margin-top:12px; line-height:1.8; display:none;
-}
-.log-ok { color:var(--green); }
-.log-warn { color:var(--amber); }
-.log-err { color:var(--red); }
-
-/* SPINNER */
-.inline-spinner {
-  display:inline-block; width:11px; height:11px;
-  border:2px solid var(--border2); border-top-color:var(--red);
-  border-radius:50%; animation:spin .7s linear infinite;
-}
-@keyframes spin { to { transform:rotate(360deg); } }
+/* HISTORIAL */
+.historial-panel { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; overflow:hidden; }
+.hist-row { display:grid; grid-template-columns:80px 70px 80px 1fr 80px 80px 100px 100px; align-items:center; padding:8px 16px; border-bottom:1px solid var(--border); font-size:11px; gap:8px; }
+.hist-row:last-child { border-bottom:none; }
+.hist-header { background:var(--bg3); font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text3); }
 
 /* TOAST */
-#toast {
-  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
-  background:#1f3829; color:var(--wa); border:1px solid rgba(37,211,102,.35);
-  padding:10px 22px; border-radius:30px; font-size:13px; font-weight:600;
-  z-index:300; white-space:nowrap; box-shadow:0 4px 24px rgba(0,0,0,.5);
-  transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
-  opacity:0; pointer-events:none;
-}
+#toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#1f3829; color:var(--wa); border:1px solid rgba(37,211,102,.35); padding:10px 22px; border-radius:30px; font-size:13px; font-weight:600; z-index:300; white-space:nowrap; box-shadow:0 4px 24px rgba(0,0,0,.5); transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s; opacity:0; pointer-events:none; }
 #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
-/* scrollbar */
+/* SPINNER */
+.inline-spinner { display:inline-block; width:11px; height:11px; border:2px solid var(--border2); border-top-color:var(--red); border-radius:50%; animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background:var(--bg2); }
 ::-webkit-scrollbar-thumb { background:var(--bg4); border-radius:3px; }
@@ -252,20 +195,26 @@ tr.row-sent td { opacity:.4; }
 <body>
 
 <header class="app-header">
-  <div class="logo">SIBRA<span> · Mesa de Ventas</span></div>
+  <div class="logo">SIBRA<span> · Mesa de Operaciones</span></div>
   <div class="header-sep"></div>
   <div class="drive-status">
     <div class="drive-dot" id="driveDot"></div>
     <span id="driveLabel">Sin conectar</span>
   </div>
-  <button class="btn-drive" id="btnDriveAuth" onclick="driveAuth()">
-    Conectar Drive
-  </button>
+  <button class="btn-drive" id="btnDriveAuth" onclick="driveAuth()">Conectar Drive</button>
 </header>
+
+<nav class="nav-tabs">
+  <div class="nav-tab active" data-tab="datos">Fuentes de datos</div>
+  <div class="nav-tab" data-tab="ventas">Ventas</div>
+  <div class="nav-tab" data-tab="compras">Compras</div>
+  <div class="nav-tab" data-tab="historial">Historial del día</div>
+</nav>
 
 <main class="main">
 
-  <!-- DRIVE PANEL -->
+<!-- ══ PANEL: DATOS ══ -->
+<div class="panel active" id="panel-datos">
   <div class="drive-panel">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
       <div class="sec-title" style="margin:0;">Fuentes de datos</div>
@@ -274,7 +223,7 @@ tr.row-sent td { opacity:.4; }
     <div class="drive-grid">
       <div class="source-card" id="sc-adcap">
         <div class="sc-title">ADCAP</div>
-        <div class="sc-file" id="sc-adcap-name">Carpeta configurada</div>
+        <div class="sc-file" id="sc-adcap-name">Carpeta Drive</div>
         <div class="sc-status idle" id="sc-adcap-status"><span>●</span> Sin cargar</div>
         <div class="sc-btn">
           <button class="btn btn-secondary btn-sm" onclick="cargarAlycDrive('ADCAP','1B8-FaVvgZ-uXYXb073FCNq8SrTmw4oD2')">↓ Drive</button>
@@ -283,7 +232,7 @@ tr.row-sent td { opacity:.4; }
       </div>
       <div class="source-card" id="sc-ieb">
         <div class="sc-title">IEB</div>
-        <div class="sc-file" id="sc-ieb-name">Carpeta configurada</div>
+        <div class="sc-file" id="sc-ieb-name">Carpeta Drive</div>
         <div class="sc-status idle" id="sc-ieb-status"><span>●</span> Sin cargar</div>
         <div class="sc-btn">
           <button class="btn btn-secondary btn-sm" onclick="cargarAlycDrive('IEB','16ed3PZqYeMOgM8jhU_Efgx47RyizTlJQ')">↓ Drive</button>
@@ -300,278 +249,546 @@ tr.row-sent td { opacity:.4; }
       </div>
       <div class="source-card" id="sc-clientes">
         <div class="sc-title">Clientes</div>
-        <div class="sc-file" id="sc-clientes-name">Carpeta configurada</div>
+        <div class="sc-file" id="sc-clientes-name">Carpeta Drive</div>
         <div class="sc-status idle" id="sc-clientes-status"><span>●</span> Sin cargar</div>
         <div class="sc-btn">
           <button class="btn btn-secondary btn-sm" onclick="cargarClientesDrive()">↓ Drive</button>
           <button class="btn btn-secondary btn-sm" onclick="pickClientesLocal()">↑ Local</button>
         </div>
       </div>
+      <div class="source-card" id="sc-precios">
+        <div class="sc-title">Precios Data912</div>
+        <div class="sc-file" id="sc-precios-name">API en vivo</div>
+        <div class="sc-status idle" id="sc-precios-status"><span>●</span> Sin cargar</div>
+        <div class="sc-btn">
+          <button class="btn btn-secondary btn-sm" onclick="fetchPrices()">↓ Descargar</button>
+        </div>
+      </div>
+      <div class="source-card" id="sc-operaciones">
+        <div class="sc-title">Hoja Operaciones</div>
+        <div class="sc-file" id="sc-operaciones-name">Google Sheets</div>
+        <div class="sc-status idle" id="sc-operaciones-status"><span>●</span> Sin cargar</div>
+        <div class="sc-btn">
+          <button class="btn btn-secondary btn-sm" onclick="cargarOperacionesSheets()">↓ Leer</button>
+        </div>
+      </div>
     </div>
     <div id="processLog" class="process-log"></div>
   </div>
 
-  <!-- FILTROS -->
+  <div class="kpi-row" id="kpiRow" style="display:none;">
+    <div class="kpi"><div class="kpi-label">Posiciones</div><div class="kpi-value" id="kpiPos">0</div></div>
+    <div class="kpi"><div class="kpi-label">Clientes</div><div class="kpi-value" id="kpiCli">0</div></div>
+    <div class="kpi"><div class="kpi-label">Tickers con precio</div><div class="kpi-value" id="kpiPrecios">0</div></div>
+    <div class="kpi"><div class="kpi-label">Operaciones hoy</div><div class="kpi-value" id="kpiOps">0</div></div>
+  </div>
+</div>
+
+<!-- ══ PANEL: VENTAS ══ -->
+<div class="panel" id="panel-ventas">
   <div class="filter-panel">
     <div class="sec-title">Filtros</div>
     <div class="filter-row">
-      <div class="fg" style="flex:1;min-width:200px;">
-        <label>Ticker a vender</label>
+      <div class="fg" style="flex:1;min-width:220px;">
+        <label>Tickers a vender</label>
         <div class="ticker-search-wrap">
-          <input type="text" class="ticker-input" id="tickerInput" placeholder="Buscar ticker..." autocomplete="off"
-            oninput="onTickerInput()" onfocus="openTickerDrop()" />
-          <div class="ticker-drop" id="tickerDrop"></div>
+          <input type="text" class="ticker-input" id="ventaTickerInput" placeholder="Buscar y agregar ticker..." autocomplete="off"
+            oninput="onVentaTickerInput()" onfocus="openVentaTickerDrop()" />
+          <div class="ticker-drop" id="ventaTickerDrop"></div>
         </div>
+        <div class="ticker-chips" id="ventaTickerChips"></div>
       </div>
       <div class="fg">
         <label>ALyC</label>
-        <select id="filterAlyc" onchange="aplicarFiltros()">
+        <select id="ventaFilterAlyc" onchange="renderVentas()">
           <option value="">Todas</option>
         </select>
       </div>
       <div class="fg">
-        <label>% a vender (global)</label>
+        <label>% Global</label>
         <div class="pct-selector">
-          <span class="pct-label">Pct:</span>
-          <button class="pct-btn" onclick="setPct(0)">0%</button>
-          <button class="pct-btn" onclick="setPct(25)">25%</button>
-          <button class="pct-btn" onclick="setPct(50)">50%</button>
-          <button class="pct-btn" onclick="setPct(75)">75%</button>
-          <button class="pct-btn active" id="pct100" onclick="setPct(100)">100%</button>
+          <button class="pct-btn" onclick="setVentaPct(0)">0%</button>
+          <button class="pct-btn" onclick="setVentaPct(25)">25%</button>
+          <button class="pct-btn" onclick="setVentaPct(50)">50%</button>
+          <button class="pct-btn" onclick="setVentaPct(75)">75%</button>
+          <button class="pct-btn active" onclick="setVentaPct(100)">100%</button>
         </div>
       </div>
-      <button class="btn btn-secondary" onclick="resetTodo()" style="align-self:flex-end;">✕ Limpiar</button>
+      <button class="btn btn-secondary btn-sm" onclick="resetVentas()" style="align-self:flex-end;">✕ Limpiar</button>
     </div>
   </div>
 
-  <!-- ÓRDENES -->
   <div class="ordenes-panel">
     <div class="ordenes-header">
-      <div class="ordenes-title">
-        <span class="tag-venta">VENTA</span>
-        <span class="ticker-badge" id="tickerBadge">—</span>
-        <span style="font-size:12px;color:var(--text3);" id="ordenesCount"></span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="tag-op tag-venta">VENTA</span>
+        <span style="font-size:12px;color:var(--text3);" id="ventaCount"></span>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button class="btn btn-secondary btn-sm" onclick="resetEnviados()">Resetear enviados</button>
-      </div>
+      <button class="btn btn-secondary btn-sm" onclick="resetEnviadosVenta()">Resetear enviados</button>
     </div>
-
-    <div id="ordenesBody">
+    <div id="ventaBody">
       <div class="empty-state">
         <div class="es-icon">📋</div>
-        <p>Buscá un ticker para ver las órdenes</p>
-        <small>Cargá los datos de Drive y luego filtrá por ticker</small>
+        <p>Seleccioná uno o más tickers para ver las órdenes</p>
       </div>
     </div>
   </div>
+</div>
+
+<!-- ══ PANEL: COMPRAS ══ -->
+<div class="panel" id="panel-compras">
+  <div class="filter-panel">
+    <div class="sec-title">Filtros</div>
+    <div class="filter-row">
+      <div class="fg" style="flex:1;min-width:220px;">
+        <label>Ticker a comprar</label>
+        <div class="ticker-search-wrap">
+          <input type="text" class="ticker-input" id="compraTickerInput" placeholder="Buscar ticker..." autocomplete="off"
+            oninput="onCompraTickerInput()" onfocus="openCompraTickerDrop()" />
+          <div class="ticker-drop" id="compraTickerDrop"></div>
+        </div>
+        <div class="ticker-chips" id="compraTickerChips"></div>
+      </div>
+      <div class="fg">
+        <label>ALyC</label>
+        <select id="compraFilterAlyc" onchange="renderCompras()">
+          <option value="">Todas</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>% Global</label>
+        <div class="pct-selector">
+          <button class="pct-btn" onclick="setCompraPct(0)">0%</button>
+          <button class="pct-btn" onclick="setCompraPct(25)">25%</button>
+          <button class="pct-btn" onclick="setCompraPct(50)">50%</button>
+          <button class="pct-btn" onclick="setCompraPct(75)">75%</button>
+          <button class="pct-btn active" onclick="setCompraPct(100)">100%</button>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="resetCompras()" style="align-self:flex-end;">✕ Limpiar</button>
+    </div>
+  </div>
+
+  <div class="ordenes-panel">
+    <div class="ordenes-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="tag-op tag-compra">COMPRA</span>
+        <span style="font-size:11px;color:var(--amber);" id="compraPrecioLabel"></span>
+        <span style="font-size:12px;color:var(--text3);" id="compraCount"></span>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="resetEnviadosCompra()">Resetear enviados</button>
+    </div>
+    <div id="compraBody">
+      <div class="empty-state">
+        <div class="es-icon">🛒</div>
+        <p>Seleccioná un ticker para ver los clientes con saldo disponible</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANEL: HISTORIAL ══ -->
+<div class="panel" id="panel-historial">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div>
+      <div class="sec-title" style="margin:0;">Operaciones del día</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;" id="histFecha"></div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="cargarOperacionesSheets()">↻ Actualizar</button>
+  </div>
+
+  <div class="kpi-row" id="histKpis">
+    <div class="kpi"><div class="kpi-label">Ventas</div><div class="kpi-value" id="histNVentas">0</div></div>
+    <div class="kpi"><div class="kpi-label">Monto vendido</div><div class="kpi-value" id="histMontoVentas" style="font-size:14px;">$0</div></div>
+    <div class="kpi"><div class="kpi-label">Compras</div><div class="kpi-value" id="histNCompras">0</div></div>
+    <div class="kpi"><div class="kpi-label">Monto comprado</div><div class="kpi-value" id="histMontoCompras" style="font-size:14px;">$0</div></div>
+  </div>
+
+  <div class="historial-panel">
+    <div class="hist-row hist-header">
+      <div>Hora</div><div>Tipo</div><div>ALyC</div><div>Cliente</div>
+      <div>Ticker</div><div class="td-r">Cant.</div><div class="td-r">Precio</div><div class="td-r">Monto ARS</div>
+    </div>
+    <div id="histBody">
+      <div class="empty-state"><div class="es-icon">📊</div><p>Sin operaciones hoy</p></div>
+    </div>
+  </div>
+</div>
 
 </main>
 
-<div id="toast">✓ Mensaje copiado — abrí WhatsApp y pegalo</div>
+<div id="toast">✓ Enviado — pegalo en WhatsApp</div>
 <input type="file" id="fileInput" style="display:none;" accept=".xlsx,.xls" />
 
 <script>
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  CONFIG
-// ═══════════════════════════════════════════════════
-const WA_NUMBER   = '5493794406315';
-const CLIENT_ID   = '891275909999-25to444ggoo9k1inji4lqbaq1h99ij41.apps.googleusercontent.com';
-const SCOPES      = 'https://www.googleapis.com/auth/drive.readonly';
-const STORAGE_KEY = 'mesaventas_enviados_v2';
+// ═══════════════════════════════════════════
+const WA_NUMBER    = '5493794406315';
+const CLIENT_ID    = '891275909999-25to444ggoo9k1inji4lqbaq1h99ij41.apps.googleusercontent.com';
+const SCOPES       = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets';
+const SHEET_ID     = '1hyerGhMQKyufztlHpU9W01yBAk10pXTPmP_QKqySwmw';
+const SHEET_NAME   = 'Operaciones';
+const SENT_KEY_V   = 'sibra_sent_ventas';
+const SENT_KEY_C   = 'sibra_sent_compras';
+const DATE_KEY     = 'sibra_fecha';
+const DATA912      = 'https://data912.com/live';
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  STATE
-// ═══════════════════════════════════════════════════
-let token = null;
-let posiciones = [];   // { alyc, comitente, ticker, tenencia }
-let clientes   = [];   // { cc, cliente, ... }
-let tickerSeleccionado = null;
-let pctGlobal  = 100;
-let cantidades = {};   // comitente+alyc -> cantidad a vender (editable)
+// ═══════════════════════════════════════════
+let token       = null;
+let posiciones  = [];
+let clientes    = [];
+let priceIndex  = {};
+let operHoy     = [];   // operaciones del día leídas de Sheets
+let ventaTickers   = new Set();
+let compraTicker   = null;
+let ventaPct    = 100;
+let compraPct   = 100;
+let ventaCants  = {};   // key -> {cant, manual}
+let compraCants = {};
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  HELPERS
-// ═══════════════════════════════════════════════════
-const $  = id => document.getElementById(id);
-const normCC = v => { if (!v && v !== 0) return ''; const n = parseFloat(String(v).trim()); return isFinite(n) ? String(Math.round(n)) : String(v).trim(); };
+// ═══════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const normCC = v => { if (!v && v!==0) return ''; const n=parseFloat(String(v).trim()); return isFinite(n)?String(Math.round(n)):String(v).trim(); };
+const fmt = (n,d=0) => isFinite(n)?n.toLocaleString('es-AR',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const fechaHoy = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+const horaAhora = () => { const d=new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
+const fechaLegible = () => { const d=new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${horaAhora()}hs`; };
 
-function log(msg, cls='') {
-  const el = $('processLog');
-  el.style.display = 'block';
-  el.innerHTML += `<div class="${cls}">${msg}</div>`;
-  el.scrollTop = el.scrollHeight;
+function log(msg,cls='') {
+  const el=$('processLog'); el.style.display='block';
+  el.innerHTML+=`<div class="${cls}">${msg}</div>`; el.scrollTop=el.scrollHeight;
 }
-function setStatus(key, status, msg) {
-  const el = $(`sc-${key}-status`);
-  const card = $(`sc-${key}`);
-  if (!el || !card) return;
-  card.className = 'source-card ' + (status==='ok'?'linked':status==='loading'?'loading':status==='error'?'error':'');
-  el.className = `sc-status ${status==='ok'?'ok':status==='error'?'err':status==='loading'?'warn':'idle'}`;
-  el.innerHTML = `<span>●</span> ${msg}`;
+function setStatus(key,status,msg) {
+  const el=$(`sc-${key}-status`), card=$(`sc-${key}`);
+  if(!el||!card) return;
+  card.className='source-card '+(status==='ok'?'linked':status==='loading'?'loading':status==='error'?'error':'');
+  el.className=`sc-status ${status==='ok'?'ok':status==='error'?'err':status==='loading'?'warn':'idle'}`;
+  el.innerHTML=`<span>●</span> ${msg}`;
 }
 
-// ═══════════════════════════════════════════════════
+// Reset diario
+function checkDailyReset() {
+  const stored = localStorage.getItem(DATE_KEY);
+  const hoy = fechaHoy();
+  if (stored !== hoy) {
+    localStorage.setItem(DATE_KEY, hoy);
+    localStorage.removeItem(SENT_KEY_V);
+    localStorage.removeItem(SENT_KEY_C);
+    log(`🔄 Nuevo día (${hoy}): enviados reseteados`, 'log-ok');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════
+function initNav() {
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      $('panel-'+t.dataset.tab).classList.add('active');
+      if(t.dataset.tab==='historial') renderHistorial();
+    });
+  });
+}
+
+// ═══════════════════════════════════════════
 //  DRIVE AUTH
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function driveAuth() {
   const redirectUri = location.href.split('?')[0].split('#')[0];
   const state = Math.random().toString(36).slice(2);
   sessionStorage.setItem('oauth_state', state);
   const params = new URLSearchParams({
-    client_id: CLIENT_ID, redirect_uri: redirectUri, response_type: 'token',
-    scope: SCOPES, state, prompt: 'select_account',
+    client_id:CLIENT_ID, redirect_uri:redirectUri, response_type:'token',
+    scope:SCOPES, state, prompt:'select_account',
   });
-  const popup = window.open('https://accounts.google.com/o/oauth2/v2/auth?' + params, 'googleOAuth', 'width=520,height=640,left=200,top=100');
-  const timer = setInterval(() => {
+  const popup = window.open('https://accounts.google.com/o/oauth2/v2/auth?'+params,'googleOAuth','width=520,height=640,left=200,top=100');
+  const timer = setInterval(()=>{
     try {
-      const url = popup.location.href;
-      if (url.includes('access_token') || url.includes('error')) {
+      const url=popup.location.href;
+      if(url.includes('access_token')||url.includes('error')) {
         clearInterval(timer); popup.close();
-        const hash = new URLSearchParams(new URL(url).hash.slice(1));
-        if (hash.get('error')) { log('❌ Auth error: ' + hash.get('error'), 'log-err'); return; }
-        setToken(hash.get('access_token'), parseInt(hash.get('expires_in') || '3600'));
+        const hash=new URLSearchParams(new URL(url).hash.slice(1));
+        if(hash.get('error')){log('❌ Auth error: '+hash.get('error'),'log-err');return;}
+        setToken(hash.get('access_token'),parseInt(hash.get('expires_in')||'3600'));
       }
-    } catch(e) {}
-    if (popup.closed) clearInterval(timer);
-  }, 500);
+    } catch(e){}
+    if(popup.closed) clearInterval(timer);
+  },500);
 }
-
-function setToken(t, expiresIn) {
-  token = t;
-  localStorage.setItem('mesaventas_token', t);
-  localStorage.setItem('mesaventas_token_exp', new Date(Date.now() + expiresIn * 1000).toISOString());
-  updateDriveUI(true);
-  log('✅ Drive conectado', 'log-ok');
+function setToken(t,expiresIn) {
+  token=t;
+  localStorage.setItem('sibra_token',t);
+  localStorage.setItem('sibra_token_exp',new Date(Date.now()+expiresIn*1000).toISOString());
+  updateDriveUI(true); log('✅ Drive + Sheets conectado','log-ok');
 }
-
 function restoreToken() {
-  const t = localStorage.getItem('mesaventas_token');
-  const exp = localStorage.getItem('mesaventas_token_exp');
-  if (t && exp && new Date(exp) > new Date()) { token = t; updateDriveUI(true); }
+  const t=localStorage.getItem('sibra_token'), exp=localStorage.getItem('sibra_token_exp');
+  if(t&&exp&&new Date(exp)>new Date()){token=t;updateDriveUI(true);}
 }
-
 function updateDriveUI(ok) {
-  $('driveDot').className = 'drive-dot' + (ok ? ' connected' : '');
-  $('driveLabel').textContent = ok ? 'Drive conectado' : 'Sin conectar';
-  $('btnDriveAuth').className = 'btn-drive' + (ok ? ' connected' : '');
-  $('btnDriveAuth').textContent = ok ? '✓ Reconectar' : 'Conectar Drive';
+  $('driveDot').className='drive-dot'+(ok?' connected':'');
+  $('driveLabel').textContent=ok?'Drive + Sheets conectado':'Sin conectar';
+  $('btnDriveAuth').className='btn-drive'+(ok?' connected':'');
+  $('btnDriveAuth').textContent=ok?'✓ Reconectar':'Conectar Drive';
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  DRIVE API
-// ═══════════════════════════════════════════════════
-async function driveGet(path, params={}) {
-  if (!token) throw new Error('Sin token');
-  const url = new URL('https://www.googleapis.com/drive/v3/' + path);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
-  const r = await fetch(url, { headers:{ Authorization:'Bearer '+token } });
-  if (!r.ok) throw new Error(`Drive API ${r.status}: ${await r.text()}`);
+// ═══════════════════════════════════════════
+async function driveGet(path,params={}) {
+  if(!token) throw new Error('Sin token');
+  const url=new URL('https://www.googleapis.com/drive/v3/'+path);
+  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  const r=await fetch(url,{headers:{Authorization:'Bearer '+token}});
+  if(!r.ok) throw new Error(`Drive API ${r.status}`);
   return r.json();
 }
-
 async function driveDownload(fileId) {
-  if (!token) throw new Error('Sin token');
-  const r = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, { headers:{ Authorization:'Bearer '+token } });
-  if (!r.ok) throw new Error(`Drive download ${r.status}`);
+  const r=await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,{headers:{Authorization:'Bearer '+token}});
+  if(!r.ok) throw new Error(`Drive download ${r.status}`);
   return r.arrayBuffer();
 }
-
 async function ultimoArchivo(folderId) {
-  const data = await driveGet('files', {
-    q: `'${folderId}' in parents and trashed=false and (name contains '.xlsx' or name contains '.xls')`,
-    orderBy: 'modifiedTime desc', pageSize: '5',
-    fields: 'files(id,name,modifiedTime)',
+  const data=await driveGet('files',{
+    q:`'${folderId}' in parents and trashed=false and (name contains '.xlsx' or name contains '.xls')`,
+    orderBy:'modifiedTime desc',pageSize:'5',fields:'files(id,name,modifiedTime)',
   });
-  if (!data.files?.length) throw new Error('No hay archivos Excel en la carpeta');
+  if(!data.files?.length) throw new Error('No hay archivos Excel en la carpeta');
   return data.files[0];
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  SHEETS API
+// ═══════════════════════════════════════════
+async function sheetsGet(range) {
+  if(!token) throw new Error('Sin token');
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`;
+  const r=await fetch(url,{headers:{Authorization:'Bearer '+token}});
+  if(!r.ok) throw new Error(`Sheets GET ${r.status}: ${await r.text()}`);
+  return r.json();
+}
+
+async function sheetsAppend(values) {
+  if(!token) throw new Error('Sin token');
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+  const r=await fetch(url,{
+    method:'POST', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({values}),
+  });
+  if(!r.ok) throw new Error(`Sheets append ${r.status}: ${await r.text()}`);
+  return r.json();
+}
+
+async function sheetsClear() {
+  if(!token) throw new Error('Sin token');
+  // Clear all data except header
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME+'!A2:Z')}:clear`;
+  const r=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:'{}'});
+  if(!r.ok) throw new Error(`Sheets clear ${r.status}`);
+}
+
+async function sheetsEnsureHeader() {
+  try {
+    const data=await sheetsGet(SHEET_NAME+'!A1:I1');
+    if(!data.values?.length) {
+      // Write header
+      const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME+'!A1')}?valueInputOption=USER_ENTERED`;
+      await fetch(url,{
+        method:'PUT', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+        body:JSON.stringify({values:[['Fecha','Hora','Tipo','ALyC','Comitente','Cliente','Ticker','Cantidad','Precio Spot','Monto ARS']]}),
+      });
+    }
+  } catch(e){ log('⚠ No se pudo verificar encabezado: '+e.message,'log-warn'); }
+}
+
+async function cargarOperacionesSheets() {
+  if(!token){log('⚠ Conectá Drive primero','log-warn');return;}
+  try {
+    setStatus('operaciones','loading','Leyendo...');
+    await sheetsEnsureHeader();
+    const data=await sheetsGet(SHEET_NAME+'!A2:J');
+    const rows=data.values||[];
+    const hoy=fechaHoy();
+
+    // Check if we need to reset (first row date != today)
+    if(rows.length>0) {
+      const firstDate=rows[0][0]||'';
+      if(firstDate && firstDate!==hoy) {
+        log(`🔄 Datos de otro día (${firstDate}). Limpiando hoja...`,'log-warn');
+        await sheetsClear();
+        operHoy=[];
+        log('✅ Hoja limpiada para el nuevo día','log-ok');
+      } else {
+        operHoy=rows.filter(r=>r[0]===hoy).map(r=>({
+          fecha:r[0], hora:r[1], tipo:r[2], alyc:r[3], comitente:r[4],
+          cliente:r[5], ticker:r[6], cantidad:parseFloat(r[7])||0,
+          precioSpot:parseFloat(r[8])||0, montoARS:parseFloat(r[9])||0,
+        }));
+        log(`✅ Operaciones hoy: ${operHoy.length}`,'log-ok');
+      }
+    } else {
+      operHoy=[];
+    }
+
+    setStatus('operaciones','ok',`${operHoy.length} operaciones hoy`);
+    $('kpiOps').textContent=operHoy.length;
+    $('kpiRow').style.display='';
+    renderHistorial();
+  } catch(e) {
+    setStatus('operaciones','error','Error: '+e.message);
+    log('❌ Sheets: '+e.message,'log-err');
+  }
+}
+
+async function registrarOperacion(tipo, alyc, comitente, ticker, cantidad, precioSpot) {
+  const cli=findCliente(comitente);
+  const cliente=cli?.cliente||comitente;
+  const montoARS=cantidad*precioSpot;
+  const hoy=fechaHoy();
+  const hora=horaAhora();
+  const row=[hoy,hora,tipo,alyc,comitente,cliente,ticker,cantidad,precioSpot,montoARS];
+  try {
+    await sheetsAppend([row]);
+    operHoy.push({fecha:hoy,hora,tipo,alyc,comitente,cliente,ticker,cantidad,precioSpot,montoARS});
+    $('kpiOps').textContent=operHoy.length;
+    renderHistorial();
+  } catch(e) {
+    log('❌ Error guardando en Sheets: '+e.message,'log-err');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  DATA912 — PRECIOS
+// ═══════════════════════════════════════════
+async function fetchPrices() {
+  const panels=[
+    ['arg_stocks','ACCION'],['arg_cedears','CEDEAR'],
+    ['arg_bonds','RENTA_FIJA'],['arg_notes','RENTA_FIJA'],['arg_corp','ON'],
+  ];
+  setStatus('precios','loading','Descargando...');
+  log('📡 Descargando precios Data912...');
+  for(const [panel] of panels) {
+    try {
+      const r=await fetch(`${DATA912}/${panel}`);
+      if(!r.ok) throw new Error(r.status);
+      const data=await r.json();
+      const rows=Array.isArray(data)?data:(data.data||data.items||[]);
+      rows.forEach(row=>{
+        const sym=(row.symbol||'').trim().toUpperCase();
+        if(!sym) return;
+        const price=parseFloat(row.c??0);
+        if(!isFinite(price)||price<=0) return;
+        if(!priceIndex[sym]) priceIndex[sym]=[];
+        priceIndex[sym].push({price,panel});
+      });
+      log(`  ✓ ${panel}:${rows.length} tickers`,'log-ok');
+    } catch(e){ log(`  ⚠ ${panel}: ${e.message}`,'log-warn'); }
+  }
+  const total=Object.keys(priceIndex).length;
+  setStatus('precios','ok',`${total} tickers`);
+  $('kpiPrecios').textContent=total;
+  $('kpiRow').style.display='';
+  log(`✅ Precios: ${total} tickers`,'log-ok');
+}
+
+function getPrice(ticker) {
+  // Try exact match first
+  if(priceIndex[ticker]?.length) {
+    const entries=priceIndex[ticker];
+    // Prefer arg_stocks for acciones, arg_bonds for bonos
+    const bond=entries.find(e=>e.panel==='arg_bonds'||e.panel==='arg_notes'||e.panel==='arg_corp');
+    const stock=entries.find(e=>e.panel==='arg_stocks'||e.panel==='arg_cedears');
+    const p=(stock||bond||entries[0]).price;
+    // Bonos cotizan en % del VN → dividir por 100
+    if(bond&&!stock) return p/100;
+    return p;
+  }
+  // Try with suffixes
+  for(const suf of ['O','D','C']) {
+    if(priceIndex[ticker+suf]?.length) return priceIndex[ticker+suf][0].price;
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════
 //  CARGA DE FUENTES
-// ═══════════════════════════════════════════════════
-async function cargarAlycDrive(alycName, folderId) {
-  if (!token) { alert('Conectá Drive primero'); return; }
-  const key = alycName.toLowerCase();
+// ═══════════════════════════════════════════
+async function cargarAlycDrive(alycName,folderId) {
+  if(!token){alert('Conectá Drive primero');return;}
+  const key=alycName.toLowerCase();
   try {
     setStatus(key,'loading','Buscando...');
-    const file = await ultimoArchivo(folderId);
-    $(`sc-${key}-name`).textContent = file.name;
-    setStatus(key,'loading',`Descargando ${file.name}...`);
-    log(`☁ ${alycName}: "${file.name}"`);
-    const buf = await driveDownload(file.id);
-    const pos = alycName === 'ADCAP' ? parseADCAP(buf) : parseIEB(buf);
-    posiciones = posiciones.filter(p => p.alyc !== alycName);
+    const file=await ultimoArchivo(folderId);
+    $(`sc-${key}-name`).textContent=file.name;
+    setStatus(key,'loading',`Descargando...`);
+    const buf=await driveDownload(file.id);
+    const pos=alycName==='ADCAP'?parseADCAP(buf):parseIEB(buf);
+    posiciones=posiciones.filter(p=>p.alyc!==alycName);
     posiciones.push(...pos);
     setStatus(key,'ok',`${pos.length} posiciones`);
-    log(`✅ ${alycName}: ${pos.length} posiciones`, 'log-ok');
-    actualizarAlycSelector();
-    if (tickerSeleccionado) aplicarFiltros();
-  } catch(e) {
-    setStatus(key,'error','Error: '+e.message);
-    log(`❌ ${alycName}: ${e.message}`, 'log-err');
-  }
+    log(`✅ ${alycName}: ${pos.length} posiciones`,'log-ok');
+    actualizarSelectores();
+    $('kpiPos').textContent=posiciones.length;
+    $('kpiRow').style.display='';
+  } catch(e){ setStatus(key,'error','Error: '+e.message); log(`❌ ${alycName}: ${e.message}`,'log-err'); }
 }
 
 async function cargarBCCH() {
-  if (!token) { alert('Conectá Drive primero'); return; }
-  const FOLDER_ID = '1hKcPBrkb5B889roVRHh3Yx3jXcKPYr9R';
+  if(!token){alert('Conectá Drive primero');return;}
+  const FOLDER_ID='1hKcPBrkb5B889roVRHh3Yx3jXcKPYr9R';
   try {
     setStatus('bcch','loading','Buscando archivos...');
-    const data = await driveGet('files', {
-      q: `'${FOLDER_ID}' in parents and trashed=false and (name contains '.xls' or name contains '.xlsx')`,
-      orderBy:'name', pageSize:'200', fields:'files(id,name)',
+    const data=await driveGet('files',{
+      q:`'${FOLDER_ID}' in parents and trashed=false and (name contains '.xls' or name contains '.xlsx')`,
+      orderBy:'name',pageSize:'200',fields:'files(id,name)',
     });
-    if (!data.files?.length) { setStatus('bcch','error','Carpeta vacía'); return; }
-    log(`☁ BCCH: ${data.files.length} archivos`);
-    setStatus('bcch','loading',`Descargando ${data.files.length} archivos...`);
-    posiciones = posiciones.filter(p => p.alyc !== 'BCCH');
-    let total = 0;
-    const BATCH = 10;
-    for (let i=0; i<data.files.length; i+=BATCH) {
-      await Promise.all(data.files.slice(i,i+BATCH).map(async file => {
+    if(!data.files?.length){setStatus('bcch','error','Carpeta vacía');return;}
+    posiciones=posiciones.filter(p=>p.alyc!=='BCCH');
+    let total=0;
+    for(let i=0;i<data.files.length;i+=10) {
+      await Promise.all(data.files.slice(i,i+10).map(async file=>{
         try {
-          const buf = await driveDownload(file.id);
-          const comitente = normCC(file.name.replace(/\.xls(x)?$/i,'').trim());
-          const pos = parseBCCH(buf, comitente);
-          posiciones.push(...pos);
+          const buf=await driveDownload(file.id);
+          const comitente=normCC(file.name.replace(/\.xls(x)?$/i,'').trim());
+          posiciones.push(...parseBCCH(buf,comitente));
           total++;
-        } catch(e) { log(`⚠ BCCH ${file.name}: ${e.message}`, 'log-warn'); }
+        } catch(e){ log(`⚠ BCCH ${file.name}: ${e.message}`,'log-warn'); }
       }));
     }
-    $('sc-bcch-name').textContent = `${total} comitentes`;
-    setStatus('bcch','ok',`${total} comitentes cargados`);
-    log(`✅ BCCH: ${total} comitentes`, 'log-ok');
-    actualizarAlycSelector();
-    if (tickerSeleccionado) aplicarFiltros();
-  } catch(e) {
-    setStatus('bcch','error','Error: '+e.message);
-    log(`❌ BCCH: ${e.message}`, 'log-err');
-  }
+    $('sc-bcch-name').textContent=`${total} comitentes`;
+    setStatus('bcch','ok',`${total} comitentes`);
+    log(`✅ BCCH: ${total} comitentes`,'log-ok');
+    actualizarSelectores();
+    $('kpiPos').textContent=posiciones.length;
+    $('kpiRow').style.display='';
+  } catch(e){ setStatus('bcch','error','Error: '+e.message); log(`❌ BCCH: ${e.message}`,'log-err'); }
 }
 
 async function cargarClientesDrive() {
-  if (!token) { alert('Conectá Drive primero'); return; }
-  const FOLDER_ID = '1HBVS0yIWUO_ywEowbovGnN2eUrj5I3n2';
+  if(!token){alert('Conectá Drive primero');return;}
   try {
     setStatus('clientes','loading','Buscando...');
-    const file = await ultimoArchivo(FOLDER_ID);
-    $('sc-clientes-name').textContent = file.name;
-    setStatus('clientes','loading',`Descargando...`);
-    const buf = await driveDownload(file.id);
+    const file=await ultimoArchivo('1HBVS0yIWUO_ywEowbovGnN2eUrj5I3n2');
+    $('sc-clientes-name').textContent=file.name;
+    const buf=await driveDownload(file.id);
     parseClientes(buf);
     setStatus('clientes','ok',`${clientes.length} clientes`);
-    log(`✅ Clientes: ${clientes.length}`, 'log-ok');
-    if (tickerSeleccionado) aplicarFiltros();
-  } catch(e) {
-    setStatus('clientes','error','Error: '+e.message);
-    log(`❌ Clientes: ${e.message}`, 'log-err');
-  }
+    log(`✅ Clientes: ${clientes.length}`,'log-ok');
+    $('kpiCli').textContent=clientes.length;
+    $('kpiRow').style.display='';
+  } catch(e){ setStatus('clientes','error','Error: '+e.message); log(`❌ Clientes: ${e.message}`,'log-err'); }
 }
 
 async function cargarTodo() {
-  $('processLog').innerHTML = '';
-  $('processLog').style.display = 'block';
+  $('processLog').innerHTML=''; $('processLog').style.display='block';
   log('☁ Cargando todo desde Drive...');
   await Promise.all([
     cargarAlycDrive('ADCAP','1B8-FaVvgZ-uXYXb073FCNq8SrTmw4oD2'),
@@ -579,104 +796,95 @@ async function cargarTodo() {
     cargarBCCH(),
     cargarClientesDrive(),
   ]);
-  log(`✅ Listo. Total posiciones: ${posiciones.length}`, 'log-ok');
+  await fetchPrices();
+  await cargarOperacionesSheets();
+  log(`✅ Listo. ${posiciones.length} posiciones totales.`,'log-ok');
 }
 
-// local fallback
 function pickAlycLocal(alycName) {
-  const input = $('fileInput');
-  input.onchange = async () => {
-    const file = input.files[0]; if (!file) return;
-    const buf = await file.arrayBuffer();
-    const pos = alycName==='ADCAP' ? parseADCAP(buf) : parseIEB(buf);
-    posiciones = posiciones.filter(p => p.alyc !== alycName);
+  const input=$('fileInput');
+  input.onchange=async()=>{
+    const file=input.files[0]; if(!file) return;
+    const buf=await file.arrayBuffer();
+    const pos=alycName==='ADCAP'?parseADCAP(buf):parseIEB(buf);
+    posiciones=posiciones.filter(p=>p.alyc!==alycName);
     posiciones.push(...pos);
     setStatus(alycName.toLowerCase(),'ok',`${pos.length} posiciones (local)`);
-    log(`✅ ${alycName} local: ${pos.length}`, 'log-ok');
-    actualizarAlycSelector();
-    if (tickerSeleccionado) aplicarFiltros();
-    input.value='';
+    actualizarSelectores(); input.value='';
   };
   input.click();
 }
 function pickClientesLocal() {
-  const input = $('fileInput');
-  input.onchange = async () => {
-    const file = input.files[0]; if (!file) return;
+  const input=$('fileInput');
+  input.onchange=async()=>{
+    const file=input.files[0]; if(!file) return;
     parseClientes(await file.arrayBuffer());
     setStatus('clientes','ok',`${clientes.length} clientes (local)`);
-    log(`✅ Clientes local: ${clientes.length}`, 'log-ok');
-    if (tickerSeleccionado) aplicarFiltros();
     input.value='';
   };
   input.click();
 }
 
-// ═══════════════════════════════════════════════════
-//  PARSERS (del Rotador)
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  PARSERS
+// ═══════════════════════════════════════════
 function parseNum(val) {
-  if (val===null||val===undefined||val==='') return 0;
-  if (typeof val==='number') return val;
-  const s = String(val).trim().replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.');
-  const n = parseFloat(s);
-  return isFinite(n)?n:0;
+  if(val===null||val===undefined||val==='') return 0;
+  if(typeof val==='number') return val;
+  const s=String(val).trim().replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.');
+  const n=parseFloat(s); return isFinite(n)?n:0;
 }
-
 function parseClientes(buf) {
-  const wb = XLSX.read(buf, {type:'array'});
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-  const first = rows[0]||{};
-  const ccKey = Object.keys(first).find(k => /^(cc|ccc|cuenta|comitente)/i.test(k.trim())) || Object.keys(first)[0]||'cc';
-  clientes = rows.map(r => ({
-    cc:      normCC(r[ccKey]??r.cc??r.CC??r.CCC??r.Cuenta??''),
-    cliente: String(r.cliente||r.Cliente||r.CLIENTE||'').trim(),
-    alyc:    String(r.alyc||r.ALyC||r.ALYC||'').trim().toUpperCase(),
+  const wb=XLSX.read(buf,{type:'array'});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+  const first=rows[0]||{};
+  const ccKey=Object.keys(first).find(k=>/^(cc|ccc|cuenta|comitente)/i.test(k.trim()))||Object.keys(first)[0]||'cc';
+  clientes=rows.map(r=>({
+    cc:normCC(r[ccKey]??r.cc??r.CC??r.CCC??r.Cuenta??''),
+    cliente:String(r.cliente||r.Cliente||r.CLIENTE||'').trim(),
+    alyc:String(r.alyc||r.ALyC||r.ALYC||'').trim().toUpperCase(),
+    caucionPesos:parseNum(r.caucionPesos||r['Caucion en Pesos']||0),
   })).filter(r=>r.cc);
 }
-
 function findCliente(comitente) {
-  const norm = normCC(comitente);
-  return clientes.find(c => normCC(c.cc)===norm);
+  const norm=normCC(comitente);
+  return clientes.find(c=>normCC(c.cc)===norm);
 }
-
 function parseADCAP(buf) {
-  const wb = XLSX.read(buf,{type:'array'});
-  const sheetName = wb.SheetNames.find(n=>/reporte/i.test(n))||wb.SheetNames[0];
-  const ws = wb.Sheets[sheetName];
-  const rows = XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
-  const pos=[]; let currentTicker=null; let ignorar=false;
+  const wb=XLSX.read(buf,{type:'array'});
+  const sheetName=wb.SheetNames.find(n=>/reporte/i.test(n))||wb.SheetNames[0];
+  const ws=wb.Sheets[sheetName];
+  const rows=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+  const pos=[]; let cur=null; let ignorar=false;
   const IGNORAR=/posici[oó]n informativa|posiciones tomadas|colocadas/i;
   const CASH_ARS=/^\$\s*-|^pesos/i;
-  const CASH_USD=/dolar\s*7000|dolar\s*mep|dolar\s*cable|usd\s*7000|usd\s*[cdo]\s*-/i;
+  const CASH_USD=/dolar\s*7000|dolar\s*mep|dolar\s*cable|usd/i;
   rows.forEach(row=>{
-    const col0=String(row[0]??'').trim();
-    if(!col0) return;
-    if(IGNORAR.test(col0)){ignorar=true;currentTicker=null;return;}
-    const esNum=!isNaN(col0)&&col0!=='';
-    if(!esNum&&col0.includes(' / ')&&!col0.includes(' - ')){ignorar=false;currentTicker=null;return;}
-    if(!esNum&&col0.includes(' - ')){
+    const c0=String(row[0]??'').trim();
+    if(!c0) return;
+    if(IGNORAR.test(c0)){ignorar=true;cur=null;return;}
+    const esNum=!isNaN(c0)&&c0!=='';
+    if(!esNum&&c0.includes(' / ')&&!c0.includes(' - ')){ignorar=false;cur=null;return;}
+    if(!esNum&&c0.includes(' - ')){
       if(ignorar) return;
-      if(CASH_ARS.test(col0)) currentTicker='CASH_ARS';
-      else if(CASH_USD.test(col0)) currentTicker='CASH_USD';
-      else currentTicker=col0.split(' - ')[0].trim().toUpperCase();
+      if(CASH_ARS.test(c0)) cur='CASH_ARS';
+      else if(CASH_USD.test(c0)) cur='CASH_USD';
+      else cur=c0.split(' - ')[0].trim().toUpperCase();
       return;
     }
-    if(esNum&&currentTicker&&!ignorar){
-      const tenencia=parseFloat(row[3]);
-      const esCash=currentTicker==='CASH_ARS'||currentTicker==='CASH_USD';
-      if(isFinite(tenencia)&&(esCash?tenencia!==0:tenencia>0))
-        pos.push({alyc:'ADCAP',comitente:normCC(col0),ticker:currentTicker,tenencia});
+    if(esNum&&cur&&!ignorar){
+      const t=parseFloat(row[3]);
+      const esCash=cur==='CASH_ARS'||cur==='CASH_USD';
+      if(isFinite(t)&&(esCash?t!==0:t>0)) pos.push({alyc:'ADCAP',comitente:normCC(c0),ticker:cur,tenencia:t});
     }
   });
   return pos;
 }
-
 function parseIEB(buf) {
-  const wb = XLSX.read(buf,{type:'array'});
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+  const wb=XLSX.read(buf,{type:'array'});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  const rows=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
   const CASH_ARS=new Set(['Pesos','PESOS','$']);
   const CASH_USD=new Set(['USD','DOLARUSA','DOLAR EXT.','DÓLAR','DOLAR']);
   const pos=[];
@@ -687,335 +895,518 @@ function parseIEB(buf) {
     const tenencia=parseFloat(row[8]);
     if(!comitente||!ticker||ticker==='-') return;
     if(!isFinite(tenencia)||tenencia===0) return;
-    let t;
-    if(CASH_ARS.has(ticker)) t='CASH_ARS';
-    else if(CASH_USD.has(ticker)) t='CASH_USD';
-    else t=ticker.toUpperCase();
+    let t=CASH_ARS.has(ticker)?'CASH_ARS':CASH_USD.has(ticker)?'CASH_USD':ticker.toUpperCase();
     if(t!=='CASH_ARS'&&t!=='CASH_USD'&&tenencia<0) return;
     pos.push({alyc:'IEB',comitente,ticker:t,tenencia});
   });
   return pos;
 }
-
-function parseBCCH(buf, comitente) {
+function parseBCCH(buf,comitente) {
   const pos=[];
   try {
     const html=new TextDecoder('utf-8').decode(buf).replace(/^\uFEFF/,'');
     const doc=new DOMParser().parseFromString(html,'text/html');
     const tables=doc.querySelectorAll('table');
     if(tables.length<2) return pos;
-    const parseNumBCCH=v=>{
-      const s=String(v||'').trim().replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.');
-      const n=parseFloat(s); return isFinite(n)?n:0;
-    };
+    const pn=v=>{const s=String(v||'').trim().replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.');const n=parseFloat(s);return isFinite(n)?n:0;};
     const t1=tables[1];
     if(t1) t1.querySelectorAll('tr').forEach(row=>{
       const cells=[...row.querySelectorAll('td,th')].map(c=>c.textContent.trim());
       const label=(cells[2]||'').toLowerCase();
-      if(label.includes('cuenta corriente pesos')){
-        const imp=parseNumBCCH(cells[cells.length-1]);
-        if(imp!==0) pos.push({alyc:'BCCH',comitente,ticker:'CASH_ARS',tenencia:imp});
-      }
-      if(label.includes('cuenta corriente d')){
-        const m=(cells[3]||'').match(/Cantidad USD[:\s]*([-\d.,]+)/i);
-        if(m){const q=parseNumBCCH(m[1]);if(q!==0)pos.push({alyc:'BCCH',comitente,ticker:'CASH_USD',tenencia:q});}
-      }
+      if(label.includes('cuenta corriente pesos')){const imp=pn(cells[cells.length-1]);if(imp!==0)pos.push({alyc:'BCCH',comitente,ticker:'CASH_ARS',tenencia:imp});}
+      if(label.includes('cuenta corriente d')){const m=(cells[3]||'').match(/Cantidad USD[:\s]*([-\d.,]+)/i);if(m){const q=pn(m[1]);if(q!==0)pos.push({alyc:'BCCH',comitente,ticker:'CASH_USD',tenencia:q});}}
     });
     for(let t=2;t<=3&&t<tables.length;t++){
       [...tables[t].querySelectorAll('tr')].slice(1).forEach(row=>{
         const cells=[...row.querySelectorAll('td,th')].map(c=>c.textContent.trim());
         const ticker=(cells[1]||'').trim().toUpperCase();
         if(!ticker||/^(ticker|subtotal|total)/i.test(ticker)) return;
-        const tenencia=parseNumBCCH(cells[3]||'');
+        const tenencia=pn(cells[3]||'');
         if(!isFinite(tenencia)||tenencia===0) return;
         pos.push({alyc:'BCCH',comitente,ticker,tenencia});
       });
     }
-  } catch(e) { console.warn('BCCH parse error',comitente,e); }
+  } catch(e){console.warn('BCCH',comitente,e);}
   return pos;
 }
 
-// ═══════════════════════════════════════════════════
-//  TICKER SEARCH
-// ═══════════════════════════════════════════════════
-function getTickersSugeridos(q) {
+// ═══════════════════════════════════════════
+//  STOCK REAL (tenencia - ventas del día)
+// ═══════════════════════════════════════════
+function stockReal(alyc, comitente, ticker) {
+  const pos=posiciones.find(p=>p.alyc===alyc&&normCC(p.comitente)===normCC(comitente)&&p.ticker===ticker);
+  const tenencia=pos?.tenencia||0;
+  const vendido=operHoy.filter(o=>o.tipo==='VENTA'&&o.alyc===alyc&&normCC(o.comitente)===normCC(comitente)&&o.ticker===ticker)
+    .reduce((s,o)=>s+o.cantidad,0);
+  return Math.max(tenencia-vendido,0);
+}
+
+// Saldo líquido ARS de un comitente (cash de cartera + producido por ventas hoy)
+function saldoLiquido(alyc, comitente) {
+  // Cash ARS de cartera
+  const cashPos=posiciones.find(p=>p.alyc===alyc&&normCC(p.comitente)===normCC(comitente)&&p.ticker==='CASH_ARS');
+  const cashARS=Math.max(cashPos?.tenencia||0, 0);
+  // Producido por ventas de hoy
+  const ventasHoy=operHoy.filter(o=>o.tipo==='VENTA'&&o.alyc===alyc&&normCC(o.comitente)===normCC(comitente))
+    .reduce((s,o)=>s+o.montoARS,0);
+  // Gastado en compras de hoy
+  const comprasHoy=operHoy.filter(o=>o.tipo==='COMPRA'&&o.alyc===alyc&&normCC(o.comitente)===normCC(comitente))
+    .reduce((s,o)=>s+o.montoARS,0);
+  return Math.max(cashARS+ventasHoy-comprasHoy, 0);
+}
+
+// ═══════════════════════════════════════════
+//  SELECTORES
+// ═══════════════════════════════════════════
+function actualizarSelectores() {
+  const alycs=[...new Set(posiciones.map(p=>p.alyc))].sort();
+  ['ventaFilterAlyc','compraFilterAlyc'].forEach(id=>{
+    const sel=$(id); if(!sel) return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">Todas</option>'+alycs.map(a=>`<option>${a}</option>`).join('');
+    if(cur) sel.value=cur;
+  });
+}
+
+// ═══════════════════════════════════════════
+//  TICKER SEARCH — VENTAS (multi)
+// ═══════════════════════════════════════════
+function getTickerList(q) {
   const counts={};
   posiciones.forEach(p=>{
     if(p.ticker==='CASH_ARS'||p.ticker==='CASH_USD') return;
-    if(!counts[p.ticker]) counts[p.ticker]=0;
-    counts[p.ticker]++;
+    counts[p.ticker]=(counts[p.ticker]||0)+1;
   });
   const q2=(q||'').toUpperCase().trim();
-  return Object.entries(counts)
-    .filter(([t])=>!q2||t.includes(q2))
-    .sort((a,b)=>b[1]-a[1]);
+  return Object.entries(counts).filter(([t])=>!q2||t.includes(q2)).sort((a,b)=>b[1]-a[1]);
 }
 
-function onTickerInput() {
-  openTickerDrop();
-}
-
-function openTickerDrop() {
-  const q=$('tickerInput').value;
-  const items=getTickersSugeridos(q);
-  const drop=$('tickerDrop');
+function onVentaTickerInput(){ openVentaTickerDrop(); }
+function openVentaTickerDrop() {
+  const q=$('ventaTickerInput').value;
+  const items=getTickerList(q).filter(([t])=>!ventaTickers.has(t));
+  const drop=$('ventaTickerDrop');
   if(!items.length){drop.classList.remove('open');return;}
   drop.innerHTML=items.slice(0,30).map(([t,n])=>`
-    <div class="ticker-item" onclick="seleccionarTicker('${t}')">
+    <div class="ticker-item" onclick="agregarVentaTicker('${t}')">
       <span class="ti-sym">${t}</span>
       <span class="ti-count">${n} cliente${n!==1?'s':''}</span>
     </div>`).join('');
   drop.classList.add('open');
 }
 
-function seleccionarTicker(t) {
-  tickerSeleccionado=t;
-  $('tickerInput').value=t;
-  $('tickerDrop').classList.remove('open');
-  cantidades={};
-  aplicarFiltros();
+function agregarVentaTicker(t) {
+  ventaTickers.add(t);
+  $('ventaTickerInput').value='';
+  $('ventaTickerDrop').classList.remove('open');
+  renderVentaChips();
+  renderVentas();
 }
 
-document.addEventListener('click', e=>{
-  if(!e.target.closest('.ticker-search-wrap')) $('tickerDrop').classList.remove('open');
+function quitarVentaTicker(t) {
+  ventaTickers.delete(t);
+  renderVentaChips();
+  renderVentas();
+}
+
+function renderVentaChips() {
+  const el=$('ventaTickerChips');
+  el.innerHTML=[...ventaTickers].map(t=>{
+    const p=getPrice(t);
+    return `<div class="ticker-chip">
+      ${t}
+      ${p?`<span class="price">$${fmt(p,2)}</span>`:''}
+      <span class="xc" onclick="quitarVentaTicker('${t}')">✕</span>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+//  TICKER SEARCH — COMPRAS (single)
+// ═══════════════════════════════════════════
+function onCompraTickerInput(){ openCompraTickerDrop(); }
+function openCompraTickerDrop() {
+  const q=$('compraTickerInput').value;
+  // Para compras mostramos todos los tickers del índice de precios
+  const items=Object.entries(priceIndex)
+    .filter(([t])=>!q||t.includes(q.toUpperCase()))
+    .sort((a,b)=>b[1].length-a[1].length)
+    .slice(0,30);
+  const drop=$('compraTickerDrop');
+  if(!items.length){drop.classList.remove('open');return;}
+  drop.innerHTML=items.map(([t,entries])=>`
+    <div class="ticker-item" onclick="seleccionarCompraTicker('${t}')">
+      <span class="ti-sym">${t}</span>
+      <span class="ti-count">$${fmt(entries[0].price,2)}</span>
+    </div>`).join('');
+  drop.classList.add('open');
+}
+
+function seleccionarCompraTicker(t) {
+  compraTicker=t;
+  $('compraTickerInput').value=t;
+  $('compraTickerDrop').classList.remove('open');
+  const p=getPrice(t);
+  $('compraPrecioLabel').textContent=p?`Precio spot: $${fmt(p,2)}`:'Sin precio';
+  renderCompraChips();
+  renderCompras();
+}
+
+function renderCompraChips() {
+  const el=$('compraTickerChips');
+  if(!compraTicker){el.innerHTML='';return;}
+  const p=getPrice(compraTicker);
+  el.innerHTML=`<div class="ticker-chip">${compraTicker}${p?`<span class="price">$${fmt(p,2)}</span>`:''}<span class="xc" onclick="limpiarCompraTicker()">✕</span></div>`;
+}
+
+function limpiarCompraTicker() {
+  compraTicker=null;
+  $('compraTickerInput').value='';
+  $('compraTickerDrop').classList.remove('open');
+  $('compraPrecioLabel').textContent='';
+  renderCompraChips();
+  renderCompras();
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ticker-search-wrap')) {
+    document.querySelectorAll('.ticker-drop').forEach(d=>d.classList.remove('open'));
+  }
 });
 
-// ═══════════════════════════════════════════════════
-//  FILTROS Y RENDER
-// ═══════════════════════════════════════════════════
-function actualizarAlycSelector() {
-  const alycs=[...new Set(posiciones.map(p=>p.alyc))].sort();
-  const sel=$('filterAlyc');
-  const cur=sel.value;
-  sel.innerHTML='<option value="">Todas</option>'+alycs.map(a=>`<option>${a}</option>`).join('');
-  if(cur) sel.value=cur;
+// ═══════════════════════════════════════════
+//  PCT GLOBAL
+// ═══════════════════════════════════════════
+function setVentaPct(pct) {
+  ventaPct=pct;
+  document.querySelectorAll('#panel-ventas .pct-btn').forEach(b=>b.classList.toggle('active',b.textContent===pct+'%'));
+  // Recalc no-manuales
+  Object.keys(ventaCants).forEach(k=>{ if(!ventaCants[k].manual) delete ventaCants[k]; });
+  renderVentas();
+}
+function setCompraPct(pct) {
+  compraPct=pct;
+  document.querySelectorAll('#panel-compras .pct-btn').forEach(b=>b.classList.toggle('active',b.textContent===pct+'%'));
+  Object.keys(compraCants).forEach(k=>{ if(!compraCants[k].manual) delete compraCants[k]; });
+  renderCompras();
 }
 
-function setPct(pct) {
-  pctGlobal=pct;
-  document.querySelectorAll('.pct-btn').forEach(b=>b.classList.remove('active'));
-  // find and activate matching button
-  document.querySelectorAll('.pct-btn').forEach(b=>{
-    if(b.textContent===pct+'%') b.classList.add('active');
-  });
-  aplicarCantidades();
-  renderOrdenes();
-}
+// ═══════════════════════════════════════════
+//  LOCALSTORAGE ENVIADOS
+// ═══════════════════════════════════════════
+function getSent(key) { try{return new Set(JSON.parse(localStorage.getItem(key)||'[]'));}catch{return new Set();} }
+function addSent(key,val) { const s=getSent(key);s.add(val);localStorage.setItem(key,JSON.stringify([...s])); }
+function resetEnviadosVenta() { localStorage.removeItem(SENT_KEY_V); renderVentas(); }
+function resetEnviadosCompra() { localStorage.removeItem(SENT_KEY_C); renderCompras(); }
 
-function calcularCantidad(tenencia, pct) {
-  return Math.round(tenencia * pct / 100);
-}
-
-function aplicarCantidades() {
-  // Recalcular cantidades sugeridas para todos (no las editadas manualmente)
-  const filterAlyc=$('filterAlyc').value;
-  posiciones.filter(p=>{
-    if(!tickerSeleccionado||p.ticker!==tickerSeleccionado) return false;
-    if(filterAlyc&&p.alyc!==filterAlyc) return false;
-    return true;
-  }).forEach(p=>{
-    const key=rowKey(p);
-    // solo actualizar si NO fue editado manualmente
-    if(!cantidades[key+'_manual']) {
-      cantidades[key]=calcularCantidad(p.tenencia, pctGlobal);
-    }
-  });
-}
-
-function rowKey(p) { return `${p.alyc}|${p.comitente}`; }
-
-function aplicarFiltros() {
-  aplicarCantidades();
-  renderOrdenes();
-}
-
-// ═══════════════════════════════════════════════════
-//  LOCALSTORAGE para enviados
-// ═══════════════════════════════════════════════════
-function getSent() {
-  try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')); } catch { return new Set(); }
-}
-function addSent(key) {
-  const s=getSent(); s.add(key);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...s]));
-}
-function resetEnviados() {
-  localStorage.removeItem(STORAGE_KEY);
-  renderOrdenes();
-}
-
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  FORMATO MENSAJE
-// ═══════════════════════════════════════════════════
-function formatFechaHora() {
-  const now = new Date();
-  const dd=String(now.getDate()).padStart(2,'0');
-  const mm=String(now.getMonth()+1).padStart(2,'0');
-  const yyyy=now.getFullYear();
-  const hh=String(now.getHours()).padStart(2,'0');
-  const min=String(now.getMinutes()).padStart(2,'0');
-  return `${dd}/${mm}/${yyyy} ${hh}:${min}hs`;
-}
-
-function formatMsg(p, cantidad) {
+// ═══════════════════════════════════════════
+function formatVenta(p,cantidad) {
   const cli=findCliente(p.comitente);
   const nombre=cli?.cliente||p.comitente;
-  const ts=formatFechaHora();
-  return `cC ${p.comitente} ${nombre}
-Título ${p.ticker}
-Operación Venta
-Cantidad ${cantidad}
-Precio de Mercado
-Plazo 24hs
-${ts}`;
+  return `CC ${p.comitente} ${nombre}\nOperación Venta\nTítulo ${p.ticker}\nCantidad ${cantidad} VN\nPrecio de Mercado\nPlazo 24hs\n${fechaLegible()}`;
 }
-
-function waLink(p, cantidad) {
-  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(formatMsg(p,cantidad))}`;
+function formatCompra(alyc,comitente,ticker,cantidad) {
+  const cli=findCliente(comitente);
+  const nombre=cli?.cliente||comitente;
+  return `CC ${comitente} ${nombre}\nOperación Compra\nTítulo ${ticker}\nCantidad ${cantidad} VN\nPrecio de Mercado\nPlazo 24hs\n${fechaLegible()}`;
 }
+function waLink(msg) { return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`; }
 
-// ═══════════════════════════════════════════════════
-//  RENDER ÓRDENES
-// ═══════════════════════════════════════════════════
-function marcarEnviado(key) {
-  addSent(key);
-  aplicarEstadoEnviado(key);
+const waIcon=`<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
+
+// ═══════════════════════════════════════════
+//  RENDER VENTAS
+// ═══════════════════════════════════════════
+function ventaKey(p,ticker) { return `${p.alyc}|${p.comitente}|${ticker}`; }
+
+function marcarVentaEnviada(key, alyc, comitente, ticker) {
+  addSent(SENT_KEY_V, key);
+  const inp=document.getElementById('vinp-'+key);
+  const cant=parseInt(inp?.value||0)||0;
+  const precio=getPrice(ticker)||0;
+  registrarOperacion('VENTA',alyc,comitente,ticker,cant,precio);
+  aplicarBadge('vcell-'+key,'vcell-'+key);
+  updateVentaCount();
   showToast();
 }
 
-function aplicarEstadoEnviado(key) {
-  const row=document.getElementById('row-'+CSS.escape(key));
-  const cell=document.getElementById('cell-'+CSS.escape(key));
-  if(row) row.classList.add('row-sent');
+function aplicarBadge(cellId) {
+  const cell=document.getElementById(cellId);
   if(cell) cell.innerHTML='<span class="badge-sent">✓ Enviado</span>';
-  updateOrdenesCount();
 }
 
-function updateOrdenesCount() {
-  const total=document.querySelectorAll('tr[id^="row-"]').length;
-  const enviados=document.querySelectorAll('tr.row-sent').length;
-  $('ordenesCount').textContent=total?`${total-enviados} pendientes · ${enviados} enviadas`:'';
-}
-
-function renderOrdenes() {
-  const body=$('ordenesBody');
-  const filterAlyc=$('filterAlyc').value;
-
-  if(!tickerSeleccionado) {
-    body.innerHTML=`<div class="empty-state"><div class="es-icon">📋</div><p>Buscá un ticker para ver las órdenes</p><small>Cargá los datos de Drive y luego filtrá por ticker</small></div>`;
-    $('tickerBadge').textContent='—';
-    $('ordenesCount').textContent='';
-    return;
+function renderVentas() {
+  const body=$('ventaBody');
+  const filterAlyc=$('ventaFilterAlyc').value;
+  if(!ventaTickers.size) {
+    body.innerHTML='<div class="empty-state"><div class="es-icon">📋</div><p>Seleccioná uno o más tickers para ver las órdenes</p></div>';
+    $('ventaCount').textContent=''; return;
   }
 
-  $('tickerBadge').textContent=tickerSeleccionado;
-
-  const filas=posiciones.filter(p=>{
-    if(p.ticker!==tickerSeleccionado) return false;
-    if(filterAlyc&&p.alyc!==filterAlyc) return false;
-    return true;
+  // Construir filas: una por cada comitente × ticker
+  const filas=[];
+  posiciones.forEach(p=>{
+    if(!ventaTickers.has(p.ticker)) return;
+    if(p.ticker==='CASH_ARS'||p.ticker==='CASH_USD') return;
+    if(filterAlyc&&p.alyc!==filterAlyc) return;
+    const stock=stockReal(p.alyc,p.comitente,p.ticker);
+    if(stock<=0) return;
+    filas.push({...p, stockReal:stock});
   });
 
   if(!filas.length) {
-    body.innerHTML=`<div class="empty-state"><div class="es-icon">🔍</div><p>Ningún cliente tiene <strong>${tickerSeleccionado}</strong></p><small>Probá otra ALyC o verificá los datos cargados</small></div>`;
-    $('ordenesCount').textContent='';
+    body.innerHTML='<div class="empty-state"><div class="es-icon">🔍</div><p>Ningún cliente tiene los tickers seleccionados con stock disponible</p></div>';
+    $('ventaCount').textContent=''; return;
+  }
+
+  const sent=getSent(SENT_KEY_V);
+  // Sort by ticker then comitente
+  filas.sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.comitente.localeCompare(b.comitente));
+
+  body.innerHTML=`<div class="table-wrap"><table>
+    <thead><tr>
+      <th>ALyC</th><th>CC</th><th>Cliente</th><th>Ticker</th>
+      <th class="td-r">Stock real</th><th class="td-r">Precio spot</th>
+      <th class="td-r">Cantidad a vender</th><th class="td-r">Monto ARS</th><th></th>
+    </tr></thead>
+    <tbody>
+    ${filas.map(p=>{
+      const key=ventaKey(p,p.ticker);
+      const cli=findCliente(p.comitente);
+      const nombre=cli?.cliente||'—';
+      const precio=getPrice(p.ticker);
+      const cantSug=Math.round(p.stockReal*ventaPct/100);
+      const cant=ventaCants[key]?.cant??cantSug;
+      const montoARS=precio?cant*precio:null;
+      const isSent=sent.has(key);
+      const msg=formatVenta(p,cant);
+      return `<tr id="vrow-${key}" class="${isSent?'row-sent':''}">
+        <td><span style="font-size:10px;font-weight:700;color:var(--text2);">${p.alyc}</span></td>
+        <td style="font-weight:700;">CC ${p.comitente}</td>
+        <td style="color:var(--text2);">${nombre}</td>
+        <td style="font-weight:700;color:var(--red-light);">${p.ticker}</td>
+        <td class="td-r" style="color:var(--text2);">${fmt(p.stockReal)}</td>
+        <td class="td-r" style="color:var(--amber);">${precio?'$'+fmt(precio,2):'—'}</td>
+        <td class="td-r">
+          <div class="cant-wrap">
+            <span class="cant-sug">${fmt(cantSug)} sug.</span>
+            <input class="cant-input" id="vinp-${key}" type="number"
+              value="${cant}" min="0" max="${p.stockReal}"
+              oninput="onVentaCantChange('${key}','${p.alyc}','${p.comitente}','${p.ticker}',${p.stockReal})" />
+          </div>
+        </td>
+        <td class="td-r" style="color:var(--green);" id="vmonto-${key}">${montoARS?'$'+fmt(montoARS):'—'}</td>
+        <td id="vcell-${key}">
+          ${isSent?'<span class="badge-sent">✓ Enviado</span>'
+            :`<a class="btn-enviar" href="${waLink(msg)}" target="_blank"
+                onclick="marcarVentaEnviada('${key}','${p.alyc}','${p.comitente}','${p.ticker}')">
+               ${waIcon} Enviar
+             </a>`}
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody></table></div>`;
+
+  updateVentaCount();
+}
+
+function onVentaCantChange(key,alyc,comitente,ticker,maxStock) {
+  const inp=document.getElementById('vinp-'+key);
+  if(!inp) return;
+  let v=parseInt(inp.value)||0;
+  if(v<0) v=0; if(v>maxStock) v=maxStock;
+  ventaCants[key]={cant:v,manual:true};
+  // Recalcular monto
+  const precio=getPrice(ticker);
+  const montoEl=document.getElementById('vmonto-'+key);
+  if(montoEl) montoEl.textContent=precio?'$'+fmt(v*precio):'—';
+  // Actualizar link WA
+  const p=posiciones.find(pos=>pos.alyc===alyc&&normCC(pos.comitente)===normCC(comitente)&&pos.ticker===ticker);
+  if(!p) return;
+  const cell=document.getElementById('vcell-'+key);
+  const a=cell?.querySelector('a.btn-enviar');
+  if(a) a.href=waLink(formatVenta(p,v));
+}
+
+function updateVentaCount() {
+  const total=document.querySelectorAll('[id^="vrow-"]').length;
+  const env=document.querySelectorAll('[id^="vrow-"].row-sent').length;
+  $('ventaCount').textContent=total?`${total-env} pendientes · ${env} enviadas`:'';
+}
+
+function resetVentas() { ventaTickers=new Set(); ventaCants={}; renderVentaChips(); renderVentas(); }
+
+// ═══════════════════════════════════════════
+//  RENDER COMPRAS
+// ═══════════════════════════════════════════
+function compraKey(alyc,comitente) { return `${alyc}|${comitente}`; }
+
+function marcarCompraEnviada(key,alyc,comitente) {
+  addSent(SENT_KEY_C,key);
+  const inp=document.getElementById('cinp-'+key);
+  const cant=parseInt(inp?.value||0)||0;
+  const precio=getPrice(compraTicker)||0;
+  registrarOperacion('COMPRA',alyc,comitente,compraTicker,cant,precio);
+  const cell=document.getElementById('ccell-'+key);
+  if(cell) cell.innerHTML='<span class="badge-sent">✓ Enviado</span>';
+  const row=document.getElementById('crow-'+key);
+  if(row) row.classList.add('row-sent');
+  updateCompraCount();
+  showToast();
+}
+
+function renderCompras() {
+  const body=$('compraBody');
+  const filterAlyc=$('compraFilterAlyc').value;
+  if(!compraTicker) {
+    body.innerHTML='<div class="empty-state"><div class="es-icon">🛒</div><p>Seleccioná un ticker para ver los clientes con saldo disponible</p></div>';
+    $('compraCount').textContent=''; return;
+  }
+  const precio=getPrice(compraTicker);
+  if(!precio) {
+    body.innerHTML='<div class="empty-state"><div class="es-icon">⚠️</div><p>Sin precio spot para '+compraTicker+'</p><small>Descargá los precios primero</small></div>';
     return;
   }
 
-  const sent=getSent();
+  // Obtener comitentes únicos con saldo > 0
+  const comitentesVistos=new Set();
+  const filas=[];
+  posiciones.forEach(p=>{
+    if(filterAlyc&&p.alyc!==filterAlyc) return;
+    const ck=compraKey(p.alyc,p.comitente);
+    if(comitentesVistos.has(ck)) return;
+    comitentesVistos.add(ck);
+    const saldo=saldoLiquido(p.alyc,p.comitente);
+    if(saldo<=0) return;
+    const cantMax=Math.floor(saldo/precio);
+    if(cantMax<=0) return;
+    filas.push({alyc:p.alyc,comitente:p.comitente,saldo,cantMax});
+  });
 
-  body.innerHTML=`
-    <div class="table-wrap">
-    <table>
-      <thead><tr>
-        <th>ALyC</th>
-        <th>Cuenta</th>
-        <th>Cliente</th>
-        <th class="td-r">Tenencia</th>
-        <th class="td-r">Cantidad a vender</th>
-        <th></th>
-      </tr></thead>
-      <tbody>
-      ${filas.map(p=>{
-        const key=rowKey(p);
-        const cli=findCliente(p.comitente);
-        const nombre=cli?.cliente||'—';
-        const cant=cantidades[key]??calcularCantidad(p.tenencia,pctGlobal);
-        const isSent=sent.has(key);
-        const link=waLink(p,cant);
-        return `<tr id="row-${key}" class="${isSent?'row-sent':''}">
-          <td><span style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:.06em;">${p.alyc}</span></td>
-          <td class="td-bold">cC ${p.comitente}</td>
-          <td style="color:var(--text2);">${nombre}</td>
-          <td class="td-r" style="color:var(--text2);">${p.tenencia.toLocaleString('es-AR')}</td>
-          <td class="td-r">
-            <div class="cant-wrap" style="justify-content:flex-end;">
-              <span class="cant-sug">${calcularCantidad(p.tenencia,pctGlobal)} sug.</span>
-              <input class="cant-input" id="inp-${key}" type="number" value="${cant}"
-                min="0" max="${p.tenencia}"
-                onchange="onCantChange('${key}','${p.alyc}','${p.comitente}',${p.tenencia})"
-                oninput="onCantChange('${key}','${p.alyc}','${p.comitente}',${p.tenencia})" />
-            </div>
-          </td>
-          <td id="cell-${key}">
-            ${isSent
-              ? '<span class="badge-sent">✓ Enviado</span>'
-              : `<a class="btn-enviar" href="${link}" target="_blank" onclick="marcarEnviado('${key}')">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                  Enviar
-                </a>`
-            }
-          </td>
-        </tr>`;
-      }).join('')}
-      </tbody>
-    </table>
-    </div>`;
+  filas.sort((a,b)=>b.saldo-a.saldo);
 
-  updateOrdenesCount();
+  if(!filas.length) {
+    body.innerHTML='<div class="empty-state"><div class="es-icon">💰</div><p>Ningún cliente tiene saldo líquido disponible</p><small>Realizá ventas primero para generar saldo</small></div>';
+    $('compraCount').textContent=''; return;
+  }
+
+  const sent=getSent(SENT_KEY_C);
+
+  body.innerHTML=`<div class="table-wrap"><table>
+    <thead><tr>
+      <th>ALyC</th><th>CC</th><th>Cliente</th>
+      <th class="td-r">Saldo ARS</th><th class="td-r">Cant. máx.</th>
+      <th class="td-r">Cantidad a comprar</th><th class="td-r">Monto ARS</th><th></th>
+    </tr></thead>
+    <tbody>
+    ${filas.map(f=>{
+      const key=compraKey(f.alyc,f.comitente);
+      const cli=findCliente(f.comitente);
+      const nombre=cli?.cliente||'—';
+      const cantSug=Math.floor(f.cantMax*compraPct/100);
+      const cant=compraCants[key]?.cant??cantSug;
+      const montoARS=cant*precio;
+      const isSent=sent.has(key);
+      const msg=formatCompra(f.alyc,f.comitente,compraTicker,cant);
+      return `<tr id="crow-${key}" class="${isSent?'row-sent':''}">
+        <td><span style="font-size:10px;font-weight:700;color:var(--text2);">${f.alyc}</span></td>
+        <td style="font-weight:700;">CC ${f.comitente}</td>
+        <td style="color:var(--text2);">${nombre}</td>
+        <td class="td-r" style="color:var(--green);">$${fmt(f.saldo)}</td>
+        <td class="td-r" style="color:var(--text2);">${fmt(f.cantMax)}</td>
+        <td class="td-r">
+          <div class="cant-wrap">
+            <span class="cant-sug">${fmt(cantSug)} sug.</span>
+            <input class="cant-input" id="cinp-${key}" type="number"
+              value="${cant}" min="0" max="${f.cantMax}"
+              oninput="onCompraCantChange('${key}','${f.alyc}','${f.comitente}',${f.cantMax},${precio})" />
+          </div>
+        </td>
+        <td class="td-r" style="color:var(--amber);" id="cmonto-${key}">$${fmt(montoARS)}</td>
+        <td id="ccell-${key}">
+          ${isSent?'<span class="badge-sent">✓ Enviado</span>'
+            :`<a class="btn-enviar" href="${waLink(msg)}" target="_blank"
+                onclick="marcarCompraEnviada('${key}','${f.alyc}','${f.comitente}')">
+               ${waIcon} Enviar
+             </a>`}
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody></table></div>`;
+
+  updateCompraCount();
 }
 
-// Cuando el usuario edita la cantidad a mano
-function onCantChange(key, alyc, comitente, tenencia) {
-  const inp=document.getElementById('inp-'+key);
+function onCompraCantChange(key,alyc,comitente,maxCant,precio) {
+  const inp=document.getElementById('cinp-'+key);
   if(!inp) return;
-  let val=parseInt(inp.value)||0;
-  if(val<0) val=0;
-  if(val>tenencia) val=tenencia;
-  cantidades[key]=val;
-  cantidades[key+'_manual']=true;
-  // Actualizar el href del link de WA con la nueva cantidad
-  const p=posiciones.find(p=>p.alyc===alyc&&normCC(p.comitente)===normCC(comitente)&&p.ticker===tickerSeleccionado);
-  if(!p) return;
-  const cell=document.getElementById('cell-'+key);
-  if(!cell) return;
-  const a=cell.querySelector('a.btn-enviar');
-  if(a) a.href=waLink(p,val);
+  let v=parseInt(inp.value)||0;
+  if(v<0) v=0; if(v>maxCant) v=maxCant;
+  compraCants[key]={cant:v,manual:true};
+  const montoEl=document.getElementById('cmonto-'+key);
+  if(montoEl) montoEl.textContent='$'+fmt(v*precio);
+  const cell=document.getElementById('ccell-'+key);
+  const a=cell?.querySelector('a.btn-enviar');
+  if(a) a.href=waLink(formatCompra(alyc,comitente,compraTicker,v));
 }
 
-function resetTodo() {
-  tickerSeleccionado=null;
-  cantidades={};
-  $('tickerInput').value='';
-  $('filterAlyc').value='';
-  renderOrdenes();
+function updateCompraCount() {
+  const total=document.querySelectorAll('[id^="crow-"]').length;
+  const env=document.querySelectorAll('[id^="crow-"].row-sent').length;
+  $('compraCount').textContent=total?`${total-env} pendientes · ${env} enviadas`:'';
 }
 
-// ═══════════════════════════════════════════════════
+function resetCompras() { compraTicker=null; compraCants={}; $('compraTickerInput').value=''; $('compraPrecioLabel').textContent=''; renderCompraChips(); renderCompras(); }
+
+// ═══════════════════════════════════════════
+//  RENDER HISTORIAL
+// ═══════════════════════════════════════════
+function renderHistorial() {
+  const hoy=fechaHoy();
+  $('histFecha').textContent=`Fecha: ${hoy}`;
+  const ops=operHoy.filter(o=>o.fecha===hoy);
+  const ventas=ops.filter(o=>o.tipo==='VENTA');
+  const compras=ops.filter(o=>o.tipo==='COMPRA');
+  $('histNVentas').textContent=ventas.length;
+  $('histMontoVentas').textContent='$'+fmt(ventas.reduce((s,o)=>s+o.montoARS,0));
+  $('histNCompras').textContent=compras.length;
+  $('histMontoCompras').textContent='$'+fmt(compras.reduce((s,o)=>s+o.montoARS,0));
+
+  const body=$('histBody');
+  if(!ops.length) {
+    body.innerHTML='<div class="empty-state"><div class="es-icon">📊</div><p>Sin operaciones hoy</p></div>';
+    return;
+  }
+  body.innerHTML=ops.map(o=>`
+    <div class="hist-row">
+      <div style="color:var(--text3);">${o.hora}</div>
+      <div><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;${o.tipo==='VENTA'?'background:rgba(225,6,0,.12);color:var(--red)':'background:rgba(34,197,94,.12);color:var(--green)'}">${o.tipo}</span></div>
+      <div style="color:var(--text2);">${o.alyc}</div>
+      <div>${o.cliente||o.comitente}</div>
+      <div style="font-weight:700;">${o.ticker}</div>
+      <div class="td-r">${fmt(o.cantidad)}</div>
+      <div class="td-r" style="color:var(--amber);">$${fmt(o.precioSpot,2)}</div>
+      <div class="td-r" style="color:var(--green);">$${fmt(o.montoARS)}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
 //  TOAST
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let toastTimer;
 function showToast() {
-  const t=$('toast');
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+  const t=$('toast'); t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  INIT
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+initNav();
 restoreToken();
+checkDailyReset();
 </script>
 </body>
 </html>

@@ -1,473 +1,514 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIBRA Market · Panel de módulos</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --red: #E10600;
-      --red-dark: #A90400;
-      --red-light: #ff3330;
-      --bg: #0d0d0d;
-      --bg2: #141414;
-      --bg3: #1a1a1a;
-      --bg4: #222222;
-      --border: rgba(255,255,255,.08);
-      --border2: rgba(255,255,255,.16);
-      --text: #f0f0f0;
-      --text2: #a6a6a6;
-      --text3: #666666;
-      --green: #22c55e;
-      --amber: #f59e0b;
-      --shadow: 0 24px 70px rgba(0,0,0,.34);
-      --font-main: 'Montserrat', Arial, sans-serif;
-      --font-head: 'Raleway', Arial, sans-serif;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIBRATECH | Market Suite</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --red:#e10600;
+    --black:#111827;
+    --gray:#667085;
+    --line:#e8e8e8;
+    --shadow:0 8px 20px rgba(0,0,0,.06);
+    --mono:'JetBrains Mono', monospace;
+    --main:'Montserrat', sans-serif;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:var(--main);
+    background:#efefef;
+    color:var(--black);
+}
+
+/* HEADER */
+
+header{
+    height:72px;
+    background:white;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.logo-box{
+    width:38px;
+    height:38px;
+    background:var(--red);
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-size:20px;
+    font-weight:900;
+}
+
+.brand-text strong{
+    font-size:28px;
+    font-weight:900;
+    line-height:1;
+}
+
+.brand-text strong span{
+    color:var(--red);
+}
+
+.brand-text small{
+    display:block;
+    font-size:8px;
+    letter-spacing:5px;
+    color:#b3b3b3;
+    margin-top:4px;
+}
+
+.nav{
+    display:flex;
+    align-items:center;
+    gap:32px;
+}
+
+.nav a{
+    text-decoration:none;
+    color:#555;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:2px;
+}
+
+.contact-btn{
+    background:var(--red);
+    color:white !important;
+    padding:11px 22px;
+    border-radius:2px 10px 2px 10px;
+}
+
+/* HERO */
+
+.hero{
+    min-height:360px;
+    background:
+        linear-gradient(rgba(225,6,0,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(225,6,0,.04) 1px, transparent 1px),
+        white;
+    background-size:42px 42px;
+    display:grid;
+    grid-template-columns:1.2fr .8fr;
+    align-items:center;
+    padding:60px 10%;
+    border-bottom:1px solid var(--line);
+}
+
+.eyebrow{
+    color:var(--red);
+    font-family:var(--mono);
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:5px;
+    margin-bottom:20px;
+}
+
+.eyebrow::before{
+    content:"";
+    display:inline-block;
+    width:34px;
+    height:1px;
+    background:var(--red);
+    margin-right:12px;
+    vertical-align:middle;
+}
+
+.hero h1{
+    font-size:clamp(38px, 5vw, 70px);
+    font-weight:900;
+    line-height:.95;
+    letter-spacing:-3px;
+    margin-bottom:22px;
+}
+
+.hero h1 span{
+    display:block;
+    color:var(--red);
+}
+
+.hero p{
+    max-width:620px;
+    font-size:16px;
+    line-height:1.8;
+    color:var(--gray);
+}
+
+.chips{
+    margin-top:26px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.chip{
+    padding:7px 12px;
+    border-radius:999px;
+    border:1px solid rgba(225,6,0,.15);
+    background:rgba(225,6,0,.03);
+    color:var(--red);
+    font-family:var(--mono);
+    font-size:9px;
+    font-weight:700;
+}
+
+.hero-right{
+    text-align:center;
+    font-family:var(--mono);
+    font-size:10px;
+    color:#8b8f98;
+    line-height:2.8;
+}
+
+.hero-right b{
+    display:block;
+    color:var(--red);
+    font-size:9px;
+}
+
+/* MAIN */
+
+main{
+    max-width:1280px;
+    margin:0 auto;
+    padding:30px 18px 50px;
+}
+
+/* MODULE GRID */
+
+.module-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:12px;
+}
+
+.module-card{
+    background:white;
+    border-radius:10px;
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+    min-height:125px;
+    padding:12px;
+    text-decoration:none;
+    color:inherit;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    transition:.18s ease;
+    position:relative;
+    overflow:hidden;
+}
+
+.module-card::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    height:3px;
+    width:100%;
+    background:var(--red);
+    transform:scaleX(.2);
+    transform-origin:left;
+    transition:.18s ease;
+}
+
+.module-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 28px rgba(0,0,0,.10);
+    border-color:rgba(225,6,0,.20);
+}
+
+.module-card:hover::before{
+    transform:scaleX(1);
+}
+
+.icon{
+    width:28px;
+    height:28px;
+    border-radius:7px;
+    background:var(--red);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.module-card h3{
+    font-size:11px;
+    font-weight:900;
+    text-transform:uppercase;
+    line-height:1.3;
+    margin-bottom:6px;
+}
+
+.module-card p{
+    font-size:9px;
+    color:var(--gray);
+    line-height:1.45;
+}
+
+.module-bottom{
+    margin-top:8px;
+    padding-top:6px;
+    border-top:1px solid #eee;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.path{
+    font-family:var(--mono);
+    font-size:8px;
+    color:#98a2b3;
+}
+
+.open{
+    font-family:var(--mono);
+    font-size:8px;
+    font-weight:800;
+    color:var(--red);
+}
+
+/* FLOW */
+
+.workflow{
+    margin-top:20px;
+    background:white;
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:18px 22px;
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    align-items:center;
+}
+
+.workflow strong{
+    color:var(--red);
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:2px;
+}
+
+.workflow span{
+    color:var(--gray);
+    font-size:11px;
+    line-height:1.6;
+}
+
+/* FOOTER */
+
+footer{
+    background:white;
+    border-top:1px solid var(--line);
+    padding:18px 6%;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+    font-family:var(--mono);
+    font-size:9px;
+    color:#98a2b3;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1200px){
+    .module-grid{
+        grid-template-columns:repeat(4,1fr);
+    }
+}
+
+@media(max-width:900px){
+    .hero{
+        grid-template-columns:1fr;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .hero-right{
+        display:none;
     }
 
-    body {
-      min-height: 100vh;
-      font-family: var(--font-main);
-      color: var(--text);
-      background:
-        radial-gradient(circle at 18% 6%, rgba(225,6,0,.22), transparent 28%),
-        radial-gradient(circle at 88% 88%, rgba(225,6,0,.12), transparent 32%),
-        linear-gradient(135deg, #080808 0%, #0d0d0d 46%, #151515 100%);
+    .module-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+}
+
+@media(max-width:760px){
+    .nav{
+        display:none;
     }
 
-    .page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    .module-grid{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    header {
-      height: 62px;
-      padding: 0 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(20,20,20,.92);
-      border-bottom: 1px solid var(--border2);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      backdrop-filter: blur(12px);
+    .workflow{
+        flex-direction:column;
+        align-items:flex-start;
     }
+}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      min-width: 0;
+@media(max-width:480px){
+    .module-grid{
+        grid-template-columns:1fr;
     }
-
-    .brand img {
-      height: 36px;
-      width: auto;
-      object-fit: contain;
-      display: block;
-    }
-
-    .brand-name {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .brand-name strong {
-      font-family: var(--font-head);
-      font-size: 18px;
-      letter-spacing: 2px;
-      font-weight: 700;
-      color: var(--red);
-      white-space: nowrap;
-    }
-
-    .brand-name span {
-      font-size: 12px;
-      color: var(--text);
-      font-weight: 300;
-      white-space: nowrap;
-    }
-
-    .header-pill {
-      padding: 7px 13px;
-      border-radius: 999px;
-      border: 1px solid rgba(225,6,0,.30);
-      color: var(--red-light);
-      background: rgba(225,6,0,.08);
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-    }
-
-    main {
-      flex: 1;
-      width: 100%;
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 64px 24px 42px;
-    }
-
-    .hero {
-      background:
-        linear-gradient(135deg, rgba(225,6,0,.11), rgba(255,255,255,.025)),
-        var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 30px;
-      margin-bottom: 22px;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      right: -120px;
-      top: -120px;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      background: rgba(225,6,0,.22);
-      filter: blur(8px);
-      pointer-events: none;
-    }
-
-    .eyebrow {
-      color: var(--red-light);
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1.4px;
-      margin-bottom: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    h1 {
-      font-family: var(--font-head);
-      font-size: clamp(34px, 5vw, 58px);
-      line-height: 1.02;
-      font-weight: 700;
-      letter-spacing: -1.6px;
-      margin-bottom: 14px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .subtitle {
-      max-width: 760px;
-      color: var(--text2);
-      font-size: 14px;
-      line-height: 1.75;
-      position: relative;
-      z-index: 1;
-    }
-
-    .module-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 20px;
-    }
-
-    .module-card {
-      text-decoration: none;
-      color: inherit;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      min-height: 270px;
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .module-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(225,6,0,.10), transparent 55%);
-      opacity: .35;
-      transition: opacity .16s ease;
-      pointer-events: none;
-    }
-
-    .module-card:hover {
-      transform: translateY(-4px);
-      background: var(--bg3);
-      border-color: rgba(225,6,0,.45);
-      box-shadow: 0 18px 45px rgba(0,0,0,.28);
-    }
-
-    .module-card:hover::before {
-      opacity: 1;
-    }
-
-    .module-top,
-    .module-bottom {
-      position: relative;
-      z-index: 1;
-    }
-
-    .icon {
-      width: 54px;
-      height: 54px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #0b0b0b;
-      border: 1px solid var(--border2);
-      color: var(--red-light);
-      font-size: 25px;
-      margin-bottom: 18px;
-    }
-
-    .module-card h2 {
-      font-family: var(--font-head);
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--text);
-    }
-
-    .module-card p {
-      color: var(--text2);
-      font-size: 12px;
-      line-height: 1.65;
-    }
-
-    .module-bottom {
-      margin-top: 22px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .path {
-      color: var(--text3);
-      font-size: 11px;
-      font-family: monospace;
-      word-break: break-all;
-    }
-
-    .open {
-      color: var(--red-light);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .6px;
-      white-space: nowrap;
-    }
-
-    .workflow {
-      margin-top: 18px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .workflow strong {
-      font-family: var(--font-head);
-      color: var(--text);
-      font-size: 20px;
-      white-space: nowrap;
-    }
-
-    .workflow span {
-      color: var(--text2);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    .status-strip {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .status {
-      background: rgba(255,255,255,.025);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 11px 13px;
-      color: var(--text2);
-      font-size: 11px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .status b {
-      color: var(--red-light);
-      font-weight: 800;
-    }
-
-    footer {
-      width: 100%;
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 0 24px 26px;
-      color: var(--text3);
-      font-size: 11px;
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    @media (max-width: 980px) {
-      .module-grid,
-      .status-strip {
-        grid-template-columns: 1fr;
-      }
-
-      .workflow {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .header-pill {
-        display: none;
-      }
-    }
-
-    @media (max-width: 560px) {
-      header {
-        height: auto;
-        padding: 14px 16px;
-      }
-
-      .brand img {
-        height: 32px;
-      }
-
-      .brand-name {
-        flex-direction: column;
-        gap: 2px;
-      }
-
-      main {
-        padding: 36px 16px 30px;
-      }
-
-      .hero {
-        padding: 22px;
-      }
-    }
-  </style>
+}
+</style>
 </head>
-<body>
-  <div class="page">
-    <header>
-      <div class="brand">
-        <img src="assets/logo.png" alt="SIBRATECH" onerror="this.style.display='none'">
-        <div class="brand-name">
-          <strong>SIBRA</strong>
-          <span>Market Suite</span>
-        </div>
-      </div>
-      <div class="header-pill">Portfolio Management</div>
-    </header>
 
-    <main>
-      <section class="hero">
-        <div class="eyebrow">SIBRA Investors</div>
-        <h1>Panel de control de carteras.</h1>
-        <p class="subtitle">
-          Acceso centralizado a los módulos de carteras actuales, propuestas y rotaciones. Flujo completo para leer posiciones reales, construir objetivos por perfil y generar rebalanceos operables.
+<body>
+
+<header>
+    <div class="brand">
+        <div class="logo-box">⌂</div>
+        <div class="brand-text">
+            <strong>SIBRA<span>TECH</span></strong>
+            <small>CONSTRUYENDO OPORTUNIDADES</small>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <a href="#">INICIO</a>
+        <a href="#">MÓDULOS</a>
+        <a href="#">RECURSOS</a>
+        <a href="mailto:info@sibratech.com.ar" class="contact-btn">CONTACTO</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <div>
+        <div class="eyebrow">SIBRATECH · APLICACIONES INTERNAS</div>
+
+        <h1>
+            Panel de Control
+            <span>Market Suite</span>
+        </h1>
+
+        <p>
+            Acceso centralizado a herramientas operativas para carteras,
+            rotaciones, órdenes y procesos comerciales.
         </p>
 
-        <div class="status-strip">
-          <div class="status"><span>Fuente actual</span><b>Drive</b></div>
-          <div class="status"><span>Motor</span><b>Allocation</b></div>
-          <div class="status"><span>Salida</span><b>Rotaciones</b></div>
+        <div class="chips">
+            <div class="chip">■ CARTERAS</div>
+            <div class="chip">■ ROTACIONES</div>
+            <div class="chip">■ ÓRDENES</div>
+            <div class="chip">■ WHATSAPP</div>
         </div>
-      </section>
+    </div>
 
-      <section class="module-grid">
-        <a class="module-card" href="./actual">
-          <div class="module-top">
-            <div class="icon">📊</div>
-            <h2>Carteras actuales</h2>
-            <p>
-              Lectura de posiciones reales por cliente, ALyC y ticker. Permite ver la cartera existente con criterios de allocation y filtros de análisis.
-            </p>
-          </div>
-          <div class="module-bottom">
-            <span class="path">./actual</span>
-            <span class="open">Abrir →</span>
-          </div>
-        </a>
+    <div class="hero-right">
+        <b>Motor</b>
+        Allocation Engine
+        <b>Fuente</b>
+        Excel / Drive / Manual
+        <b>Salida</b>
+        Órdenes Ejecutables
+        <b>Estado</b>
+        MVP
+    </div>
+</section>
 
-        <a class="module-card" href="./propuestas">
-          <div class="module-top">
-            <div class="icon">🎯</div>
-            <h2>Carteras propuestas</h2>
-            <p>
-              Construcción de cartera objetivo según perfil del cliente, distribución por plazo y ponderación interna de cada cartera tipo.
-            </p>
-          </div>
-          <div class="module-bottom">
-            <span class="path">./propuestas</span>
-            <span class="open">Abrir →</span>
-          </div>
-        </a>
+<main>
 
-        <a class="module-card" href="./rotaciones">
-          <div class="module-top">
-            <div class="icon">🔄</div>
-            <h2>Rotaciones</h2>
-            <p>
-              Comparación entre cartera actual y objetivo para detectar diferencias, ventas, compras y ajustes sugeridos por cliente.
-            </p>
-          </div>
-          <div class="module-bottom">
-            <span class="path">./rotaciones</span>
-            <span class="open">Abrir →</span>
-          </div>
-        </a>
-      </section>
+<section class="module-grid">
 
-      <section class="workflow">
-        <strong>Actual → Propuesta → Rotación</strong>
-        <span>
-          La suite replica el flujo de trabajo de gestión: primero diagnóstico, luego objetivo y finalmente la orden sugerida.
-        </span>
-      </section>
-    </main>
+<a class="module-card" href="./actual">
+<div>
+<div class="icon">📊</div>
+<h3>Carteras actuales</h3>
+<p>Lectura de posiciones reales.</p>
+</div>
+<div class="module-bottom">
+<span class="path">./actual</span>
+<span class="open">ABRIR →</span>
+</div>
+</a>
 
-    <footer>
-      <span>© SIBRATECH SRL · construyendo oportunidades</span>
-      <span>info@sibratech.com.ar</span>
-    </footer>
-  </div>
+<a class="module-card" href="./propuestas">
+<div>
+<div class="icon">🎯</div>
+<h3>Carteras propuestas</h3>
+<p>Construcción de cartera objetivo.</p>
+</div>
+<div class="module-bottom">
+<span class="path">./propuestas</span>
+<span class="open">ABRIR →</span>
+</div>
+</a>
+
+<a class="module-card" href="./rotaciones">
+<div>
+<div class="icon">🔄</div>
+<h3>Rotaciones</h3>
+<p>Diferencias y rebalanceos.</p>
+</div>
+<div class="module-bottom">
+<span class="path">./rotaciones</span>
+<span class="open">ABRIR →</span>
+</div>
+</a>
+
+<a class="module-card" href="https://sibraweb.github.io/market/chicas/" target="_blank">
+<div>
+<div class="icon">💬</div>
+<h3>Órdenes chicas</h3>
+<p>WhatsApp rápido.</p>
+</div>
+<div class="module-bottom">
+<span class="path">market/chicas</span>
+<span class="open">ABRIR →</span>
+</div>
+</a>
+
+<a class="module-card" href="#"><div><div class="icon">🧾</div><h3>Módulo 5</h3><p>Nuevo módulo.</p></div></a>
+<a class="module-card" href="#"><div><div class="icon">📈</div><h3>Módulo 6</h3><p>Nuevo módulo.</p></div></a>
+<a class="module-card" href="#"><div><div class="icon">🏗️</div><h3>Módulo 7</h3><p>Nuevo módulo.</p></div></a>
+<a class="module-card" href="#"><div><div class="icon">⚙️</div><h3>Módulo 8</h3><p>Nuevo módulo.</p></div></a>
+<a class="module-card" href="#"><div><div class="icon">📁</div><h3>Módulo 9</h3><p>Nuevo módulo.</p></div></a>
+<a class="module-card" href="#"><div><div class="icon">🚀</div><h3>Módulo 10</h3><p>Nuevo módulo.</p></div></a>
+
+</section>
+
+<section class="workflow">
+<strong>ACTUAL → PROPUESTA → ROTACIÓN → ORDEN</strong>
+<span>Flujo operativo sugerido para gestión y ejecución.</span>
+</section>
+
+</main>
+
+<footer>
+<span>© SIBRATECH SRL · construyendo oportunidades</span>
+<span>info@sibratech.com.ar · sibratech.com.ar</span>
+</footer>
+
 </body>
 </html>

@@ -654,6 +654,7 @@ async function registrarOperacion(tipo, alyc, comitente, ticker, cantidad, preci
   const montoARS=cantidad*precioSpot;
   const hoy=fechaHoy();
   const hora=horaAhora();
+  
   const row=[hoy,hora,tipo,alyc,comitente,cliente,ticker,cantidad,precioSpot,montoARS];
   try {
     await sheetsAppend([row]);
@@ -1110,7 +1111,7 @@ function formatVenta(p,cantidad) {
 function formatCompra(alyc,comitente,ticker,cantidad) {
   const cli=findCliente(comitente);
   const nombre=cli?.cliente||comitente;
-  return `CC ${comitente} ${nombre}\nOperación Compra\nTítulo ${ticker}\nCantidad ${cantidad} VN\nPrecio de Mercado\nPlazo 24hs\n${fechaLegible()}`;
+  return `CC ${comitente} ${nombre}\nOperación Compra\nTítulo ${ticker}\nCantidad ${cantidad} VN\nPrecio de Mercado\nPlazo 24hs\nAlyc ${alyc}\ ${fechaLegible()}`;
 }
 function waLink(msg) { return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`; }
 
